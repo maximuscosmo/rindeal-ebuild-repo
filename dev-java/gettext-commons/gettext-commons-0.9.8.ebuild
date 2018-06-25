@@ -19,7 +19,6 @@ inherit java-pkg-simple
 ## variables: SRC_URI, HOMEPAGE
 inherit git-hosting
 
-
 DESCRIPTION="Internationalization (i18n) through GNU gettext and Java ResourceBundles"
 LICENSE="LGPL-2.1"
 

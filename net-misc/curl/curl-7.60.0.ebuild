@@ -52,11 +52,11 @@ IUSE_A=(
 	+ssl
 	$(rindeal:dsf:prefix_flags \
 		"ssl_" \
-			axtls gnutls libressl mbedtls nss +openssl)
+			axtls gnutls mbedtls nss +openssl)
 	# improve compatibility with external packages referencing these official use flags
 	$(rindeal:dsf:prefix_flags \
 		"curl_ssl_" \
-			axtls gnutls libressl mbedtls nss openssl)
+			axtls gnutls mbedtls nss openssl)
 )
 
 # tests lead to lots of false negatives, bug gentoo#285669
@@ -66,7 +66,7 @@ CDEPEND_A=(
 	"protocol_ldap? ( net-nds/openldap )"
 	"ssl? ("
 		"$(rindeal:dsf:eval \
-			"ssl_openssl|ssl_libressl|ssl_gnutls" \
+			"ssl_openssl|ssl_gnutls" \
 				"app-misc/ca-certificates")"
 
 		"ssl_axtls?		( net-libs/axtls )"
@@ -74,7 +74,6 @@ CDEPEND_A=(
 			"net-libs/gnutls:0=[static-libs?]"
 			"dev-libs/nettle:0="
 		")"
-		"ssl_libressl?	( dev-libs/libressl:0=[static-libs?] )"
 		"ssl_mbedtls?	( net-libs/mbedtls:0= )"
 		"ssl_openssl?	( dev-libs/openssl:0=[static-libs?] )"
 		"ssl_nss?		( dev-libs/nss:0 )"
@@ -111,7 +110,7 @@ REQUIRED_USE_A=(
 		"|| ("
 			$(rindeal:dsf:prefix_flags \
 				"ssl_" \
-				axtls gnutls libressl mbedtls nss openssl)
+				axtls gnutls mbedtls nss openssl)
 		")"
 	")"
 	"?? ( libssh2 libssh )"
@@ -127,7 +126,7 @@ REQUIRED_USE_A=(
 	"protocol_ldaps?  ( protocol_ldap ssl )"
 	"protocol_pop3s?  ( protocol_pop3 ssl )"
 	"protocol_imaps?  ( protocol_imap ssl )"
-	"protocol_smb?    ( auth_digest ^^ ( $(rindeal:dsf:prefix_flags "ssl_" openssl libressl gnutls nss) ) )"
+	"protocol_smb?    ( auth_digest ^^ ( $(rindeal:dsf:prefix_flags "ssl_" openssl gnutls nss) ) )"
 	"protocol_smbs?   ( protocol_smb ssl )"
 	"protocol_smtps?  ( protocol_smtp ssl )"
 	"protocol_scp?    ( || ( libssh2 libssh ) )"
@@ -136,7 +135,6 @@ REQUIRED_USE_A=(
 	# ensure these use flags have the intended effect
 	"curl_ssl_axtls?  ( ssl_axtls )"
 	"curl_ssl_gnutls? ( ssl_gnutls )"
-	"curl_ssl_libressl? ( ssl_libressl )"
 	"curl_ssl_mbedtls?  ( ssl_mbedtls )"
 	"curl_ssl_nss?    ( ssl_nss )"
 	"curl_ssl_openssl?  ( ssl_openssl )"
@@ -167,8 +165,7 @@ src_configure() {
 			*) die;;
 		esac
 		call+=( "${2}" "${3:-"${2}"}")
-		shift 3
-		call+=( "${@}" )
+		(( $# > 3 )) && call+=( "${4}" )
 
 		"${call[@]}"
 	}
@@ -177,10 +174,9 @@ src_configure() {
 		(( $# < 3 || $# > 5 )) && die
 
 		local call=(
-			myuse "${1}" "${2}_${3}" "${3}" "${4:-"${3}"}"
+			myuse "${1}" "${2}_${3}" "${4:-"${3}"}"
 		)
-		shift 4
-		call+=( "${@}" )
+		(( $# > 4 )) && call+=( "${5}" )
 
 		"${call[@]}"
 	}
@@ -193,8 +189,7 @@ src_configure() {
 		(( $# < 2 || $# > 4 )) && die
 
 		local call=( myuse "${1}" "$(usex "ssl" "ssl_${2}" "ssl")" "${3:-"${2}"}")
-		shift 3
-		call+=( "${@}" )
+		(( $# > 3 )) && call+=( "${4}" )
 
 		"${call[@]}"
 	}
@@ -246,11 +241,10 @@ src_configure() {
 		$(use_with     zlib)
 		$(use_with     brotli)
 		"$(myusepref w auth gssapi{,} "${EPREFIX}"/usr)"
-		$(usex ssl $(usex openssl "--with-default-ssl-backend=openssl" '') '')
+		$(usex ssl $(usex ssl_openssl "--with-default-ssl-backend=openssl" '') '')
 		--without-winssl	# disable Windows native SSL/TLS
 		--without-darwinssl	# disable Apple OS native SSL/TLS
 		$(myssluse w openssl ssl)
-		$(myssluse w libressl ssl)
 		$(myssluse w gnutls)
 # 		$(myssluse w polarssl)  # polarssl removed from Gentoo repos
 		$(myssluse w mbedtls)
@@ -271,7 +265,7 @@ src_configure() {
 		--with-zsh-functions-dir="${EPREFIX}"/usr/share/zsh/site-functions
 	)
 
-	if use ssl_openssl || use ssl_libressl || use ssl_gnutls ; then
+	if use ssl_openssl || use ssl_gnutls ; then
 		my_econf_args+=( --with-ca-path="${EPREFIX}"/etc/ssl/certs )
 	else
 		my_econf_args+=( --without-ca-path )

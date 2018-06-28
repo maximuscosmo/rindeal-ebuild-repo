@@ -11,12 +11,16 @@ GH_REF="curl-${PV//./_}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: rindeal:dsf:eval, rindeal:dsf:prefix_flags
 inherit rindeal-utils
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
+
 ## functions: eprefixify
 inherit prefix
 
@@ -28,10 +32,7 @@ SLOT="0"
 
 KEYWORDS="amd64 arm arm64"
 IUSE_A=(
-	curldebug +largefile libgcc +rt +symbol-hiding versioned-symbols static-libs test threads
-
-	#improve compatibility with external packages referencing these official use flags
-	curl_ssl_axtls curl_ssl_gnutls curl_ssl_libressl curl_ssl_mbedtls curl_ssl_nss curl_ssl_openssl
+	curldebug +largefile libgcc +rt +symbol-hiding versioned-symbols static-libs +shared-libs test threads
 
 	libcurl-option manual +verbose
 
@@ -51,7 +52,11 @@ IUSE_A=(
 	+ssl
 	$(rindeal:dsf:prefix_flags \
 		"ssl_" \
-		axtls gnutls libressl mbedtls nss +openssl)
+			axtls gnutls libressl mbedtls nss +openssl)
+	# improve compatibility with external packages referencing these official use flags
+	$(rindeal:dsf:prefix_flags \
+		"curl_ssl_" \
+			axtls gnutls libressl mbedtls nss openssl)
 )
 
 # tests lead to lots of false negatives, bug gentoo#285669
@@ -99,10 +104,9 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(
 	"?? ( dns_threaded dns_c-ares )"
-	# `if test "$want_pthreads" = "yes" && test "$dontwant_rt" = "yes"; then AC_MSG_ERROR`
+	# `AC_MSG_ERROR([options --enable-pthreads and --disable-rt are mutually exclusive])`
 	"?? ( threads !rt )"
-	# `dnl turn off pthreads if no threaded resolver	`
-	"threads? ( dns_threaded )"
+	"dns_threaded? ( threads )"
 	"ssl? ("
 		"|| ("
 			$(rindeal:dsf:prefix_flags \
@@ -112,28 +116,30 @@ REQUIRED_USE_A=(
 	")"
 	"?? ( libssh2 libssh )"
 
-	"auth_kerberos?	( auth_digest auth_gssapi )"
-	"auth_ntlm-wb?	( auth_ntlm protocol_http )"
-	"auth_ntlm?		( auth_digest ssl )"
-	"auth_spnego?	( || ( auth_digest auth_gssapi ) )"
+	"auth_kerberos? ( auth_digest auth_gssapi )"
+	"auth_ntlm-wb?  ( auth_ntlm protocol_http )"
+	"auth_ntlm?     ( auth_digest ssl )"
+	"auth_spnego?   ( || ( auth_digest auth_gssapi ) )"
 
-	"protocol_https?	( protocol_http ssl )"
-	"protocol_ftps?		( protocol_ftp ssl )"
-	"protocol_ldaps?	( protocol_ldap )"
-	"protocol_pop3s?	( protocol_pop3 ssl )"
-	"protocol_imaps?	( protocol_imap ssl )"
-	"protocol_smb?		( auth_digest ^^ ( $(rindeal:dsf:prefix_flags "ssl_" openssl libressl gnutls nss) ) )"
-	"protocol_smbs?		( protocol_smb ssl )"
-	"protocol_smtps?	( protocol_smtp ssl )"
-	"protocol_scp?		( || ( libssh2 libssh ) )"
-	"protocol_sftp?		( || ( libssh2 libssh ) )"
-	#ensure these use flags have the intended effect
-	"curl_ssl_axtls? 	( ssl_axtls )"
-	"curl_ssl_gnutls? 	( ssl_gnutls )"
-	"curl_ssl_libressl? 	( ssl_libressl )"
-	"curl_ssl_mbedtls? 	( ssl_mbedtls )"
-	"curl_ssl_nss? 		( ssl_nss )"
-	"curl_ssl_openssl? 	( ssl_openssl )"
+	"protocol_https?  ( protocol_http ssl )"
+	"protocol_ftps?   ( protocol_ftp ssl )"
+	# `if (test "x$USE_OPENLDAP" = "x1" && test "x$SSL_ENABLED" = "x1")`
+	"protocol_ldaps?  ( protocol_ldap ssl )"
+	"protocol_pop3s?  ( protocol_pop3 ssl )"
+	"protocol_imaps?  ( protocol_imap ssl )"
+	"protocol_smb?    ( auth_digest ^^ ( $(rindeal:dsf:prefix_flags "ssl_" openssl libressl gnutls nss) ) )"
+	"protocol_smbs?   ( protocol_smb ssl )"
+	"protocol_smtps?  ( protocol_smtp ssl )"
+	"protocol_scp?    ( || ( libssh2 libssh ) )"
+	"protocol_sftp?   ( || ( libssh2 libssh ) )"
+
+	# ensure these use flags have the intended effect
+	"curl_ssl_axtls?  ( ssl_axtls )"
+	"curl_ssl_gnutls? ( ssl_gnutls )"
+	"curl_ssl_libressl? ( ssl_libressl )"
+	"curl_ssl_mbedtls?  ( ssl_mbedtls )"
+	"curl_ssl_nss?    ( ssl_nss )"
+	"curl_ssl_openssl?  ( ssl_openssl )"
 )
 
 inherit arrays
@@ -150,94 +156,121 @@ src_prepare() {
 }
 
 src_configure() {
+	## Usage: myuse TYPE USE_FLAG [OPT_NAME [OPT_VAL]]
+	myuse() {
+		(( $# < 2 || $# > 4 )) && die
+
+		local call=()
+		case "${1}" in
+			e*) call=( use_enable ) ;;
+			w*) call=( use_with ) ;;
+			*) die;;
+		esac
+		call+=( "${2}" "${3:-"${2}"}")
+		shift 3
+		call+=( "${@}" )
+
+		"${call[@]}"
+	}
+	## Usage: myusepref TYPE PREFIX USE_FLAG [OPT_NAME [OPT_VAL]]
+	myusepref() {
+		(( $# < 3 || $# > 5 )) && die
+
+		local call=(
+			myuse "${1}" "${2}_${3}" "${3}" "${4:-"${3}"}"
+		)
+		shift 4
+		call+=( "${@}" )
+
+		"${call[@]}"
+	}
+	## Usage: TYPE USE_FLAG [OPT_NAME]
+	myprotouse() {
+		myusepref "${1}" protocol "${2}" "${3:-"${2}"}"
+	}
+	## Usage: myssluse TYPE USE_FLAG [OPT_NAME [OPT_VAL]]
+	myssluse() {
+		(( $# < 2 || $# > 4 )) && die
+
+		local call=( myuse "${1}" "$(usex "ssl" "ssl_${2}" "ssl")" "${3:-"${2}"}")
+		shift 3
+		call+=( "${@}" )
+
+		"${call[@]}"
+	}
+
 	local my_econf_args=(
 		--disable-debug # just sets -g* flags
 		--disable-optimize # just sets -O* flags
 		--enable-warnings
 		--disable-werror
 		--disable-soname-bump
-		--with-zsh-functions-dir="${EPREFIX}"/usr/share/zsh/site-functions
-
-		$(use_enable	curldebug)
-		$(use_enable	largefile)
-		$(use_enable	libgcc)
-		$(use_enable	rt)
-		$(use_enable	symbol-hiding)
-		$(use_enable	versioned-symbols)
-		$(use_enable	static-libs static)
-		# --with-pic=yes|no|default
-
-		$(use_enable	libcurl-option)
-		$(use_enable	manual)
-		$(use_enable	verbose)
-
-		$(use_enable	ipv6)
-		$(use_enable	unix-sockets)
-		$(use_with		zlib)
-		$(use_with		brotli)
-		$(use_enable	dns_c-ares ares) # =PATH
-		$(use_enable	dns_threaded threaded-resolver)
-		$(use_with		idn libidn2)
-		$(use_with		psl libpsl)
-
-		$(use_enable	cookies)
-		$(use_with		metalink libmetalink)
-		$(use_enable	proxy)
-		$(use_with		libssh2)
-		$(use_with		libssh)
-	)
-
-	my_econf_args+=(
-		"$(use_with		auth_gssapi		gssapi "${EPREFIX}"/usr)"
-		$(use_enable	auth_ntlm-wb	ntlm-wb)
-		$(use_enable	auth_tls-srp	tls-srp)
-		$(use_enable	auth_digest		crypto-auth)
-	)
-
-	### Protocols
-	myprotouse() {
-		use_$1 protocol_$2 ${3:-${2}}
-	}
-	my_econf_args+=(
-		$(myprotouse enable	http)
-		$(myprotouse with	http2 nghttp2)
-		$(myprotouse enable	ftp)
-		$(myprotouse enable	file)
-		$(myprotouse enable	telnet)
-		$(myprotouse enable	ldap)
-		$(myprotouse enable	ldaps)
-		$(myprotouse enable	dict)
-		$(myprotouse enable	tftp)
-		$(myprotouse enable	gopher)
-		$(myprotouse enable	pop3)
-		$(myprotouse enable	imap)
-		$(myprotouse enable	smb)
-		$(myprotouse enable	smtp)
-		$(myprotouse enable	rtsp)
-		$(myprotouse with	rtmp librtmp)
-	)
-
-	### SSL
-	my_use_ssl() {
-		usex ssl ssl_$1 ssl
-	}
-	my_econf_args+=(
-		# "Don't use the built in CA store of the SSL library"
-		--without-ca-fallback
-		--with-ca-bundle="${EPREFIX}"/etc/ssl/certs/ca-certificates.crt
+		$(use_enable curldebug)
+		$(use_enable symbol-hiding)
+		$(myusepref  e dns c-ares ares) # =PATH
+		$(use_enable rt)
+		--disable-code-coverage
+		$(use_enable   largefile)
+		$(use_enable   shared-libs shared)
+		$(use_enable   static-libs static)
+		$(myprotouse e http)
+		$(myprotouse e ftp)
+		$(myprotouse e file)
+		$(myprotouse e ldap)
+		$(myprotouse e ldaps)
+		$(myprotouse e rtsp)
+		$(use_enable   proxy)
+		$(myprotouse e dict)
+		$(myprotouse e telnet)
+		$(myprotouse e tftp)
+		$(myprotouse e pop3)
+		$(myprotouse e imap)
+		$(myprotouse e smb)
+		$(myprotouse e smtp)
+		$(myprotouse e gopher)
+		$(use_enable   manual)
+		$(use_enable   libcurl-option)
+		$(use_enable   libgcc)
+		$(use_enable   ipv6)
+		$(use_enable   versioned-symbols)
+		$(myusepref  e dns threaded threaded-resolver)
+		$(use_enable   threads pthreads)
+		$(use_enable   verbose)
+		--disable-sspi  # windows only
+		$(myusepref  e auth digest crypto-auth)
+		$(myusepref  e auth ntlm-wb)
+		$(myusepref  e auth tls-srp)
+		$(use_enable   unix-sockets)
+		$(use_enable   cookies)
+		# TODO: gnu-ld
+		$(use_with     zlib)
+		$(use_with     brotli)
+		"$(myusepref w auth gssapi{,} "${EPREFIX}"/usr)"
+		$(usex ssl $(usex openssl "--with-default-ssl-backend=openssl" '') '')
 		--without-winssl	# disable Windows native SSL/TLS
 		--without-darwinssl	# disable Apple OS native SSL/TLS
+		$(myssluse w openssl ssl)
+		$(myssluse w libressl ssl)
+		$(myssluse w gnutls)
+# 		$(myssluse w polarssl)  # polarssl removed from Gentoo repos
+		$(myssluse w mbedtls)
+# 		$(myssluse w cyassl)  # TODO: --with-wolfssl as an alias for --with-cyassl
+		$(myssluse w nss)
+		$(myssluse w axtls)
+		--with-ca-bundle="${EPREFIX}"/etc/ssl/certs/ca-certificates.crt
+		# "Don't use the built-in CA store of the SSL library"
+		--without-ca-fallback
+		$(use_with psl libpsl)
+		$(use_with		metalink libmetalink)
+		$(use_with		libssh2)
+		$(use_with		libssh)
+		$(myprotouse with	rtmp librtmp)
 		--without-winidn	# disable Windows native IDN
-
-		$(use_with $(my_use_ssl axtls)		axtls)
-		$(use_with $(my_use_ssl gnutls)		gnutls)
-		$(use_with $(my_use_ssl gnutls)		nettle)
-		$(use_with $(my_use_ssl libressl)	ssl)
-		$(use_with $(my_use_ssl mbedtls)	mbedtls)
-		$(use_with $(my_use_ssl nss)		nss)
-		$(use_with $(my_use_ssl openssl)	ssl)
-		# TODO: --with-wolfssl as an alias for --with-cyassl
+		$(use_with idn libidn2)
+		$(myprotouse with	http2 nghttp2)
+		--with-zsh-functions-dir="${EPREFIX}"/usr/share/zsh/site-functions
 	)
+
 	if use ssl_openssl || use ssl_libressl || use ssl_gnutls ; then
 		my_econf_args+=( --with-ca-path="${EPREFIX}"/etc/ssl/certs )
 	else

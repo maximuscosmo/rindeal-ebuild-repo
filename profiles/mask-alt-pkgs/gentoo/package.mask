@@ -2,11 +2,16 @@ app-admin/lnav::gentoo
 app-admin/logrotate::gentoo
 app-admin/monit::gentoo
 app-admin/syslog-ng::gentoo
+app-arch/brotli::gentoo
+app-arch/rpm::gentoo
+app-crypt/ima-evm-utils::gentoo
 app-dicts/sword-czecep::gentoo
 app-dicts/sword-czekms::gentoo
 app-doc/zeal::gentoo
+app-emulation/qt-virt-manager::gentoo
 app-emulation/sen::gentoo
 app-misc/icdiff::gentoo
+app-misc/mime-types::gentoo
 app-misc/nnn::gentoo
 app-misc/tmux::gentoo
 app-portage/repoman::gentoo
@@ -15,8 +20,11 @@ app-text/docbook-xsl-stylesheets::gentoo
 dev-cpp/catch::gentoo
 dev-db/sqlitestudio::gentoo
 dev-java/commons-codec::gentoo
+dev-java/commons-compress::gentoo
 dev-java/java-config::gentoo
+dev-java/javassist::gentoo
 dev-java/svgsalamander::gentoo
+dev-java/xz-java::gentoo
 dev-libs/capnproto::gentoo
 dev-libs/glib::gentoo
 dev-libs/gnulib::gentoo
@@ -37,6 +45,7 @@ dev-python/typed-ast::gentoo
 dev-python/typing::gentoo
 dev-util/clinfo::gentoo
 dev-util/gdbus-codegen::gentoo
+dev-util/lxqt-build-tools::gentoo
 dev-util/premake::gentoo
 dev-util/spirv-headers::gentoo
 dev-util/spirv-tools::gentoo
@@ -87,5 +96,7 @@ sys-process/nmon::gentoo
 sys-process/procps::gentoo
 www-client/opera::gentoo
 www-client/phantomjs::gentoo
+x11-libs/qtermwidget::gentoo
 x11-misc/redshift::gentoo
+x11-terms/qterminal::gentoo
 x11-wm/qtile::gentoo

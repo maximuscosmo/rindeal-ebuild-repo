@@ -10,22 +10,30 @@ GH_RN="gitlab:rindeal-forks"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
+
 ## EXPORT_FUNCTIONS: pkg_setup
 inherit linux-info
+
 ## functions: enewgroup, enewuser
 inherit user
+
+## functions: systemd_get_systemunitdir
+inherit systemd
 
 DESCRIPTION="Miredo is an open-source Teredo IPv6 tunneling software"
 HOMEPAGE="http://www.remlab.net/miredo/ ${GH_HOMEPAGE}"
 LICENSE="GPL-2"
 
-SLOT="0"
+SLOT="0/6"
 
-KEYWORDS="amd64 arm arm64"
+[[ ${PV} != *9999* ]] && \
+	KEYWORDS="amd64 arm arm64"
 IUSE_A=( +caps +client nls +assert judy )
 
 CDEPEND_A=(
@@ -60,6 +68,7 @@ src_configure() {
 		--disable-static
 		--enable-miredo-user=miredo
 		--with-runstatedir=/run
+		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 
 		$(use_enable assert)
 		$(use_with caps libcap)

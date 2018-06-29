@@ -16,6 +16,12 @@ inherit git-hosting
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
 
+## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
+inherit xdg
+
+## functions: doicon
+inherit desktop
+
 DESCRIPTION="Fast and usable calculator for power users"
 HOMEPAGE="http://speedcrunch.org/ https://speedcrunch.blogspot.com/ ${GH_HOMEPAGE}"
 LICENSE="GPL-2"
@@ -63,6 +69,8 @@ src_prepare() {
 	eapply_user
 
 	src_prepare-locales
+
+	xdg_src_prepare
 
 	# NOTE: remove when a new release is available
 	esed -e "/^set.*speedcrunch_VERSION/ s|\"master\"|\"${PV} (${GH_REF})\"|" -i -- CMakeLists.txt

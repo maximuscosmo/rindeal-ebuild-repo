@@ -76,7 +76,6 @@
     <flag name="ssl">Crypto engine support. After enabling, choose one of the ssl_* options.</flag>
     <flag name="ssl_axtls">axTLS Embedded SSL</flag>
     <flag name="ssl_gnutls">GnuTLS</flag>
-    <flag name="ssl_libressl">LibreSSL</flag>
     <flag name="ssl_mbedtls">mbed TLS (previously PolarSSL)</flag>
     <flag name="ssl_nss">Mozilla Network Security Services</flag>
     <flag name="ssl_openssl">OpenSSL</flag>

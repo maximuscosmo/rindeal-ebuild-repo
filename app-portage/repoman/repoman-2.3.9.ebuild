@@ -46,30 +46,7 @@ python_prepare_all() {
 	# do not install tests that are never used at runtime
 	esed -e "/if '__init__.py' in filenames/ s@:\$@ and '/tests' not in dirpath:@" -i -- setup.py
 
-	cat <<'_EOF_' > "${T}/class_deleter.awk" || die
-BEGIN {
-	skipping = 0
-}
-
-/^class EbuildHeader/ {
-	skipping = 1
-	next
-}
-
-{
-	if ( skipping ) {
-		if (match($0, /^class /)) {
-			skipping = 0
-			print
-		}
-		next
-	}
-	print
-}
-
-_EOF_
-
-	gawk -i inplace -f "${T}/class_deleter.awk" pym/repoman/modules/linechecks/gentoo_header/header.py || die
+	esed -e '/gentooheader/d' -i -- cnf/repository/repository.yaml
 
 	distutils-r1_python_prepare_all
 }

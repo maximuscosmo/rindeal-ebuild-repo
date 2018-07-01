@@ -6,7 +6,7 @@ EAPI=6
 inherit rindeal
 
 ## git-hosting.eclass:
-GH_RN="github:gentoo:portage"
+GH_RN="gentoo:proj:portage.git"
 GH_REF="${P}"
 
 ## python-*.eclass:
@@ -22,7 +22,7 @@ inherit git-hosting
 inherit distutils-r1
 
 DESCRIPTION="Repoman is a Quality Assurance tool for Gentoo ebuilds"
-HOMEPAGE="${GH_HOMEPAGE} https://wiki.gentoo.org/wiki/Project:Portage"
+HOMEPAGE="https://wiki.gentoo.org/wiki/Project:Portage ${GH_HOMEPAGE}"
 LICENSE="GPL-2"
 
 SLOT="0"

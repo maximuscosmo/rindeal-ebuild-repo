@@ -1,0 +1,23 @@
+From d28e8a14ee2b93e23ad32f446e1771131c698055 Mon Sep 17 00:00:00 2001
+From: "Jan Chren (rindeal)" <dev.rindeal@gmail.com>
+Date: Sun, 1 Jul 2018 23:41:39 +0200
+Subject: [PATCH] add redefinition guard around _GNU_SOURCE
+
+---
+ include/radeontop.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/radeontop.h b/include/radeontop.h
+index 09eee16..cf0543f 100644
+--- a/include/radeontop.h
++++ b/include/radeontop.h
+@@ -17,7 +17,9 @@
+ #ifndef RADEONTOP_H
+ #define RADEONTOP_H
+ 
++#ifndef _GNU_SOURCE
+ #define _GNU_SOURCE
++#endif
+ 
+ #include "version.h"
+ #include "gettext.h"

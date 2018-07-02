@@ -12,10 +12,12 @@ GH_REF="release-${PV}"
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
-## functions: makeopts_jobs
-inherit multiprocessing
+
 ## functions: eautoreconf
 inherit autotools
+
+## functions: makeopts_jobs
+inherit multiprocessing
 
 DESCRIPTION="Tools to create, alter, and inspect Matroska files"
 HOMEPAGE="https://mkvtoolnix.download/ ${GH_HOMEPAGE}"
@@ -24,7 +26,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 KEYWORDS="~amd64"
-IUSE_A=( debug +pch test +gui flac magic nls +tools )
+IUSE_A=( debug +pch test +gui flac +magic nls +tools )
 
 # check NEWS.md for build system changes entries for boost/libebml/libmatroska
 # version requirement updates and other packaging info
@@ -50,6 +52,7 @@ CDEPEND_A=(
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-ruby/rake"
+	"app-text/cmark"
 	"nls? ("
 		"sys-devel/gettext"
 		"app-text/po4a"
@@ -94,22 +97,27 @@ src_prepare() {
 }
 
 src_configure() {
+	# ac/qt5.m4 finds default Qt version set by qtchooser, bug #532600
+	export PATH="${EROOT}usr/$(get_libdir)/qt5/bin:${PATH}"
+
 	local myconf=(
+		### Optional Features:
 		--disable-update-check
 		--disable-appimage
 		$(use_enable debug)
 		--disable-profiling
 		--disable-optimization
-# 		--disable-addrsan # https://gitlab.com/mbunkus/mkvtoolnix/issues/2199
-# 		--disable-ubsan # https://gitlab.com/mbunkus/mkvtoolnix/issues/2199
-		$(usex pch "" --disable-precompiled-headers)
+ 		--disable-addrsan
+ 		--disable-ubsan
+		$(use_enable pch precompiled-headers)
 		--disable-static
-
 		$(use_enable gui qt)
 		--disable-static-qt
 		$(use_enable magic)
 
+		### Optional Packages:
 		$(use_with flac)
+# 		--with-qt-pkg-config-modules=modules  # the built-in lists is ok
 		--with-qt-pkg-config
 		$(use_with nls gettext)
 
@@ -120,16 +128,6 @@ src_configure() {
 
 		$(use_with tools)
 	)
-
-	if use gui ; then
-		# ac/qt5.m4 finds default Qt version set by qtchooser, bug #532600
-		myconf+=(
-			--with-moc="${EROOT}usr/$(get_libdir)/qt5/bin/moc"
-			--with-uic="${EROOT}usr/$(get_libdir)/qt5/bin/uic"
-			--with-rcc="${EROOT}usr/$(get_libdir)/qt5/bin/rcc"
-			--with-qmake="${EROOT}usr/$(get_libdir)/qt5/bin/qmake"
-		)
-	fi
 
 	econf "${myconf[@]}"
 }

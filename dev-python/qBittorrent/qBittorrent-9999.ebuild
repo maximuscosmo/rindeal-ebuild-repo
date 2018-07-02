@@ -1,11 +1,11 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit rindeal
 
 GH_RN="github:v1k45:python-qBittorrent"
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 # EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

@@ -11,13 +11,14 @@ GH_REF="${P}"
 
 ## python-*.eclass:
 # python3 support is tracked here https://github.com/balabit/syslog-ng/issues/1832
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 ## variables: EPYTHON
 inherit python-utils-r1
 
 ## EXPORT_FUNCTIONS: pkg_setup
-inherit python-single-r1
+## variables: PYTHON_DEPS, PYTHON_REQUIRED_USE
+inherit python-any-r1
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
@@ -70,6 +71,7 @@ CDEPEND_A=(
 
 	# for --with-docbook-dir
 	"app-text/docbook-xsl-stylesheets"
+	"${PYTHON_DEPS}"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"sys-devel/flex"
@@ -82,6 +84,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(
 	"man? ( doc )"
+	"${PYTHON_REQUIRED_USE}"
 )
 RESTRICT="test"
 

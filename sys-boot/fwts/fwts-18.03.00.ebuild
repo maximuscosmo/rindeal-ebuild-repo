@@ -49,6 +49,8 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 	"!sys-apps/fwts"
 )
 
+inherit arrays
+
 S="${WORKDIR}"
 
 src_prepare(){

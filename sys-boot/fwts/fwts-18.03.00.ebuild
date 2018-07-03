@@ -7,8 +7,10 @@ inherit rindeal
 
 ## functions: eutoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
+
 ## functions: get_bashcompdir
 inherit bash-completion-r1
 

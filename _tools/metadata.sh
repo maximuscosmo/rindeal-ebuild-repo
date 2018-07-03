@@ -19,7 +19,7 @@ format_strong() {
 }
 
 delete_all_maintainers() {
-    xmlstarlet ed -d pkgmetadata/maintainer
+    xmlstarlet ed -d 'pkgmetadata/maintainer'
 }
 
 add_myself_as_maintainer() {
@@ -39,6 +39,10 @@ add_myself_as_maintainer() {
         -d 'pkgmetadata/tmp'
     )
     xmlstarlet ed "${args[@]}"
+}
+
+delete_upstream() {
+    xmlstarlet ed -d '//upstream'
 }
 
 save() {
@@ -81,6 +85,9 @@ while (( $# )) ; do
             ;;
         d*)
             buf="$( echo "${buf}" | delete_all_maintainers )"
+            ;;
+        u*)
+            buf="$( echo "${buf}" | delete_upstream )"
             ;;
         s*)
             save

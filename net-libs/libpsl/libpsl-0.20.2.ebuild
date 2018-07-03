@@ -13,12 +13,16 @@ GH_REF="${PN}-${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
+
 ## EXPORT_FUNCTIONS: pkg_setup
 inherit python-any-r1
+
 ## functions: rindeal:dsf:eval
 inherit rindeal-utils
+
 ## functions: prune_libtool_files
 inherit ltprune
 

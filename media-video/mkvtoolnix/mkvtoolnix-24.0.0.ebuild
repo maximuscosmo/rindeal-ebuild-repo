@@ -120,8 +120,8 @@ src_configure() {
 		$(use_enable debug)
 		--disable-profiling
 		--disable-optimization
- 		--disable-addrsan
- 		--disable-ubsan
+		--disable-addrsan
+		--disable-ubsan
 		$(use_enable pch precompiled-headers)
 		--disable-static
 		$(use_enable gui qt)

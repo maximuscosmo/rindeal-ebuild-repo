@@ -91,6 +91,19 @@ src_prepare() {
 
 	src_prepare-locales
 
+	### COC
+	erm CODE_OF_CONDUCT.md
+	erm src/mkvtoolnix-gui/main_window/code_of_conduct_dialog.{cpp,h}
+	erm src/mkvtoolnix-gui/forms/main_window/code_of_conduct_dialog.ui
+
+	esed -e '/CODE_OF_CONDUCT.md/d' -i -- src/mkvtoolnix-gui/qt_resources.qrc
+	esed -e '/code_of_conduct_dialog.ui/d' -i -- src/mkvtoolnix-gui/mkvtoolnix-gui.pro
+	esed -e '/code_of_conduct_dialog/d'  -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
+	esed -e '/actionHelpCodeOfConduct/d' -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
+
+	xmlstarlet ed --inplace --delete "//addaction[@name='actionHelpCodeOfConduct']" src/mkvtoolnix-gui/forms/main_window/main_window.ui
+	xmlstarlet ed --inplace --delete "//action[@name='actionHelpCodeOfConduct']" src/mkvtoolnix-gui/forms/main_window/main_window.ui
+
 	touch config.sub || die
 
 	eautoreconf
@@ -117,7 +130,7 @@ src_configure() {
 
 		### Optional Packages:
 		$(use_with flac)
-# 		--with-qt-pkg-config-modules=modules  # the built-in lists is ok
+# 		--with-qt-pkg-config-modules=modules  # the built-in list is ok
 		--with-qt-pkg-config
 		$(use_with nls gettext)
 
@@ -134,11 +147,6 @@ src_configure() {
 
 src_compile() {
 	my_rake
-}
-
-src_test() {
-	my_rake tests:unit
-	my_rake tests:run_unit
 }
 
 src_install() {

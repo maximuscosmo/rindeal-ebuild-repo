@@ -59,7 +59,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(
 	# at least one backend must be selected otherwise it segfaults
-	"|| ( ${backends[*]} )"
+# 	"|| ( ${backends[*]} )"
 	# IF(ALSOFT_UTILS AND NOT ALSOFT_NO_CONFIG_UTIL) add_subdirectory(utils/alsoft-config)
 	"gui? ( utils )"
 )
@@ -79,10 +79,25 @@ src_prepare() {
 
 src_configure() {
 		local mycmakeargs=(
-			-D "ALSOFT_DLOPEN=ON"
-			-D "ALSOFT_WERROR=OFF"
 			# for dynamicly loading backend libs
 			-D "ALSOFT_DLOPEN=ON"
+			-D "ALSOFT_WERROR=OFF"
+			# Build and install utility programs
+			-D "ALSOFT_UTILS=$(usex utils)"
+			# Disable building the alsoft-config utility
+			-D "ALSOFT_NO_CONFIG_UTIL=$(usex '!gui')"
+
+			-D "ALSOFT_EXAMPLES=$(usex examples)"
+			-D "ALSOFT_TESTS=$(usex tests)"
+
+			# alsoft.conf sample configuration file
+			-D "ALSOFT_CONFIG=ON"
+			# HRTF definition files
+			-D "ALSOFT_HRTF_DEFS=ON"
+			# AmbDec preset files
+			-D "ALSOFT_AMBDEC_PRESETS=ON"
+			# install headers and libs, executables only otherwise
+			-D "ALSOFT_INSTALL=ON"
 
 			-D ALSOFT_{REQUIRE,BACKEND}_ALSA=$(usex alsa)
 			-D ALSOFT_{REQUIRE,BACKEND}_OSS=$(usex oss)
@@ -105,21 +120,6 @@ src_configure() {
 			-D ALSOFT_{REQUIRE,CPUEXT}_SSE4_1=$(usex cpu_flags_x86_sse4_1)
 			-D ALSOFT_{REQUIRE,CPUEXT}_NEON=$(usex cpu_flags_arm_neon)
 
-			# Build and install utility programs
-			-D "ALSOFT_UTILS=$(usex utils)"
-			# Disable building the alsoft-config utility
-			-D "ALSOFT_NO_CONFIG_UTIL=$(usex '!gui')"
-			-D "ALSOFT_EXAMPLES=$(usex examples)"
-			-D "ALSOFT_TESTS=$(usex tests)"
-
-			# alsoft.conf sample configuration file
-			-D "ALSOFT_CONFIG=ON"
-			# HRTF definition files
-			-D "ALSOFT_HRTF_DEFS=ON"
-			# AmbDec preset files
-			-D "ALSOFT_AMBDEC_PRESETS=ON"
-			# install headers and libs, executables only otherwise
-			-D "ALSOFT_INSTALL=ON"
 			-D "ALSOFT_EMBED_HRTF_DATA=OFF"
 		)
 

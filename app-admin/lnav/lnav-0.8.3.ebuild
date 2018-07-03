@@ -5,29 +5,25 @@
 EAPI=6
 inherit rindeal
 
-## python-*.eclass
-PYTHON_COMPAT=( python2_7 )
-
 ## git-hosting.eclass:
 GH_RN="github:tstack"
 GH_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: pkg_setup
-inherit python-any-r1
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
 
 DESCRIPTION="Curses-based tool for viewing and analyzing log files"
-HOMEPAGE="http://lnav.org ${GH_HOMEPAGE}"
+HOMEPAGE="https://lnav.org ${GH_HOMEPAGE}"
 LICENSE="BSD-2"
 
 SLOT="0"
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE_A=( pcre readline static test unicode )
+IUSE_A=( pcre readline static unicode )
 
 # system-wide yajl cannot be used, because lnav uses custom-patched version
 CDEPEND_A=(
@@ -42,17 +38,16 @@ CDEPEND_A=(
 	"pcre? ( dev-libs/libpcre[cxx] )"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
-	"sys-apps/gawk"
 	"dev-util/re2c"
-
-	"test? ( ${PYTHON_DEPS} )"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 inherit arrays
 
+RESTRICT+=" test"
+
 src_prepare() {
-	default
+	eapply_user
 
 	# respect AR
 	# https://github.com/tstack/lnav/pull/356
@@ -76,9 +71,6 @@ src_configure() {
 	)
 	econf "${my_econf_args[@]}"
 }
-
-## Tests
-# Fail: test_listview.sh, test_mvwattrline.sh, test_view_colors.sh
 
 src_install() {
 	default

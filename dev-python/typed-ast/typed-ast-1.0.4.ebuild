@@ -6,7 +6,7 @@ inherit rindeal
 
 GH_RN="github:python:${PN//-/_}"
 
-PYTHON_COMPAT=( python3_{4,5,6} )
+PYTHON_COMPAT=( python3_{5,6} )
 
 inherit git-hosting
 inherit distutils-r1

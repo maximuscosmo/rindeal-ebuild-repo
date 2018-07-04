@@ -6,7 +6,7 @@ EAPI=6
 inherit rindeal
 
 # jython depends on java-config, so don't add it or things will break
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 inherit distutils-r1
 inherit vcs-snapshot

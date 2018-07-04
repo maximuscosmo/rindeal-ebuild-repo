@@ -5,7 +5,7 @@ EAPI=6
 inherit rindeal
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 ## git-hosting.eclass:
 GH_RN="github:rockdaboot"

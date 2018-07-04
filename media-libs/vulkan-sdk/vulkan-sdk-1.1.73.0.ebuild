@@ -9,7 +9,7 @@ GH_RN="github:KhronosGroup:Vulkan-LoaderAndValidationLayers"
 GH_REF="sdk-${PV}"
 
 ## python-any-r1.eclass:
-PYTHON_COMPAT=( python3_{4,5,6} )
+PYTHON_COMPAT=( python3_{5,6} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

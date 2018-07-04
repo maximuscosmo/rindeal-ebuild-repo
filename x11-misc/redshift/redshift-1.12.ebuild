@@ -10,7 +10,7 @@ GH_RN="github:jonls"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{4,5,6} )
+PYTHON_COMPAT=( python3_{5,6} )
 
 # functions: rindeal:dsf:prefix_flags
 inherit rindeal-utils

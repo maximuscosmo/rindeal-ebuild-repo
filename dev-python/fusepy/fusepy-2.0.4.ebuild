@@ -7,7 +7,7 @@ inherit rindeal
 GH_RN="github:terencehonles"
 GH_REF="v${PV}"
 
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 inherit git-hosting
 inherit distutils-r1

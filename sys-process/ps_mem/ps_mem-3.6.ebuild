@@ -4,7 +4,7 @@
 EAPI=6
 inherit rindeal
 
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 DISTUTILS_SINGLE_IMPL=true
 
 GH_RN='github:pixelb'

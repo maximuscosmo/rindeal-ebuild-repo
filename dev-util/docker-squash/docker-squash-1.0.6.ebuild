@@ -8,7 +8,7 @@ inherit rindeal
 GH_RN="github:goldmann"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 ## distutils-r1.eclass:
 DISTUTILS_SINGLE_IMPL=1

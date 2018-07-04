@@ -9,7 +9,7 @@ GH_RN="github:WoLpH"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

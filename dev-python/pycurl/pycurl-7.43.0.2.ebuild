@@ -11,7 +11,7 @@ GH_REF="REL_${PV//./_}"
 
 ## python-*.eclass:
 # The selftests fail with pypy, and urlgrabber segfaults for me.
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 ## distutils-r1.eclass:
 # Needed for individual runs of testsuite by python impls.

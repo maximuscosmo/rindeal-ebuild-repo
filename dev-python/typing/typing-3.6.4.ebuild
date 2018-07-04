@@ -14,6 +14,7 @@ PYTHON_COMPAT=( python2_7 python3_4 pypy{,3} )
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1
 
@@ -28,7 +29,7 @@ KEYWORDS="amd64 arm arm64"
 python_test() {
 	cd "${BUILD_DIR}" || die
 
-	if [[ ${EPYTHON} == python2* || ${EPYTHON} == pypy ]]; then
+	if [[ ${EPYTHON} == python2* || ${EPYTHON} == pypy ]] ; then
 		ecp "${S}"/python2/test_typing.py .
 	else
 		ecp "${S}"/src/test_typing.py .

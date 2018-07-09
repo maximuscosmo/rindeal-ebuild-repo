@@ -5,11 +5,12 @@
 EAPI=6
 inherit rindeal
 
-inherit eutils
 ## functions: tc-getCC, tc-getPKG_CONFIG
 inherit toolchain-funcs
+
 ## functions: enewgroup, enewuser
 inherit user
+
 ## functions: systemd_dounit
 inherit systemd
 
@@ -47,13 +48,13 @@ IUSE_A=(
 )
 
 CDEPEND_A=(
-	"dbus? ( sys-apps/dbus )"
-	"idn? ( net-dns/libidn )"
+	"dbus? ( sys-apps/dbus:0 )"
+	"idn? ( net-dns/libidn:0 )"
 	"lua? ( dev-lang/lua:* )"
-	"conntrack? ( net-libs/libnetfilter_conntrack )"
+	"conntrack? ( net-libs/libnetfilter_conntrack:0 )"
 	"nls? ("
-		"sys-devel/gettext"
-		"net-dns/libidn"
+		"sys-devel/gettext:0"
+		"net-dns/libidn:0"
 	")"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
@@ -103,6 +104,7 @@ src_prepare() {
 	esed -r -e 's:lua5.[0-9]+:lua:' -i -- Makefile
 	esed -e "s:%%PREFIX%%:${EPREFIX}/usr:" -i -- dnsmasq.conf.example
 
+	## change default opts
 	esed -e 's|CACHESIZ 150|CACHESIZ 2000|' \
 		-e 's|CHUSER "nobody"|CHUSER "dnsmasq"|' \
 		-e 's|CHGRP "dip"|CHGRP "dnsmasq"|' \
@@ -139,7 +141,7 @@ src_configure() {
 
 	# the `-n` options are there because
 
-	declare -g -r -a COPTS=(
+	declare -g -r -a COPTS_A=(
 		$(my_use_have broken-rtc)
 
 		$(my_use_have tftp)
@@ -166,12 +168,11 @@ src_configure() {
 
 		$(my_use_have ipv6 -n IPV6)
 
-		${DNSMASQ_CUSTOM_COPTS} # allow users to override and add additional options
+		# allow users to override and add additional options
+		${DNSMASQ_CUSTOM_COPTS}
 	)
-}
 
-src_compile() {
-	declare -g -r -a common_emake_opts=(
+	declare -g -r -a COMMON_EMAKE_OPTS=(
 		PREFIX=/usr
 		MANDIR=/usr/share/man
 		CC="$(tc-getCC)"
@@ -179,19 +180,21 @@ src_compile() {
 		CFLAGS="-Wall -Wextra ${CFLAGS}"
 		LDFLAGS="${LDFLAGS}"
 		CONFFILE="/etc/${PN}.conf"
-		COPTS="${COPTS[@]}"
+		COPTS="${COPTS_A[@]}"
 	)
-	emake "${common_emake_opts[@]}" \
+}
+
+src_compile() {
+	emake "${COMMON_EMAKE_OPTS[@]}" \
 		all$(usex nls "-i18n" "")
 
 	use dhcp-tools && \
-		emake -C contrib/lease-tools "${common_emake_opts[@]}" \
+		emake -C contrib/lease-tools "${COMMON_EMAKE_OPTS[@]}" \
 			all
 }
 
 src_install() {
-	local lingua puid
-	emake "${common_emake_opts[@]}" DESTDIR="${ED}" \
+	emake "${COMMON_EMAKE_OPTS[@]}" DESTDIR="${ED}" \
 		install$(use nls && echo "-i18n")
 
 	[[ -d "${D}"/usr/share/locale/ ]] && \
@@ -210,8 +213,9 @@ src_install() {
 	doins trust-anchors.conf
 
 	if use dhcp ; then
-		dodir /var/lib/misc
+		keepdir /var/lib/misc
 	fi
+
 	if use dbus ; then
 		insinto /etc/dbus-1/system.d
 		doins dbus/dnsmasq.conf
@@ -227,10 +231,12 @@ src_install() {
 
 pkg_preinst() {
 	# temporary workaround to (hopefully) prevent leases file from being removed
-	[[ -f /var/lib/misc/dnsmasq.leases ]] && ecp /var/lib/misc/dnsmasq.leases "${T}"
+	[[ -f /var/lib/misc/dnsmasq.leases ]] && \
+		ecp /var/lib/misc/dnsmasq.leases "${T}"
 }
 
 pkg_postinst() {
 	# temporary workaround to (hopefully) prevent leases file from being removed
-	[[ -f "${T}"/dnsmasq.leases ]] && ecp "${T}"/dnsmasq.leases /var/lib/misc/dnsmasq.leases
+	[[ -f "${T}"/dnsmasq.leases ]] && \
+		ecp "${T}"/dnsmasq.leases /var/lib/misc/dnsmasq.leases
 }

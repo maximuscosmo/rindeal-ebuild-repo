@@ -12,34 +12,43 @@ esac
 inherit rindeal
 
 
+## python-*.eclass:
 [[ -z "${PYTHON_COMPAT}" ]] && \
-	PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+	PYTHON_COMPAT=( python2_7 python3_{5,6} )
 [[ -z "${PYTHON_REQ_USE}" ]] && \
 	PYTHON_REQ_USE="threads"
 
+## distutils-r1.eclass:
 [[ -z "${DISTUTILS_OPTIONAL}" ]] && \
 	DISTUTILS_OPTIONAL=true
 [[ -z "${DISTUTILS_IN_SOURCE_BUILD}" ]] && \
 	DISTUTILS_IN_SOURCE_BUILD=true
 
+## git-hosting.eclass:
 GH_RN='github:arvidn:libtorrent'
 GH_REF="libtorrent-${PV//./_}"
 
 
-## functions: prune_libtool_files
-inherit ltprune
-## functions: version_compare
-inherit versionator
-## functions: append-cxxflags
-inherit flag-o-matic
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
-## functions: eautoreconf
-inherit autotools
-## functions: distutils-r1_src_prepare distutils-r1_src_configure distutils-r1_src_compile distutils-r1_src_install
+
+## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_install
 inherit distutils-r1
+
 ## functions: make_setup.py_extension_compilation_parallel
 inherit rindeal-python-utils
+
+## functions: eautoreconf
+inherit autotools
+
+## functions: version_compare
+inherit versionator
+
+## functions: append-cxxflags
+inherit flag-o-matic
+
+## functions: prune_libtool_files
+inherit ltprune
 
 
 DESCRIPTION='C++ BitTorrent implementation focusing on efficiency and scalability'
@@ -70,7 +79,7 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 )
 
 REQUIRED_USE_A=( "python? ( ${PYTHON_REQUIRED_USE} )" )
-RESTRICT+=" mirror test"
+RESTRICT+=" test"
 
 inherit arrays
 
@@ -102,7 +111,9 @@ libtorrent-rasterbar_src_prepare() {
 
 	eautoreconf
 
-	use python && distutils-r1_src_prepare
+	if use python ; then
+		distutils-r1_src_prepare
+	fi
 }
 
 libtorrent-rasterbar_src_configure() {

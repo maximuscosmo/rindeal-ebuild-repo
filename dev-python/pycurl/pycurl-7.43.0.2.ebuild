@@ -13,16 +13,13 @@ GH_REF="REL_${PV//./_}"
 # The selftests fail with pypy, and urlgrabber segfaults for me.
 PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
-## distutils-r1.eclass:
-# Needed for individual runs of testsuite by python impls.
-DISTUTILS_IN_SOURCE_BUILD=1
-
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 ## functions: distutils-r1_python_prepare_all, distutils-r1_python_compile, distutils-r1_python_install_all
-## variables: PYTHON_USEDEP
+## variables: PYTHON_DEPS, PYTHON_REQUIRED_USE
 inherit distutils-r1
 
 DESCRIPTION="Python interface to libcurl"
@@ -33,59 +30,59 @@ HOMEPAGE="
 LICENSE="LGPL-2.1"
 
 SLOT="0"
+
 KEYWORDS="amd64 arm arm64"
-IUSE_A=( doc ssl_gnutls ssl_nss +ssl_openssl examples ssl test )
+IUSE_A=(
+	doc test examples
+	ssl ssl_gnutls ssl_nss +ssl_openssl
+)
 
 CDEPEND_A=(
+	"${PYTHON_DEPS}"
+
 	# If the libcurl ssl backend changes pycurl should be recompiled.
-	">=net-misc/curl-7.25.0-r1[ssl=]"
+	"net-misc/curl:0=[ssl=]"
 	"ssl? ("
 		# Depend on a curl with ssl_* USE flags.
 		# libcurl must not be using an ssl backend we do not support.
-		"net-misc/curl[ssl_gnutls(-)=,ssl_nss(-)=,ssl_openssl(-)=,-ssl_axtls(-)]"
+		"net-misc/curl[ssl_gnutls(-)?,ssl_nss(-)?,ssl_openssl(-)?]"
+
 		# If curl uses gnutls, depend on at least gnutls 2.11.0 so that pycurl
 		# does not need to initialize gcrypt threading and we do not need to
 		# explicitly link to libgcrypt.
 		"ssl_gnutls? ( >=net-libs/gnutls-2.11.0 )"
 	")"
 )
-DEPEND_A=( "${CDEPEND_A[@]}"
-	"test? ("
-		"dev-python/bottle[${PYTHON_USEDEP}]"
-		"dev-python/flaky[${PYTHON_USEDEP}]"
-		"dev-python/nose[${PYTHON_USEDEP}]"
-		"dev-python/nose-show-skipped[${PYTHON_USEDEP}]"
-		"net-misc/curl[ssl_gnutls(-)=,ssl_nss(-)=,ssl_openssl(-)=,-ssl_axtls(-),auth_kerberos]"
-		# bottle-0.12.7: https://github.com/pycurl/pycurl/issues/180
-		# bottle-0.12.7: https://github.com/defnull/bottle/commit/f35197e2a18de1672831a70a163fcfd38327a802
-		">=dev-python/bottle-0.12.7[${PYTHON_USEDEP}]"
-	")"
+DEPEND_A=( "${CDEPEND_A[@]}" )
+RDEPEND_A=( "${CDEPEND_A[@]}" )
+
+REQUIRED_USE_A=(
+	"${PYTHON_REQUIRED_USE}"
+	"ssl? ( ^^ ( ssl_openssl ssl_gnutls ssl_nss ) )"
 )
 
 inherit arrays
 
 python_prepare_all() {
+	# do not install docs, examples and other unneeded stuff
 	esed -e "/setup_args\['data_files'\] = /d" -i -- setup.py
-	esed -e '/pyflakes/d' -i -- Makefile
 
 	distutils-r1_python_prepare_all
 }
 
-# python_configure_all() {
-# 	# Override faulty detection in setup.py, bug 510974.
-# 	export PYCURL_SSL_LIBRARY="${CURL_SSL/libressl/openssl}"
-# }
-
 python_compile() {
 	python_is_python3 || local -x CFLAGS="${CFLAGS} -fno-strict-aliasing"
 
+	# prepares headers and fixes docstrings
 	emake gen
 
-	distutils-r1_python_compile
-}
+	local mydistutilsargs=(
+		$(usex ssl_openssl "--with-openssl" "")
+		$(usex ssl_gnutls "--withgnutls" "")
+		$(usex ssl_nss "--with-nss" "")
+	)
 
-python_test() {
-	emake -j1 do-test
+	distutils-r1_python_compile
 }
 
 python_install_all() {

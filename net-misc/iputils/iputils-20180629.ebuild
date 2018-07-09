@@ -9,16 +9,20 @@ inherit rindeal
 GH_RN="github"
 GH_REF="s${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
-## functions: append-ldflags
-inherit flag-o-matic
-## functions: tc-export
-inherit toolchain-funcs
-## functions: fcaps
-inherit fcaps
 # functions: rindeal:dsf:eval
 inherit rindeal-utils
+
+## EXPORT_FUNCTIONS: src_unpack
+inherit git-hosting
+
+## functions: append-ldflags
+inherit flag-o-matic
+
+## functions: tc-export
+inherit toolchain-funcs
+
+## functions: fcaps
+inherit fcaps
 
 DESCRIPTION="Network monitoring tools including ping and ping6"
 HOMEPAGE="https://wiki.linuxfoundation.org/networking/iputils ${GH_HOMEPAGE}"
@@ -28,12 +32,12 @@ SLOT="0"
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
-	+arping caps clockdiff doc man gcrypt idn ipv6 libressl nettle +openssl rarpd rdisc SECURITY_HAZARD ssl static tftpd tracepath traceroute
+	+arping caps clockdiff doc man gcrypt idn ipv6 nettle +openssl rarpd rdisc ssl static tftpd tracepath traceroute
 )
 
 LIB_DEPEND="
 	caps? ( sys-libs/libcap[static-libs(+)] )
-	idn? ( net-dns/libidn[static-libs(+)] )
+	idn? ( net-dns/libidn2:0[static-libs(+)] )
 	ipv6? (
 		ssl? (
 			gcrypt? ( dev-libs/libgcrypt:0=[static-libs(+)] )
@@ -43,9 +47,6 @@ LIB_DEPEND="
 	)
 "
 CDEPEND_A=(
-	"arping? ( !net-misc/arping )"
-	"rarpd? ( !net-misc/rarpd )"
-	"traceroute? ( !net-analyzer/traceroute )"
 	"!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
@@ -53,12 +54,13 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"virtual/os-headers"
 	"$(rindeal:dsf:eval \
 		'doc | man' \
-			"app-text/openjade
-			dev-perl/SGMLSpm
-			app-text/docbook-sgml-dtd
-			app-text/docbook-sgml-utils" )"
+			"dev-libs/libxslt" )"
 )
-RDEPEND_A=( "${CDEPEND_A[@]}" )
+RDEPEND_A=( "${CDEPEND_A[@]}"
+	"arping? ( !net-misc/arping )"
+	"rarpd? ( !net-misc/rarpd )"
+	"traceroute? ( !net-analyzer/traceroute )"
+)
 
 REQUIRED_USE_A=(
 	"ipv6? ("
@@ -76,8 +78,6 @@ inherit arrays
 
 src_prepare() {
 	eapply "${FILESDIR}/021109-uclibc-no-ether_ntohost.patch"
-	use SECURITY_HAZARD && \
-		eapply "${FILESDIR}"/${PN}-20150815-nonroot-floodping.patch
 	eapply_user
 }
 
@@ -174,13 +174,6 @@ src_install() {
 		dosbin traceroute6
 		use man && doman doc/traceroute6.8
 	fi
-
-	if use rarpd ; then
-		newinitd "${FILESDIR}"/rarpd.init.d rarpd
-		newconfd "${FILESDIR}"/rarpd.conf.d rarpd
-	fi
-
-	dodoc INSTALL.md RELNOTES
 
 	if use doc ; then
 		docinto html

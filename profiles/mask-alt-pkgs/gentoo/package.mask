@@ -89,6 +89,7 @@ sys-apps/shadow::gentoo
 sys-apps/util-linux::gentoo
 sys-auth/libfprint::gentoo
 sys-block/gparted::gentoo
+sys-fs/fuse-common::gentoo
 sys-fs/ntfs3g::gentoo
 sys-process/htop::gentoo
 sys-process/lsof::gentoo
@@ -96,6 +97,7 @@ sys-process/nmon::gentoo
 sys-process/procps::gentoo
 www-client/opera::gentoo
 www-client/phantomjs::gentoo
+x11-apps/radeontop::gentoo
 x11-libs/qtermwidget::gentoo
 x11-misc/redshift::gentoo
 x11-terms/qterminal::gentoo

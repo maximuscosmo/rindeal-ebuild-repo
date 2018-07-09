@@ -4,10 +4,9 @@
 EAPI=6
 inherit rindeal
 
-
-DESCRIPTION="<DESCRIPTION>"
-HOMEPAGE="<HOMEPAGE>"
-LICENSE="<LICENSE>"
+DESCRIPTION="Create Phar of Composer based PHP application "
+HOMEPAGE="https://github.com/MacFJA/PharBuilder"
+LICENSE="MIT"
 
 PN_NB="${PN%-bin}"
 DISTFILE="phar-builder-${PV}.phar"

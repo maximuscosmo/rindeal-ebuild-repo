@@ -16,14 +16,17 @@ esac
 inherit rindeal
 
 
-## functions: make_desktop_entry, newicon
-inherit desktop
-## functions: eshopts_push, eshopts_pop
-inherit estack
 ## functions: get_version_component_range, get_major_version
 inherit versionator
+
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
+
+## functions: make_desktop_entry, newicon
+inherit desktop
+
+## functions: eshopts_push, eshopts_pop
+inherit estack
 
 
 declare -g -r \
@@ -106,8 +109,8 @@ jetbrains-intellij_src_unpack() {
 	)
 
 	local excludes=( "${_JBIJ_DEFAULT_TAR_EXCLUDE[@]}" )
-	use system-jre	&& excludes+=( 'jre' )
-	use amd64		|| excludes+=( bin/{fsnotifier64,libbreakgen64.so,libyjpagent-linux64.so,LLDBFrontend} )
+	use system-jre && excludes+=( 'jre' )
+	use amd64      || excludes+=( bin/{fsnotifier64,libbreakgen64.so,libyjpagent-linux64.so,LLDBFrontend} )
 
 	readonly JBIJ_TAR_EXCLUDE
 	excludes+=( "${JBIJ_TAR_EXCLUDE[@]}" )
@@ -170,10 +173,11 @@ readonly JBIJ_STARTUP_SCRIPT_NAME
 _jetbrains-intellij_src_install-icon() {
 	debug-print-function "${FUNCNAME}" "${@}"
 
-	# nullglob is required otherwise BASH will think '*' is a filename
+	# First find any '*.svg' and '*.png' images in the 'bin/' dir.
+	# Nullglob is required otherwise BASH will think '*' is a filename.
 	eshopts_push -s nullglob
-	# first find any '*.svg' and '*.png' images in the 'bin/' dir
 	local -r svg=( bin/*.svg ) png=( bin/*.png )
+	eshopts_pop
 
 	# prefer SVG icons if any were found
 	if (( ${#svg[@]} )) ; then
@@ -181,14 +185,13 @@ _jetbrains-intellij_src_install-icon() {
 
 	# PNG otherwise
 	elif (( ${#png[@]} )) ; then
-		# icons size is sometimes 128 and sometimes 256
+		# icons size is sometimes 128 and sometimes 256, let's stick with the smaller value
 		newicon -s 128 "${png[0]}" "${_JBIJ_PN_SLOTTED}.png"
 
 	# throw ebuild QA warning if nothing was found
 	else
 		equawarn "No icon found"
 	fi
-	eshopts_pop
 }
 
 _jetbrains-intellij_src_install-pre() {
@@ -230,10 +233,10 @@ _jetbrains-intellij_src_install-post() {
 	## generate and install .desktop menu file
 	local -r make_desktop_entry_args=(
 		# start the script directly
-		"${_JBIJ_PN_SLOTTED} %U"	# exec
-		"${JBIJ_PN_PRETTY} ${SLOT}"	# name
-		"${_JBIJ_PN_SLOTTED}"		# icon
-		"$(printf '%s;' "${_JBIJ_DEFAULT_DESKTOP_CATEGORIES[@]}" "${JBIJ_DESKTOP_CATEGORIES[@]}")"	# categories
+		"${_JBIJ_PN_SLOTTED} %U"    # exec
+		"${JBIJ_PN_PRETTY} ${SLOT}" # name
+		"${_JBIJ_PN_SLOTTED}"       # icon
+		"$(printf '%s;' "${_JBIJ_DEFAULT_DESKTOP_CATEGORIES[@]}" "${JBIJ_DESKTOP_CATEGORIES[@]}")"  # categories
 	)
 	local -r make_desktop_entry_extras=(
 		"${_JBIJ_DEFAULT_DESKTOP_EXTRAS[@]}"

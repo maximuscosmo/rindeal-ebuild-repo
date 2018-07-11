@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github:python"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_4 pypy{,3} )
+PYTHON_COMPAT=( python2_7 pypy{,3} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE

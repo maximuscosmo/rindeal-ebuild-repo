@@ -25,6 +25,12 @@ LICENSE="PSF-2"
 SLOT="0"
 
 KEYWORDS="amd64 arm arm64"
+IUSE_A=(
+	# compatibility with broken Gentoo packages which depend on these USE-flags
+	python_targets_python3_{5,6}
+)
+
+inherit arrays
 
 python_test() {
 	cd "${BUILD_DIR}" || die

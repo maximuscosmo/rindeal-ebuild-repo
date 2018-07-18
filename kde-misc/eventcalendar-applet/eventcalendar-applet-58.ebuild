@@ -39,6 +39,6 @@ src_install() {
 
 	cd "package" || die
 
-	emkdir "${instdir}"
+	rmkdir "${instdir}"
 	ecp -r * "${instdir}"
 }

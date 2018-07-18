@@ -106,7 +106,7 @@ libtorrent-rasterbar_src_prepare() {
 	make_setup.py_extension_compilation_parallel bindings/python/setup.py
 
 	# automake fails miserably if this file doesn't exist
-	emkdir build-aux
+	rmkdir build-aux
 	touch build-aux/config.rpath || die
 
 	eautoreconf

@@ -136,7 +136,7 @@ rpopd() {
 	popd "${@}" >/dev/null || die -n
 }
 
-emkdir() {
+rmkdir() {
 	mkdir $(_NO_V) -p "${@}" || die -n
 }
 

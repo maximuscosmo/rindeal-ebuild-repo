@@ -96,7 +96,7 @@ jetbrains-intellij_src_unpack() {
 
 	einfo "Unpacking '${archive}' to '${S}'"
 
-	NO_V=1 emkdir "${S}"
+	NO_V=1 rmkdir "${S}"
 
 	local tar=(
 		tar --extract
@@ -246,7 +246,7 @@ _jetbrains-intellij_src_install-post() {
 		"$( printf '%s\n' "${make_desktop_entry_extras[@]}" )"
 
 	## recommended by: https://confluence.jetbrains.com/display/IDEADEV/Inotify+Watches+Limit
-	NO_V=1 emkdir "${D}"/etc/sysctl.d
+	NO_V=1 rmkdir "${D}"/etc/sysctl.d
 	echo "fs.inotify.max_user_watches = 524288" \
 		>"${D}"/etc/sysctl.d/30-idea-inotify-watches.conf || die
 }
@@ -256,7 +256,7 @@ jetbrains-intellij_src_install() {
 
 	_jetbrains-intellij_src_install-pre
 
-	emkdir "${ED%/}${JBIJ_INSTALL_DIR}"
+	rmkdir "${ED%/}${JBIJ_INSTALL_DIR}"
 
 	# use `cp` as `doins()` is too slow
 	NO_V=1 ecp -r . "${ED%/}${JBIJ_INSTALL_DIR}"

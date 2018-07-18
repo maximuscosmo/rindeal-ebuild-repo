@@ -84,7 +84,7 @@ src_unpack() {
 src_prepare() {
 	xdg_src_prepare
 
-	emkdir "${OPERA_HOME#/}"
+	rmkdir "${OPERA_HOME#/}"
 
 	# delete broken symlink, proper one will be created in src_install()
 	erm "usr/bin/${PN}"

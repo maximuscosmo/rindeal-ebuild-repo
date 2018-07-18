@@ -231,7 +231,7 @@ pkg_postinst() {
 	# only ensure that one is there
 	# <obz@gentoo.org>
 	if [[ ! -e ${CATALOG} ]]; then
-		[[ -d "${EROOT}etc/xml" ]] || emkdir "${EROOT}etc/xml"
+		[[ -d "${EROOT}etc/xml" ]] || rmkdir "${EROOT}etc/xml"
 		"${EPREFIX}"/usr/bin/xmlcatalog --create > "${CATALOG}"
 		einfo "Created XML catalog in ${CATALOG}"
 	fi

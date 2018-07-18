@@ -65,7 +65,7 @@ src_prepare() {
 	sed -e 's|"@{classpath}"|"${gentoo.classpath}"|g' -i -- nbproject/build-impl.xml || die
 
 	# these dirs are checked for presence during the build
-	emkdir src/gen/{res,java}
+	rmkdir src/gen/{res,java}
 
 	java-pkg-2_src_prepare
 }

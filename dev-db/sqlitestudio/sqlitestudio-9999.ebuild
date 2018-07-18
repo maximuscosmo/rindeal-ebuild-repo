@@ -151,11 +151,11 @@ src_configure() {
 	)
 
 	## Core
-	emkdir "${MY_CORE_BUILD_DIR}" && cd "${MY_CORE_BUILD_DIR}" || die
+	rmkdir "${MY_CORE_BUILD_DIR}" && cd "${MY_CORE_BUILD_DIR}" || die
 	eqmake5 "${qmake_args[@]}" "${MY_CORE_SRC_DIR}"
 
 	## Plugins
-	emkdir "${MY_PLUGINS_BUILD_DIR}" && cd "${MY_PLUGINS_BUILD_DIR}" || die
+	rmkdir "${MY_PLUGINS_BUILD_DIR}" && cd "${MY_PLUGINS_BUILD_DIR}" || die
 	eqmake5 "${qmake_args[@]}" "${MY_PLUGINS_SRC_DIR}"
 }
 

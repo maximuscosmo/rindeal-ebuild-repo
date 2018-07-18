@@ -40,7 +40,7 @@ src_prepare() {
 	java-pkg-2_src_prepare
 
 	# required for ant build task
-	emkdir bin
+	rmkdir bin
 }
 
 src_install() {

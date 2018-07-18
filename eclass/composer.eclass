@@ -26,7 +26,7 @@ _composer_do_env_dir() {
 
 	[ -z "${!var}" ] && declare -g "${var}"="${default}"
 	export "${var}"
-	emkdir "${!var}"
+	rmkdir "${!var}"
 
 	debug-print "${var}='${!var}'"
 }
@@ -93,7 +93,7 @@ composer_list_bin() {
 }
 
 composer_copy_install_all() {
-	emkdir "${ED}${COMPOSER_INSTALL_DIR}"
+	rmkdir "${ED}${COMPOSER_INSTALL_DIR}"
 	NO_V=1 ecp -r "${S}"/* "${ED}${COMPOSER_INSTALL_DIR}"
 }
 

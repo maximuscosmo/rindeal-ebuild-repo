@@ -159,7 +159,7 @@ src_install() {
 
 	# fix symlinks to /bin/rpm (#349840)
 	for binary in rpmquery rpmverify ; do
-		eln -sf rpm "${ED}"/usr/bin/${binary}
+		rln -sf rpm "${ED}"/usr/bin/${binary}
 	done
 
 	if ! use nls ; then

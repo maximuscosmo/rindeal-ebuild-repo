@@ -60,7 +60,7 @@ src_prepare() {
 	esed -e '/run_external_revision_generate.*SPIRV_TOOLS_COMMIT_ID/d' -i -- CMakeLists.txt
 	echmod +x ./scripts/external_revision_generator.py
 	./scripts/external_revision_generator.py --rev_file <(echo deadbeef ) -s SPIRV_TOOLS_COMMIT_ID -o spirv_tools_commit_id.h || die
-	eln -s "${S}/spirv_tools_commit_id.h" layers/spirv_tools_commit_id.h
+	rln -s "${S}/spirv_tools_commit_id.h" layers/spirv_tools_commit_id.h
 
 	cmake-utils_src_prepare
 }

@@ -148,7 +148,7 @@ rmv() {
 	mv $(_NO_V) "${@}" || die -n
 }
 
-eln() {
+rln() {
 	ln $(_NO_V) "${@}" || die -n
 }
 

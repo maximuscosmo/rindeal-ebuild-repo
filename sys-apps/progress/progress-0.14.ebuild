@@ -1,14 +1,16 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit rindeal
 
+## git-hosting.eclass:
 GH_RN="github:Xfennec"
 GH_REF="v${PV}"
 
-# EXPORT_FUNCTIONS: src_unpack
+## EXPORT_FUNCTIONS: src_unpack
+## variables: HOMEPAGE, SRC_URI
 inherit git-hosting
 
 DESCRIPTION="Linux tool to show progress for cp, mv, dd, and virtually any command"
@@ -30,11 +32,4 @@ inherit arrays
 
 pkg_setup() {
 	export PREFIX="${EPREFIX}/usr"
-}
-
-src_prepare() {
-	default
-
-	# https://github.com/Xfennec/progress/pull/87
-	sed -e '/CFLAGS.*=/ s|-g ||' -i -- Makefile || die
 }

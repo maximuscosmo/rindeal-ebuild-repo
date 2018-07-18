@@ -33,8 +33,8 @@ inherit arrays
 
 python_prepare_all() {
 	if ! use test ; then
-		esed -e '/"github.tests"/d' -i -- setup.py
-		esed -e '/"github": \["tests/d' -i -- setup.py
+		rsed -e '/"github.tests"/d' -i -- setup.py
+		rsed -e '/"github": \["tests/d' -i -- setup.py
 	fi
 
 	distutils-r1_python_prepare_all

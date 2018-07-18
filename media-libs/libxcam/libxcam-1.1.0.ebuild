@@ -64,7 +64,7 @@ pkg_setup() {
 src_prepare() {
 	eapply_user
 
-	esed -e "s| -fstack-protector||" -i -- configure.ac
+	rsed -e "s| -fstack-protector||" -i -- configure.ac
 
 	eautoreconf
 }

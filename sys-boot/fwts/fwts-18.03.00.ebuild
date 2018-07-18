@@ -60,11 +60,11 @@ src_prepare(){
 		sed -e 's| -Werror||' \
 			-i --
 	assert
-	esed -e 's:/usr/bin/lspci:'$(type -p lspci)':' \
+	rsed -e 's:/usr/bin/lspci:'$(type -p lspci)':' \
 		-i -- src/lib/include/fwts_binpaths.h
 
 	# Fix json-c includes
-	esed -e 's|^#include <json.h>|#include <json-c/json.h>|' \
+	rsed -e 's|^#include <json.h>|#include <json-c/json.h>|' \
 		-i -- src/lib/include/fwts_json.h \
 			src/utilities/kernelscan.c
 
@@ -73,7 +73,7 @@ src_prepare(){
 	# Sandbox fails due to https://bugs.gentoo.org/show_bug.cgi?id=598810,
 	# because bash executes the globs inside $_G_message.
 	# Specific content that fails is: https://pastebin.com/B4kgCYpJ.
-	esed -e 's|for _G_line in $_G_message; do|for _G_line in "$_G_message"; do|' -i -- ltmain.sh
+	rsed -e 's|for _G_line in $_G_message; do|for _G_line in "$_G_message"; do|' -i -- ltmain.sh
 }
 
 src_configure() {

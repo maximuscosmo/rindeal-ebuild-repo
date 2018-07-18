@@ -120,7 +120,7 @@ src_prepare() {
 		regex="${regex%"|"}"
 
 		einfo "Disabling modules: '${modules[*]}' in '${file#${S}/}'"
-		esed -r -e "/${regex}/d" -i -- "${file}"
+		rsed -r -e "/${regex}/d" -i -- "${file}"
 	}
 
 	## Core

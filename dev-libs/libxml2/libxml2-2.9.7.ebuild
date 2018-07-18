@@ -104,7 +104,7 @@ src_prepare() {
 	eapply "${FILESDIR}/0003-python-remove-single-use-of-_PyVerify_fd.patch"
 	eapply "${FILESDIR}/0004-CVE-2017-8872.patch"
 
-	esed -r -e '/^(DIST_)?SUBDIRS/ s, (doc|example),,g' -i -- Makefile.am
+	rsed -r -e '/^(DIST_)?SUBDIRS/ s, (doc|example),,g' -i -- Makefile.am
 
 	# Please do not remove, as else we get references to PORTAGE_TMPDIR
 	# in /usr/lib/python?.?/site-packages/libxml2mod.la among things.

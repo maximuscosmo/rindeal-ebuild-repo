@@ -82,7 +82,7 @@ src_prepare-locales() {
 		for l in ${locales} ; do
 			if use man ; then
 				# not all langs in `po/` dir are present also in `man/` dir
-				esed -r -e "/^SUBDIRS/ s, ${l}( |$), ," -i -- man/Makefile.am
+				rsed -r -e "/^SUBDIRS/ s, ${l}( |$), ," -i -- man/Makefile.am
 				local f="man/${dir}/${pre}${l}${post}"
 				[[ -e "${f}" ]] && \
 					rrm "${f}"
@@ -100,13 +100,13 @@ src_prepare() {
 
 	# move `passwd` from `/usr/bin` to `/bin`
 	# NOTE: shadow_cv_passwd_dir is being ignored by Makefiles
-	esed -r \
+	rsed -r \
 		-e "/^(ubin_PROGRAMS|suidubins)/ s, passwd( |$), ," \
 		-e "/^(bin_PROGRAMS|suidbins)/   s,$, passwd," \
 		-i -- src/Makefile.am
 
 	if ! use man ; then
-		esed -r -e '/^SUBDIRS/ s, man( |$), ,' -i -- Makefile.am
+		rsed -r -e '/^SUBDIRS/ s, man( |$), ,' -i -- Makefile.am
 	fi
 
 	eautoreconf
@@ -156,11 +156,11 @@ my_set_login_opt() {
 	local -r def_file="/etc/login.defs"
 
 	# always comment it out first if not already, just in case opt is present multiple times
-	esed -r -e "/^${opt}\b/ s|^|#|" -i -- "${ED}${def_file}"
+	rsed -r -e "/^${opt}\b/ s|^|#|" -i -- "${ED}${def_file}"
 
 	if [[ -n ${val} ]] ; then
 		# replace only the first occurence
-		esed -e "0,/^#${opt}\b/ s|^#${opt}\b.*|${opt} ${val}|" -i -- "${ED}${def_file}"
+		rsed -e "0,/^#${opt}\b/ s|^#${opt}\b.*|${opt} ${val}|" -i -- "${ED}${def_file}"
 	fi
 
 	## print out result
@@ -203,7 +203,7 @@ src_install_login_defs() {
 			sed_args+=( -e "/^#${opt}\>/b pamnote" )
 		done
 		# add notes
-		esed "${sed_args[@]}" \
+		rsed "${sed_args[@]}" \
 			-e 'b exit' \
 			-e ': pamnote; i# NOTE: This setting should be configured via /etc/pam.d/ and not in this file.' \
 			-e ': exit' \

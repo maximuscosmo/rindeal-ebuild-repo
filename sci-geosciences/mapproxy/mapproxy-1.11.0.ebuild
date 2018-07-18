@@ -42,7 +42,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 python_prepare_all() {
-	esed -e 's|find_packages()|find_packages(exclude=["*.test", "*.test.*", "test.*", "test"])|' \
+	rsed -e 's|find_packages()|find_packages(exclude=["*.test", "*.test.*", "test.*", "test"])|' \
 		-i -- setup.py
 
 	distutils-r1_python_prepare_all

@@ -32,7 +32,7 @@ inherit arrays
 src_prepare() {
 	eapply_user
 
-	esed -e '/^MANPAGE_DOCBOOK_XSL/ s:/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl:/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl:' -i -- Makefile.am
+	rsed -e '/^MANPAGE_DOCBOOK_XSL/ s:/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl:/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl:' -i -- Makefile.am
 
 	eautoreconf
 }

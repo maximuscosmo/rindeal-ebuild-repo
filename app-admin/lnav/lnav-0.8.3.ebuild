@@ -51,7 +51,7 @@ src_prepare() {
 
 	# respect AR
 	# https://github.com/tstack/lnav/pull/356
-	esed -e '/^AC_PROG_RANLIB/ a AM_PROG_AR' -i -- configure.ac
+	rsed -e '/^AC_PROG_RANLIB/ a AM_PROG_AR' -i -- configure.ac
 
 	eautoreconf
 }

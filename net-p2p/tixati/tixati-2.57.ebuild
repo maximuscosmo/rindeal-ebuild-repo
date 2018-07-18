@@ -48,6 +48,6 @@ src_install() {
 	doicon	-s 48 "${PN}.png"
 
 	# fix invalid `Categories` value
-	esed -e 's|Internet;||' -i -- "${PN}.desktop"
+	rsed -e 's|Internet;||' -i -- "${PN}.desktop"
 	domenu	"${PN}.desktop"
 }

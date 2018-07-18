@@ -44,9 +44,9 @@ src_unpack() {
 src_prepare() {
 	eapply_user
 
-	esed -e "\,dependencies/nanopb,d" -i -- src/CMakeLists.txt
-	esed -r -e 's!struct bxf_spawn_params!struct bxf_spawn_params_s!' -i -- src/core/runner_coroutine.c
-	esed -r -e "/\bDESTINATION\b/ s,\blib\b,$(get_libdir)," -i -- .cmake/Modules/PackageUtils.cmake
+	rsed -e "\,dependencies/nanopb,d" -i -- src/CMakeLists.txt
+	rsed -r -e 's!struct bxf_spawn_params!struct bxf_spawn_params_s!' -i -- src/core/runner_coroutine.c
+	rsed -r -e "/\bDESTINATION\b/ s,\blib\b,$(get_libdir)," -i -- .cmake/Modules/PackageUtils.cmake
 
 	cmake-utils_src_prepare
 }

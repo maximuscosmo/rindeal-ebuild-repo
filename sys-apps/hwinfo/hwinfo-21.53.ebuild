@@ -35,15 +35,15 @@ src_prepare() {
 	local sed_args
 
 	# Respect AR variable
-	esed -e 's:ar r:$(AR) r:' \
+	rsed -e 's:ar r:$(AR) r:' \
 		-i -- src/{,isdn,ids,smp,hd}/Makefile
 
 	# Respect LDFLAGS
-	esed -e 's:$(CC) $(CFLAGS):$(CC) $(LDFLAGS) $(CFLAGS):' \
+	rsed -e 's:$(CC) $(CFLAGS):$(CC) $(LDFLAGS) $(CFLAGS):' \
 		-i -- src/ids/Makefile
 
 	# Respect MAKE variable
-	esed -e 's:make:$(MAKE):' \
+	rsed -e 's:make:$(MAKE):' \
 		-i -- Makefile{,.common}
 
 	sed_args=(
@@ -54,7 +54,7 @@ src_prepare() {
 		# respect LD
 		-e 's|LD[ \t]*=|LD ?=|'
 	)
-	esed "${sed_args[@]}" \
+	rsed "${sed_args[@]}" \
 		-i -- Makefile.common
 }
 

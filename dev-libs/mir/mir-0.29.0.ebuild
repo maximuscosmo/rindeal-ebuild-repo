@@ -69,7 +69,7 @@ inherit arrays
 
 src_prepare()
 {
-	esed -e '/enable_coverage_report/d' -i -- CMakeLists.txt
+	rsed -e '/enable_coverage_report/d' -i -- CMakeLists.txt
 
 	cmake-utils_src_prepare
 }

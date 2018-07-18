@@ -31,7 +31,7 @@ inherit arrays
 src_prepare() {
 	default
 
-	esed -r -e '/^CFLAGS *=/ s,-funroll-loops|-O2,,g' -i -- Makefile.am
+	rsed -r -e '/^CFLAGS *=/ s,-funroll-loops|-O2,,g' -i -- Makefile.am
 
 	eautoreconf
 }

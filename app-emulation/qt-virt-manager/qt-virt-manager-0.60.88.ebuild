@@ -66,7 +66,7 @@ src_prepare-locales() {
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
 		rrm "${dir}/${pre}${l}${post}"
-		esed -e "\,${dir}/${pre}${l}${post},d" -i -- CMakeLists.txt
+		rsed -e "\,${dir}/${pre}${l}${post},d" -i -- CMakeLists.txt
 	done
 }
 

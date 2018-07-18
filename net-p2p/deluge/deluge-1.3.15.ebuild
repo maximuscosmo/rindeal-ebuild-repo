@@ -81,11 +81,11 @@ src_prepare-locales() {
 
 python_prepare_all() {
 	# disable libtorrent checks
-	esed -e 's|build_libtorrent = True|build_libtorrent = False|' \
+	rsed -e 's|build_libtorrent = True|build_libtorrent = False|' \
 		-e "/Compiling po file/a \\\tuptoDate = False" \
         -i -- 'setup.py'
 	# disable new release checks
-	esed -e 's|"new_release_check": True|"new_release_check": False|' \
+	rsed -e 's|"new_release_check": True|"new_release_check": False|' \
         -i -- 'deluge/core/preferencesmanager.py'
 
 	src_prepare-locales

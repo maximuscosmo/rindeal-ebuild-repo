@@ -54,10 +54,10 @@ inherit arrays
 src_prepare() {
 	eapply_user
 
-	esed -r -e '/install\(.*\$\{CMAKE_INSTALL_BINDIR\}\)/ s|\$\{CMAKE_INSTALL_BINDIR\}|${CMAKE_INSTALL_LIBEXECDIR}/'"${PN}"'|' -i -- demos/CMakeLists.txt demos/*/CMakeLists.txt
+	rsed -r -e '/install\(.*\$\{CMAKE_INSTALL_BINDIR\}\)/ s|\$\{CMAKE_INSTALL_BINDIR\}|${CMAKE_INSTALL_LIBEXECDIR}/'"${PN}"'|' -i -- demos/CMakeLists.txt demos/*/CMakeLists.txt
 
 	## nasty hackery to workaround hard dependencies on submodules
-	esed -e '/run_external_revision_generate.*SPIRV_TOOLS_COMMIT_ID/d' -i -- CMakeLists.txt
+	rsed -e '/run_external_revision_generate.*SPIRV_TOOLS_COMMIT_ID/d' -i -- CMakeLists.txt
 	rchmod +x ./scripts/external_revision_generator.py
 	./scripts/external_revision_generator.py --rev_file <(echo deadbeef ) -s SPIRV_TOOLS_COMMIT_ID -o spirv_tools_commit_id.h || die
 	rln -s "${S}/spirv_tools_commit_id.h" layers/spirv_tools_commit_id.h

@@ -82,7 +82,7 @@ src_prepare() {
 
 	# fix wrong portable conditional
 	# it should be: `portable { ... ; linux { ... } ; }`
-	esed -e 's#linux|portable#portable#' \
+	rsed -e 's#linux|portable#portable#' \
 		-i -- "${MY_CORE_SRC_DIR}"/sqlitestudio/sqlitestudio.pro
 
 	if ! use nls ; then
@@ -112,7 +112,7 @@ src_prepare() {
 		regex="${regex%"|"}"
 
 		einfo "Disabling modules: '${modules[*]}' in '${file#${S}/}'"
-		esed -r -e "/${regex}/d" -i -- "${file}"
+		rsed -r -e "/${regex}/d" -i -- "${file}"
 	}
 
 	## Core

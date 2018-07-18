@@ -46,14 +46,14 @@ inherit arrays
 src_prepare() {
 	eapply_user
 
-	esed -e '/autoreconf/ s|^|## PORTAGE ##|' -i -- bootstrap
+	rsed -e '/autoreconf/ s|^|## PORTAGE ##|' -i -- bootstrap
 
 	./bootstrap || die
 
 	eautoreconf
 
 	# Stub out the -k test since it's known to be flaky. #545812
-	esed -e '1iexit 77' -i -- tests*/strace-k.test
+	rsed -e '1iexit 77' -i -- tests*/strace-k.test
 }
 
 src_configure() {

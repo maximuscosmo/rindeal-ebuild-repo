@@ -47,7 +47,7 @@ src_prepare() {
 	eapply "${FILESDIR}/65.patch"
 	eapply_user
 
-	esed -e "/dlopen(/ s|\"\(libradeontop_xcb.so\)\"|\"${EPREFIX}${XCBLIB_DIR}/\1\"|" -i -- auth.c
+	rsed -e "/dlopen(/ s|\"\(libradeontop_xcb.so\)\"|\"${EPREFIX}${XCBLIB_DIR}/\1\"|" -i -- auth.c
 
 	cat > include/version.h <<-_EOF_ || die
 		#ifndef VER_H

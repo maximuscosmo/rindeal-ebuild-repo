@@ -44,19 +44,19 @@ src_prepare() {
 	eapply "${FILESDIR}"/1.3.2-honor_html_dir.patch
 	eapply_user
 
-	use doc || esed -e '/SUBDIRS/ s|html||' -i -- doc/Makefile.am
+	use doc || rsed -e '/SUBDIRS/ s|html||' -i -- doc/Makefile.am
 	# https://sourceforge.net/p/flac/bugs/379/
 	find doc/ -type f -name Makefile.am | xargs sed \
 		-e 's|docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)|docdir = @docdir@|' -i --
 	assert
 	# delete doxygen tagfile
-	esed -e 's|FLAC.tag||g' -e '/doc_DATA =/d' -i -- doc/Makefile.am
+	rsed -e 's|FLAC.tag||g' -e '/doc_DATA =/d' -i -- doc/Makefile.am
 
-	esed -r -e '/^SUBDIRS/ s, microbench( |$), ,' -i -- Makefile.am
-	use examples || esed -r -e '/^SUBDIRS/ s, examples( |$), ,' -i -- Makefile.am
+	rsed -r -e '/^SUBDIRS/ s, microbench( |$), ,' -i -- Makefile.am
+	use examples || rsed -r -e '/^SUBDIRS/ s, examples( |$), ,' -i -- Makefile.am
 	if ! use test ; then
-		esed -r -e '/^SUBDIRS/ s, test( |$), ,' -i -- Makefile.am
-		esed -r -e '/(^|[ \t])test_.*\\$/d' -i -- src/Makefile.am
+		rsed -r -e '/^SUBDIRS/ s, test( |$), ,' -i -- Makefile.am
+		rsed -r -e '/(^|[ \t])test_.*\\$/d' -i -- src/Makefile.am
 	fi
 
 	touch config.rpath || die

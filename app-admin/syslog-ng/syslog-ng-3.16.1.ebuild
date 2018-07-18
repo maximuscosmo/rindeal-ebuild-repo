@@ -103,21 +103,21 @@ src_prepare() {
 	local d
 	for d in "${autogen_sh_submodules[@]}" ; do
 		rrm -rf "${d}"
-		esed -r -e "/^SUBMODULES/ s,( |\")${d}(/[^ ]*)?,\1,g"  -i -- autogen.sh
+		rsed -r -e "/^SUBMODULES/ s,( |\")${d}(/[^ ]*)?,\1,g"  -i -- autogen.sh
 	done
 
 	if ! use doc ; then
-		esed -e '/^include doc/d' -i -- Makefile.am
+		rsed -e '/^include doc/d' -i -- Makefile.am
 	fi
 
 	# drop scl modules requiring json
 	if ! use json ; then
-		esed -r -e '/\b(osquery|nodejs|graylog2|ewmm|elasticsearch|cim)\b/d' -i -- scl/Makefile.am
+		rsed -r -e '/\b(osquery|nodejs|graylog2|ewmm|elasticsearch|cim)\b/d' -i -- scl/Makefile.am
 	fi
 
 	# use gentoo default path
 	if use systemd ; then
-		esed -e 's,/etc/syslog-ng.conf,/etc/syslog-ng/syslog-ng.conf,g' \
+		rsed -e 's,/etc/syslog-ng.conf,/etc/syslog-ng/syslog-ng.conf,g' \
 			-e 's,/var/run,/run,g' \
 			-i -- contrib/systemd/syslog-ng@default
 	fi

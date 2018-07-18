@@ -290,7 +290,7 @@ src_configure() {
 	fi
 	grep -q Requires.private libcurl.pc && die "need to update ebuild"
 	libs=$(printf '|%s' "${libs[@]}")
-	esed -r -e "/^Libs.private/s:(${libs#|})( |$)::g" \
+	rsed -r -e "/^Libs.private/s:(${libs#|})( |$)::g" \
 		-i -- libcurl.pc
 	echo "Requires.private: ${priv[*]}" >> libcurl.pc
 }

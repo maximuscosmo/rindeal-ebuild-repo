@@ -51,7 +51,7 @@ inherit arrays
 src_prepare() {
 	eapply_user
 
-	esed -e '/CMAKE_C_FLAGS.*-Werror/d' -i -- CMakeLists.txt || die
+	rsed -e '/CMAKE_C_FLAGS.*-Werror/d' -i -- CMakeLists.txt || die
 
 	cmake-utils_src_prepare
 }

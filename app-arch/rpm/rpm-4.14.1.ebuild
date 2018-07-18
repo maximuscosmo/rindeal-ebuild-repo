@@ -110,9 +110,9 @@ src_prepare() {
 	eapply_user
 
 	# fix #356769
-	esed -e 's:%{_var}/tmp:/var/tmp:' -i -- macros.in
+	rsed -e 's:%{_var}/tmp:/var/tmp:' -i -- macros.in
 	# fix #492642
-	esed -e "s:@__PYTHON@:${PYTHON}:" -i -- macros.in
+	rsed -e "s:@__PYTHON@:${PYTHON}:" -i -- macros.in
 
 	eautoreconf
 

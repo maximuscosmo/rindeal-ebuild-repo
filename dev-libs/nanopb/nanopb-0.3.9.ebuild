@@ -47,7 +47,7 @@ src_prepare() {
 	eapply_user
 
 	# change from static to shared
-	esed -e 's,\bSTATIC\b,SHARED,' -e 's,\bARCHIVE\b,LIBRARY,' -i -- CMakeLists.txt
+	rsed -e 's,\bSTATIC\b,SHARED,' -e 's,\bARCHIVE\b,LIBRARY,' -i -- CMakeLists.txt
 
 	cmake-utils_src_prepare
 }

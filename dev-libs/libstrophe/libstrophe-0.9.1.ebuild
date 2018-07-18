@@ -49,7 +49,7 @@ inherit arrays
 src_prepare() {
 	default
 
-	esed -e '/^AM_CFLAGS/ s| -g||' -i -- Makefile.am
+	rsed -e '/^AM_CFLAGS/ s| -g||' -i -- Makefile.am
 
 	eautoreconf
 }

@@ -35,7 +35,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 python_prepare_all() {
-	esed -r -e "/packages *=/ s|\[[^]]*\]\+||" -i -- setup.py
+	rsed -r -e "/packages *=/ s|\[[^]]*\]\+||" -i -- setup.py
 
 	rrm -r examples
 

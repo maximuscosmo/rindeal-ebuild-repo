@@ -50,7 +50,7 @@ src_prepare() {
 	eapply_user
 
 	# sandbox violation with mtab writability wrt #438250
-	esed -r -e 's|^[ \t]*umount --fake.*|true|' -i -- configure.ac
+	rsed -r -e 's|^[ \t]*umount --fake.*|true|' -i -- configure.ac
 
 	touch config.rpath
 	eautoreconf

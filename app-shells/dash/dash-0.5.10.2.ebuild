@@ -51,10 +51,10 @@ src_prepare() {
 	eapply_user
 
 	# Fix the invalid sort
-	esed -e 's|LC_COLLATE=C|LC_ALL=C|g' -i -- src/mkbuiltins
+	rsed -e 's|LC_COLLATE=C|LC_ALL=C|g' -i -- src/mkbuiltins
 
 	# Use pkg-config for libedit linkage
-	esed -e "/LIBS/ s|-ledit|\`$(tc-getPKG_CONFIG) --libs libedit $(usex static --static '')\`|" \
+	rsed -e "/LIBS/ s|-ledit|\`$(tc-getPKG_CONFIG) --libs libedit $(usex static --static '')\`|" \
 		-i -- configure.ac
 
 	eautoreconf

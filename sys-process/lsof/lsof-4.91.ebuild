@@ -43,12 +43,12 @@ src_prepare() {
 	eapply_user
 
 	# fix POSIX compliance with `echo`
-	esed -e 's:echo -n:printf:' \
+	rsed -e 's:echo -n:printf:' \
 		-i -- AFSConfig Configure Customize Inventory tests/CkTestDB
 	# Convert `test -r header.h` into a compile test.
 	# Make sure we convert `test ... -a ...` into two `test` commands
 	# so we can then convert both over into a compile test. #601432
-	esed -E \
+	rsed -E \
 		-e '/if test .* -a /s: -a : \&\& test :g' \
 		-e '/test -r/s:test -r \$\{LSOF_INCLUDE\}/([[:alnum:]/._]*):echo "#include <\1>" | ${LSOF_CC} ${LSOF_CFGF} -E - >/dev/null 2>\&1:g' \
 		-e 's:grep (.*) \$\{LSOF_INCLUDE\}/([[:alnum:]/._]*):echo "#include <\2>" | ${LSOF_CC} ${LSOF_CFGF} -E -P -dD - 2>/dev/null | grep \1:' \

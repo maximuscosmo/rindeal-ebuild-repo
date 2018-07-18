@@ -78,7 +78,7 @@ src_prepare-locales() {
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
 		rrm "${dir}/${pre}${l}${post}"
-		esed -e "/^ALL_LINGUAS/ s|${l}||" -i -- configure.ac
+		rsed -e "/^ALL_LINGUAS/ s|${l}||" -i -- configure.ac
 	done
 }
 
@@ -90,9 +90,9 @@ src_prepare() {
 	src_prepare-locales
 
 	# do not make some compiler prefered over another and let user make the choice
-	esed -r -e 's:^AC_PROG_(CC|CXX).*:AC_PROG_\1:' -i -- configure.ac
+	rsed -r -e 's:^AC_PROG_(CC|CXX).*:AC_PROG_\1:' -i -- configure.ac
 
-	esed -e '/^docdir/,/^$/d' -i -- Makefile.am
+	rsed -e '/^docdir/,/^$/d' -i -- Makefile.am
 
 	eautoreconf
 }

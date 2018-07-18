@@ -127,14 +127,14 @@ src_prepare() {
 	rpushd "${PN}"
 
 	# People seem to take the example configuration file too literally (bug gentoo#102361)
-	esed \
+	rsed \
 		-e "s:^\(opensc_engine_path\):#\1:" \
 		-e "s:^\(pkcs11_engine_path\):#\1:" \
 		-e "s:^\(pkcs11_module_path\):#\1:" \
 		-i -- wpa_supplicant.conf
 
 	# Change configuration to match Gentoo locations (bug gentoo#143750)
-	esed \
+	rsed \
 		-e "s:/usr/lib/opensc:/usr/$(get_libdir):" \
 		-e "s:/usr/lib/pkcs11:/usr/$(get_libdir):" \
 		-i -- wpa_supplicant.conf

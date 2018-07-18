@@ -70,7 +70,7 @@ src_configure() {
 
 src_test() {
 	if (( EUID )) || ! use drop-root ; then
-		esed -e '/^\(espudp1\|eapon1\)/d;' -i -- tests/TESTLIST
+		rsed -e '/^\(espudp1\|eapon1\)/d;' -i -- tests/TESTLIST
 		emake check
 	else
 		ewarn "Tests skipped!"

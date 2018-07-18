@@ -60,7 +60,7 @@ src_prepare-locales() {
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
 		rrm "${dir}/${pre}${l}${post}"
-		esed -e "s|<file>locale/${l}.qm</file>||" \
+		rsed -e "s|<file>locale/${l}.qm</file>||" \
 			-i -- resources/speedcrunch.qrc
 	done
 }
@@ -73,9 +73,9 @@ src_prepare() {
 	xdg_src_prepare
 
 	# NOTE: remove when a new release is available
-	esed -e "/^set.*speedcrunch_VERSION/ s|\"master\"|\"${PV} (${GH_REF})\"|" -i -- CMakeLists.txt
+	rsed -e "/^set.*speedcrunch_VERSION/ s|\"master\"|\"${PV} (${GH_REF})\"|" -i -- CMakeLists.txt
 
-	esed -e '/^enable_testing/d' -i -- CMakeLists.txt
+	rsed -e '/^enable_testing/d' -i -- CMakeLists.txt
 
 	cmake-utils_src_prepare
 }

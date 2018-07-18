@@ -44,9 +44,9 @@ S+="/repoman"
 
 python_prepare_all() {
 	# do not install tests that are never used at runtime
-	esed -e "/if '__init__.py' in filenames/ s@:\$@ and '/tests' not in dirpath:@" -i -- setup.py
+	rsed -e "/if '__init__.py' in filenames/ s@:\$@ and '/tests' not in dirpath:@" -i -- setup.py
 
-	esed -e '/gentooheader/d' -i -- cnf/repository/repository.yaml
+	rsed -e '/gentooheader/d' -i -- cnf/repository/repository.yaml
 
 	distutils-r1_python_prepare_all
 }

@@ -68,8 +68,8 @@ S="${WORKDIR}/${MY_P}"
 src_prepare() {
 	eapply_user
 
-	esed -e 's:Exec=@gksuprog@ :Exec=:' -i -- gparted.desktop.in.in
-	esed -e "/^ *polkit_action_DATA/ s,=.*,=," -i -- Makefile.am
+	rsed -e 's:Exec=@gksuprog@ :Exec=:' -i -- gparted.desktop.in.in
+	rsed -e "/^ *polkit_action_DATA/ s,=.*,=," -i -- Makefile.am
 
 	gnome2_src_prepare
 }
@@ -93,7 +93,7 @@ src_install() {
 
 	if use kde ; then
 		rcp "${_ddir}"/gparted{,-kde}.desktop
-		esed -e 's:Exec=:Exec=kdesu5 :' -i -- "${_ddir}"/gparted-kde.desktop
+		rsed -e 's:Exec=:Exec=kdesu5 :' -i -- "${_ddir}"/gparted-kde.desktop
 		echo 'OnlyShowIn=KDE;' >> "${_ddir}"/gparted-kde.desktop
 		echo 'NotShowIn=KDE;' >> "${_ddir}"/gparted.desktop
 	fi

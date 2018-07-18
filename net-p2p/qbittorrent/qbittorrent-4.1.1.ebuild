@@ -79,7 +79,7 @@ src_prepare-locales() {
 	l10n_get_locales locales app $(usex nls off all)
 	for l in ${locales} ; do
 		rrm "${loc_dir}/${loc_pre}${l}${loc_post}"
-		esed -e "/qbittorrent_${l}.qm/d" -i -- src/lang.qrc
+		rsed -e "/qbittorrent_${l}.qm/d" -i -- src/lang.qrc
 	done
 }
 
@@ -91,14 +91,14 @@ src_prepare() {
 	src_prepare-locales
 
 	# make build verbose
-	esed -r -e '/^CONFIG[ \+]*=/ s|silent||' -i -- src/src.pro
+	rsed -r -e '/^CONFIG[ \+]*=/ s|silent||' -i -- src/src.pro
 
 	# disable AUTOMAKE as no Makefile.am is present
-	esed -e '/^AM_INIT_AUTOMAKE/d' -i -- configure.ac
+	rsed -e '/^AM_INIT_AUTOMAKE/d' -i -- configure.ac
 
 	# disable qmake call inside ./configure script,
 	# we'll call it ourselves from eqmake wrapper
-	esed -e '/^$QT_QMAKE/ s|^|echo |' -i -- configure.ac
+	rsed -e '/^$QT_QMAKE/ s|^|echo |' -i -- configure.ac
 
 	eautoreconf
 

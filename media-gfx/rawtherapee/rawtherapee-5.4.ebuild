@@ -66,7 +66,7 @@ src_prepare() {
 	eapply_user
 
 	# do not install LICENSE
-	esed -e '/^install/ s/.*LICENSE.txt.*//' -i -- CMakeLists.txt
+	rsed -e '/^install/ s/.*LICENSE.txt.*//' -i -- CMakeLists.txt
 
 	# Generating this file automatically requires a valid GIT repo.
 	# This info is only shown in the "About" dialog.

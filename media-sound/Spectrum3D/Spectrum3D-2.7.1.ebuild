@@ -60,12 +60,12 @@ src_prepare() {
 
 	## fix icons path (https://sourceforge.net/p/spectrum3d/discussion/bug-wishlist/thread/8c685767/)
 	# the svg icon is used only in the desktop menu entry
-	esed -r -e "s|^(svgicondir =).*|\1 \$(datadir)/icons/hicolor/scalable/apps|" -i -- data/Makefile.am
+	rsed -r -e "s|^(svgicondir =).*|\1 \$(datadir)/icons/hicolor/scalable/apps|" -i -- data/Makefile.am
 
-	esed -e "1s|^|icondir = \$(datadir)/${PN}/icons\n|" -i -- src/Makefile.am
-	esed -r -e "s|^(icondir =).*|\1 \$(datadir)/${PN}/icons|" -i -- data/Makefile.am
+	rsed -e "1s|^|icondir = \$(datadir)/${PN}/icons\n|" -i -- src/Makefile.am
+	rsed -r -e "s|^(icondir =).*|\1 \$(datadir)/${PN}/icons|" -i -- data/Makefile.am
 	# pass $(icondir) to source files
-	esed -e "/^AM_CPPFLAGS =/ s|$| -D ICONDIR='\"\$(icondir)\"'|" -i -- src/Makefile.am
+	rsed -e "/^AM_CPPFLAGS =/ s|$| -D ICONDIR='\"\$(icondir)\"'|" -i -- src/Makefile.am
 	grep --files-with-matches -r "g_build_filename.*DATADIR.*icons" |\
 		xargs \
 		sed -r -e '/g_build_filename.*DATADIR.*icons/ '"s|DATADIR, \"icons\"|ICONDIR|" -i --

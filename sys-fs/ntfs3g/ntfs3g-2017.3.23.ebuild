@@ -76,7 +76,7 @@ src_prepare() {
 
 	# Keep the symlinks in the same place we put the main binaries.
 	# Having them in / when all the progs are in /usr is pointless.
-	esed -e 's:/sbin:$(sbindir):g' \
+	rsed -e 's:/sbin:$(sbindir):g' \
 		-i -- {ntfsprogs,src}/Makefile.in # gentoo#578336
 
 	# Note: patches apply to Makefile.in, so don't run autotools here.

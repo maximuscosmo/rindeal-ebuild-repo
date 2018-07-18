@@ -90,7 +90,7 @@ src_prepare-locales() {
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
 		rrm "${dir}/${pre}${l}${post}"
-		esed -e "/languages\.put.*\"${l}\"/d" \
+		rsed -e "/languages\.put.*\"${l}\"/d" \
 			-i -- src/org/openstreetmap/josm/tools/{I18n,LanguageInfo}.java || die
 	done
 }
@@ -129,31 +129,31 @@ src_prepare() {
 			"${xmlstarlet[@]}" || die
 		done
 	done
-	esed -e "s,/usr/share/java/ant-contrib.jar,$(java-pkg_getjars --build-only ant-contrib),g" \
+	rsed -e "s,/usr/share/java/ant-contrib.jar,$(java-pkg_getjars --build-only ant-contrib),g" \
 		-i -- build.xml i18n/build.xml || die
-	esed -e "s,/usr/share/java/gettext-ant-tasks.jar,$(java-pkg_getjars --build-only gettext-ant-tasks),g" \
+	rsed -e "s,/usr/share/java/gettext-ant-tasks.jar,$(java-pkg_getjars --build-only gettext-ant-tasks),g" \
 		-i -- i18n/build.xml || die
 
 	## print stats for EPSG compilation
-	esed -e "s|printStats *= *false|printStats = true|" \
+	rsed -e "s|printStats *= *false|printStats = true|" \
 		-i -- scripts/BuildProjectionDefinitions.java || die
 
 	## fix font path
-	esed -e 's,/usr/share/fonts/truetype/noto,/usr/share/fonts/noto,g' \
+	rsed -e 's,/usr/share/fonts/truetype/noto,/usr/share/fonts/noto,g' \
 		-i -- src/org/openstreetmap/josm/tools/FontsManager.java || die
 
 	## change default look and feel to GTK
-	esed -e 's|"javax.swing.plaf.metal.MetalLookAndFeel"|"com.sun.java.swing.plaf.gtk.GTKLookAndFeel"|' \
+	rsed -e 's|"javax.swing.plaf.metal.MetalLookAndFeel"|"com.sun.java.swing.plaf.gtk.GTKLookAndFeel"|' \
 		-i -- src/org/openstreetmap/josm/tools/PlatformHookUnixoid.java || die
 
 	## normalize user-agent
-	esed -r -e 's|(String *result *= *"JOSM/1.5 \(").*|\1 + v + ")";|' \
+	rsed -r -e 's|(String *result *= *"JOSM/1.5 \(").*|\1 + v + ")";|' \
 		-i -- src/org/openstreetmap/josm/data/Version.java || die
-	esed -e '/Main.platform.getOSDescription/d' -i -- src/org/openstreetmap/josm/data/Version.java || die
-	esed -r -e 's|(getAgentString\(\)) *\+.*|\1;|' -i -- src/org/openstreetmap/josm/data/Version.java || die
+	rsed -e '/Main.platform.getOSDescription/d' -i -- src/org/openstreetmap/josm/data/Version.java || die
+	rsed -r -e 's|(getAgentString\(\)) *\+.*|\1;|' -i -- src/org/openstreetmap/josm/data/Version.java || die
 
 	## do not display MOTD by default, as it requires calling home
-	esed -e 's|getBoolean("help.displaymotd", true)|getBoolean("help.displaymotd", false)|' \
+	rsed -e 's|getBoolean("help.displaymotd", true)|getBoolean("help.displaymotd", false)|' \
 		-i -- src/org/openstreetmap/josm/gui/GettingStarted.java || die
 
 	# update `REVISION` entry

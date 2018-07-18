@@ -397,11 +397,11 @@ src_prepare() {
 
 	# Don't use --started-from-file when not using dbus.
 	if ! use dbus ; then
-		esed -e 's, --started-from-file,,' -i -- share/vlc.desktop.in
+		rsed -e 's, --started-from-file,,' -i -- share/vlc.desktop.in
 	fi
 
 	# Disable running of vlc-cache-gen, we do that in pkg_postinst
-	esed -e "/test.*build.*host/s/\$(host)/nothanks/" \
+	rsed -e "/test.*build.*host/s/\$(host)/nothanks/" \
 		-i -- Makefile.am bin/Makefile.am
 
 	eautoreconf
@@ -643,7 +643,7 @@ src_configure() {
 	# _FORTIFY_SOURCE is set to 2 in config.h, which is also the default value on Gentoo.
 	# Other values of _FORTIFY_SOURCE may break the build (bug 523144), so definition should not be removed from config.h.
 	# To prevent redefinition warnings, we undefine _FORTIFY_SOURCE at the very start of config.h file
-	esed -e '1i#undef _FORTIFY_SOURCE' -i -- "${S}"/config.h
+	rsed -e '1i#undef _FORTIFY_SOURCE' -i -- "${S}"/config.h
 }
 
 src_test() {

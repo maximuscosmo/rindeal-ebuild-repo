@@ -31,10 +31,10 @@ inherit arrays
 src_prepare() {
 	eapply_user
 
-	esed -e '/include.*utils.cmake/a include(GNUInstallDirs)'  -i -- CMakeLists.txt
-	esed -r -e '/set.*C_FLAGS/ s, -(O[0-9]|pedantic),,g' -i -- CMakeLists.txt
-	esed -e '/add_library/ s,$, SHARED,' -i -- CMakeLists.txt
-	esed -e '/SOVERSION/ s,$, PUBLIC_HEADER utf8proc.h,' -i -- CMakeLists.txt
+	rsed -e '/include.*utils.cmake/a include(GNUInstallDirs)'  -i -- CMakeLists.txt
+	rsed -r -e '/set.*C_FLAGS/ s, -(O[0-9]|pedantic),,g' -i -- CMakeLists.txt
+	rsed -e '/add_library/ s,$, SHARED,' -i -- CMakeLists.txt
+	rsed -e '/SOVERSION/ s,$, PUBLIC_HEADER utf8proc.h,' -i -- CMakeLists.txt
 	echo 'install(TARGETS utf8proc LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})' >> CMakeLists.txt || die
 	echo 'MESSAGE(STATUS ${CMAKE_INSTALL_INCLUDEDIR})'  >> CMakeLists.txt || die
 

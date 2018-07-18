@@ -43,7 +43,7 @@ INST_DIR="/opt/${PN_NOBIN}"
 src_prepare() {
 	xdg_src_prepare
 
-	esed -r -e "s|(Try)?Exec=|\1Exec=${EPREFIX}${INST_DIR}/|" \
+	rsed -r -e "s|(Try)?Exec=|\1Exec=${EPREFIX}${INST_DIR}/|" \
 		-i -- "${PN_NOBIN}.desktop"
 }
 

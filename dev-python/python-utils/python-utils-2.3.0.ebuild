@@ -35,7 +35,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 python_prepare_all() {
-	esed -e "/setup_requires=\['pytest-runner'\]/d" -i -- setup.py
+	rsed -e "/setup_requires=\['pytest-runner'\]/d" -i -- setup.py
 
 	distutils-r1_python_prepare_all
 }

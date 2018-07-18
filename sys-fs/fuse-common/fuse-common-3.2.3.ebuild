@@ -46,7 +46,7 @@ src_prepare() {
 	eapply_user
 
 	# do not build unneeded targets
-	esed -r -e "/^subdirs *=/ s/'(lib|include|example|doc|test)',?//g" -i -- meson.build
+	rsed -r -e "/^subdirs *=/ s/'(lib|include|example|doc|test)',?//g" -i -- meson.build
 
 	# lto not supported yet -- https://github.com/libfuse/libfuse/issues/198
 	filter-flags -flto*

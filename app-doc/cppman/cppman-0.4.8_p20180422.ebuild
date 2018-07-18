@@ -45,7 +45,7 @@ inherit arrays
 python_prepare_all() {
 	eapply_user
 
-	esed -e 's|echo -e |printf |g' -i -- cppman/lib/pager.sh
+	rsed -e 's|echo -e |printf |g' -i -- cppman/lib/pager.sh
 
 	distutils-r1_python_prepare_all
 }

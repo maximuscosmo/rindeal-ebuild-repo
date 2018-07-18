@@ -124,7 +124,7 @@ src_prepare() {
 		-e "s|^Name=${PN}.*|& ${SLOT}|I"
 		-e "/^Icon=/ s|.*|Icon=${PN_SLOTTED}|"
 	)
-	esed -r "${sedargs[@]}" \
+	rsed -r "${sedargs[@]}" \
 		-i -- "applications/${PN}.desktop"
 	# fix menu entry path
 	rmv "applications"/{${PN},${PN_SLOTTED}}.desktop

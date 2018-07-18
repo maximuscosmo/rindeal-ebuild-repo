@@ -65,7 +65,7 @@ inherit arrays
 
 python_prepare_all() {
 	# do not install docs, examples and other unneeded stuff
-	esed -e "/setup_args\['data_files'\] = /d" -i -- setup.py
+	rsed -e "/setup_args\['data_files'\] = /d" -i -- setup.py
 
 	distutils-r1_python_prepare_all
 }

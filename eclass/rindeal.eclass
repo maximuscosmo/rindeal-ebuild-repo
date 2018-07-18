@@ -168,7 +168,7 @@ rrmdir() {
 	rmdir $(_NO_V) "${@}" || die -n
 }
 
-esed() {
+rsed() {
 	local diff_prog=()
 
 	if (( RINDEAL_DEBUG )) ; then

@@ -36,7 +36,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 python_prepare_all() {
-	esed -e "s|, 'pytest-runner>=2.8'||" -i -- setup.py
+	rsed -e "s|, 'pytest-runner>=2.8'||" -i -- setup.py
 
 	distutils-r1_python_prepare_all
 }

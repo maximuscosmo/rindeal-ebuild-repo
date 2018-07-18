@@ -81,23 +81,23 @@ src_prepare() {
 
 	## remove ads
 	rrm src/app/resources/browser/welcome.html
-	esed -e '/welcome.html/d' -i -- src/app/resources/zeal.qrc
-	esed -e '/WelcomePageUrl\[] =/ s|welcome.html|welcome-noad.html|' -i -- src/libs/ui/mainwindow.cpp
+	rsed -e '/welcome.html/d' -i -- src/app/resources/zeal.qrc
+	rsed -e '/WelcomePageUrl\[] =/ s|welcome.html|welcome-noad.html|' -i -- src/libs/ui/mainwindow.cpp
 
 	## disable update checks
-	esed -e '/ReleasesApiUrl/ s|".*"|""|' -i -- src/libs/core/application.cpp
-	esed -e '/QUrl(ReleasesApiUrl)/i return;' -i -- src/libs/core/application.cpp
+	rsed -e '/ReleasesApiUrl/ s|".*"|""|' -i -- src/libs/core/application.cpp
+	rsed -e '/QUrl(ReleasesApiUrl)/i return;' -i -- src/libs/core/application.cpp
 
 	## change default settings
-	esed -e '/"disable_ad"/ s|false|true|' -i -- src/libs/core/settings.cpp
-	esed -e '/"check_for_update"/ s|true|false|' -i -- src/libs/core/settings.cpp
-	esed -e '/"smooth_scrolling"/ s|false|true|' -i -- src/libs/core/settings.cpp
-	esed -e '/"fuzzy_search_enabled"/ s|false|true|' -i -- src/libs/core/settings.cpp
+	rsed -e '/"disable_ad"/ s|false|true|' -i -- src/libs/core/settings.cpp
+	rsed -e '/"check_for_update"/ s|true|false|' -i -- src/libs/core/settings.cpp
+	rsed -e '/"smooth_scrolling"/ s|false|true|' -i -- src/libs/core/settings.cpp
+	rsed -e '/"fuzzy_search_enabled"/ s|false|true|' -i -- src/libs/core/settings.cpp
 
 	## disable tracking and analytics
-	esed -e '/installId =/,+2d' -i -- src/libs/core/settings.cpp
-	esed -e '/setValue.*"install_id"/d' -i -- src/libs/core/settings.cpp
-	esed -e '/Application::userAgentJson/ {n;a return QString(); '$'\n''}' -i -- src/libs/core/application.cpp
+	rsed -e '/installId =/,+2d' -i -- src/libs/core/settings.cpp
+	rsed -e '/setValue.*"install_id"/d' -i -- src/libs/core/settings.cpp
+	rsed -e '/Application::userAgentJson/ {n;a return QString(); '$'\n''}' -i -- src/libs/core/application.cpp
 
 	xdg_src_prepare
 	cmake-utils_src_prepare

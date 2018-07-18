@@ -96,10 +96,10 @@ src_prepare() {
 	rrm src/mkvtoolnix-gui/main_window/code_of_conduct_dialog.{cpp,h}
 	rrm src/mkvtoolnix-gui/forms/main_window/code_of_conduct_dialog.ui
 
-	esed -e '/CODE_OF_CONDUCT.md/d' -i -- src/mkvtoolnix-gui/qt_resources.qrc
-	esed -e '/code_of_conduct_dialog.ui/d' -i -- src/mkvtoolnix-gui/mkvtoolnix-gui.pro
-	esed -e '/code_of_conduct_dialog/d'  -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
-	esed -e '/actionHelpCodeOfConduct/d' -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
+	rsed -e '/CODE_OF_CONDUCT.md/d' -i -- src/mkvtoolnix-gui/qt_resources.qrc
+	rsed -e '/code_of_conduct_dialog.ui/d' -i -- src/mkvtoolnix-gui/mkvtoolnix-gui.pro
+	rsed -e '/code_of_conduct_dialog/d'  -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
+	rsed -e '/actionHelpCodeOfConduct/d' -i -- src/mkvtoolnix-gui/main_window/main_window.cpp
 
 	xmlstarlet ed --inplace --delete "//addaction[@name='actionHelpCodeOfConduct']" src/mkvtoolnix-gui/forms/main_window/main_window.ui
 	xmlstarlet ed --inplace --delete "//action[@name='actionHelpCodeOfConduct']" src/mkvtoolnix-gui/forms/main_window/main_window.ui

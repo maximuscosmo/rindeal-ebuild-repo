@@ -87,15 +87,15 @@ src_prepare() {
 	xdg_src_prepare
 
 	# respect user CFLAGS
-	esed -e '/^CFLAGS/ s| -g[^ \t]*||g' \
+	rsed -e '/^CFLAGS/ s| -g[^ \t]*||g' \
 		-i -- Makefile
 
 	# supply PVR instead of commit hash
-	esed -e "s|^COMMIT_HASH.*|COMMIT_HASH=${PVR}|" \
+	rsed -e "s|^COMMIT_HASH.*|COMMIT_HASH=${PVR}|" \
 		-i -- Makefile
 
 	    # we'll run setup.py manually
-	esed -r -e 's|^[ \t]*\$\(PYTHON\)|# disabled # $(PYTHON)|' \
+	rsed -r -e 's|^[ \t]*\$\(PYTHON\)|# disabled # $(PYTHON)|' \
 		-i -- Makefile
 
 	# NOTE: examples must be installed as they're used in startup scripts
@@ -106,7 +106,7 @@ src_prepare() {
 	# 	-i -- Makefile || die
 
 	# fix default ca-cert path
-# 	esed -e "s|/etc/ssl/certs/ca-bundle.crt|${EPREFIX}/etc/ssl/certs/ca-certificates.crt|" \
+# 	rsed -e "s|/etc/ssl/certs/ca-bundle.crt|${EPREFIX}/etc/ssl/certs/ca-certificates.crt|" \
 # 		-i -- examples/config/config
 
 	distutils-r1_src_prepare

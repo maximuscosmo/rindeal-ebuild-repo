@@ -35,8 +35,8 @@ inherit arrays
 src_prepare() {
 	default
 
-	esed -r -e "\,(tutorial|perf)/,d" -i -- Makefile.am
-	esed -r -e "\|noinst_PROGRAMS *\+?\=| { s|^|# EBUILD MOD # |; s|\\\\$||; }" -i -- Makefile.am
+	rsed -r -e "\,(tutorial|perf)/,d" -i -- Makefile.am
+	rsed -r -e "\|noinst_PROGRAMS *\+?\=| { s|^|# EBUILD MOD # |; s|\\\\$||; }" -i -- Makefile.am
 
 	eautoreconf
 }

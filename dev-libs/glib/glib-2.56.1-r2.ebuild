@@ -121,15 +121,15 @@ src_prepare() {
 	rmv -f "${WORKDIR}"/pkg-config-*/pkg.m4 "${S}"/m4macros/
 
 	# Don't build tests, also prevents extra deps, bug gentoo#512022
-	esed -e "s/subdir('tests')//" -i -- meson.build
+	rsed -e "s/subdir('tests')//" -i -- meson.build
 	if ! use nls ; then
-		esed -e "/i18n.gettext/d" -i -- po/meson.build
+		rsed -e "/i18n.gettext/d" -i -- po/meson.build
 	fi
 
 	# Leave python shebang alone - handled by python_replicate_script
 	# We could call python_setup and give configure a valid --with-python
 	# arg, but that would mean a build dep on python when USE=utils.
-	esed -e '/${PYTHON}/d' -i -- glib/Makefile.am
+	rsed -e '/${PYTHON}/d' -i -- glib/Makefile.am
 
 	xdg_src_prepare
 	gnome2_environment_reset

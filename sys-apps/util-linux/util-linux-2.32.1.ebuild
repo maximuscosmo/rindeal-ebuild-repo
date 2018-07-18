@@ -321,7 +321,7 @@ pkg_setup() {
 my_use_build_init() {
 	local flag="${1}" option="${2:-"${1}"}"
 	grep -F -q "UL_BUILD_INIT([${option}]" configure.ac || die
-	esed -r -e "s@^(UL_BUILD_INIT *\( *\[${option}\])(, *\[[a-z]{2,}\])?@\1, [$(usex ${flag})]@" \
+	rsed -r -e "s@^(UL_BUILD_INIT *\( *\[${option}\])(, *\[[a-z]{2,}\])?@\1, [$(usex ${flag})]@" \
 		-i -- configure.ac
 }
 

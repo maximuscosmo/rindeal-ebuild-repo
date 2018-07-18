@@ -121,12 +121,12 @@ src_prepare() {
 	NO_V=1 rrm -r "${S_OLD}"/{exiv2-*,expat,installer,zlib-*}
 	NO_V=1 rrm -r "${S}"/3rdparty/quazip-*
 
-	esed -e 's|QStringList libPaths = QCoreApplication::libraryPaths();|QStringList libPaths;|' \
+	rsed -e 's|QStringList libPaths = QCoreApplication::libraryPaths();|QStringList libPaths;|' \
 		-e "s|libPaths.append(QCoreApplication::applicationDirPath() + \"/plugins\");|libPaths.append(\"${EPREFIX}/usr/$(get_libdir)/nomacs-plugins\");|" \
 		-i -- src/DkCore/DkPluginManager.cpp
 
 	if use plugins ; then
-		esed -e "s|DESTINATION lib/nomacs-plugins|DESTINATION $(get_libdir)/nomacs-plugins|" \
+		rsed -e "s|DESTINATION lib/nomacs-plugins|DESTINATION $(get_libdir)/nomacs-plugins|" \
 			-i -- plugins/cmake/Utils.cmake
 	fi
 

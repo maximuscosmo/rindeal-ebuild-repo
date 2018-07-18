@@ -45,7 +45,7 @@ CMAKE_USE_DIR="${S}/src/main/native"
 src_prepare() {
 	eapply_user
 
-	esed -e "s,DESTINATION lib),DESTINATION $(get_libdir))," -i -- "${CMAKE_USE_DIR}/CMakeLists.txt"
+	rsed -e "s,DESTINATION lib),DESTINATION $(get_libdir))," -i -- "${CMAKE_USE_DIR}/CMakeLists.txt"
 
 	java-pkg-2_src_prepare
 	cmake-utils_src_prepare

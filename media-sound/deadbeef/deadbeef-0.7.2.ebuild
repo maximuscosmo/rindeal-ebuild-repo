@@ -224,14 +224,14 @@ src_prepare() {
 	eapply_user
 
 	# clear out `docs_DATA`
-	esed -e '/^EXTRA_DIST/i docs_DATA =' -i -- Makefile.am
+	rsed -e '/^EXTRA_DIST/i docs_DATA =' -i -- Makefile.am
 
 	# `groups extending the format should start with "X-"`
-	esed -r -e '\@^\[[^]]* Shortcut Group\]@ s@^\[@[X-@' -i -- ${PN}.desktop.in
+	rsed -r -e '\@^\[[^]]* Shortcut Group\]@ s@^\[@[X-@' -i -- ${PN}.desktop.in
 	# TODO: remove in in 0.7.3+, fixed by https://github.com/Alexey-Yakovenko/deadbeef/pull/1697
-	esed -e '/^Keywords=/i Actions=Play;Pause;Stop;Next;Prev' -i -- ${PN}.desktop.in
+	rsed -e '/^Keywords=/i Actions=Play;Pause;Stop;Next;Prev' -i -- ${PN}.desktop.in
 	# TODO: remove in in 0.7.3+, fixed by https://github.com/Alexey-Yakovenko/deadbeef/pull/1697
-	esed -r -e 's,(Desktop Action Prev)ious,\1,' -i -- ${PN}.desktop.in
+	rsed -r -e 's,(Desktop Action Prev)ious,\1,' -i -- ${PN}.desktop.in
 
 	# automake: `error: required file `./config.rpath' not found`
 	touch config.rpath || die

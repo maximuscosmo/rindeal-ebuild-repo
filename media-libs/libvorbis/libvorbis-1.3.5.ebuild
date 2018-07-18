@@ -41,7 +41,7 @@ inherit arrays
 src_prepare() {
 	default
 
-	esed -r -e '/CFLAGS="/ s,( |")-(O3|ffast-math|mno-ieee-fp),\1,g' \
+	rsed -r -e '/CFLAGS="/ s,( |")-(O3|ffast-math|mno-ieee-fp),\1,g' \
 		-i -- configure.ac
 
 	# Un-hack docdir redefinition.
@@ -51,7 +51,7 @@ src_prepare() {
 			{} + || die
 
 	if ! use doc ; then
-		esed \
+		rsed \
 			-e '/^DISTCHECK_CONFIGURE_FLAGS/ s|--enable-docs|--disable-docs|' \
 			-e '/^SUBDIRS/ s| doc| |' \
 			-i -- Makefile.am

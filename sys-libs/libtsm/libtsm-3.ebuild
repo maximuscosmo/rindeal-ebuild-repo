@@ -58,12 +58,12 @@ S="${WORKDIR}/${snapshot_id}"
 src_prepare() {
 	default
 
-	esed -e '/-ffast-math/d' -i -- Makefile.am || die
-	esed -e '/AM_CFLAGS/ s,-O[0-3],,g' -i -- Makefile.am || die
+	rsed -e '/-ffast-math/d' -i -- Makefile.am || die
+	rsed -e '/AM_CFLAGS/ s,-O[0-3],,g' -i -- Makefile.am || die
 	# ```
 	# src/gtktsm/gtktsm-terminal.c:32:20: fatal error: libtsm.h: No such file or directory
 	# ```
-	esed -e '/gtktsm_CPPFLAGS/ s,= ,= -Isrc/tsm ,' -i -- Makefile.am || die
+	rsed -e '/gtktsm_CPPFLAGS/ s,= ,= -Isrc/tsm ,' -i -- Makefile.am || die
 
 	eautoreconf
 }

@@ -51,10 +51,10 @@ src_prepare() {
 	assert
 
 	# disable docs rebuilding as they're shipped prebuilt
-	esed -e '/SUBDIRS[^=]*=/ s:doc::g' -i -- Makefile.am
+	rsed -e '/SUBDIRS[^=]*=/ s:doc::g' -i -- Makefile.am
 
 	# disable building tests automagically
-	use test || esed -e '/SUBDIRS[^=]*=/ s:[^ ]*_test::g' -i -- c/Makefile.am
+	use test || rsed -e '/SUBDIRS[^=]*=/ s:[^ ]*_test::g' -i -- c/Makefile.am
 
 	eautoreconf
 }

@@ -44,10 +44,10 @@ src_prepare() {
 
 	## change `man 1 lid` to `man 1 libuser-lid`
 	rmv apps/{,libuser-}lid.1
-	esed -e 's@ apps/lid\.1 @ apps/libuser-lid.1 @' \
+	rsed -e 's@ apps/lid\.1 @ apps/libuser-lid.1 @' \
 		-i -- Makefile.am
 
-	use doc || esed -e '/^SUBDIRS/ s| docs| |' -i -- Makefile.am
+	use doc || rsed -e '/^SUBDIRS/ s| docs| |' -i -- Makefile.am
 
 	eautoreconf
 }

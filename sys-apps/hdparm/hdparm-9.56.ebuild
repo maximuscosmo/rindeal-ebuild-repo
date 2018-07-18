@@ -40,7 +40,7 @@ src_prepare() {
 		# respect LDFLAGS
 		-e "/^LDFLAGS/d"
 	)
-	esed "${sed_args[@]}" -i -- Makefile
+	rsed "${sed_args[@]}" -i -- Makefile
 }
 
 src_configure() {

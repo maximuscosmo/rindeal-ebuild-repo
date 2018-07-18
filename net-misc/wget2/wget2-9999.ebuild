@@ -97,11 +97,11 @@ src_prepare() {
 	eapply_user
 
 	# lzip is only needed for tarball generation
-	esed -e "/^lzip/d" -i -- bootstrap.conf
+	rsed -e "/^lzip/d" -i -- bootstrap.conf
 
-	esed -e "/^SUBDIRS/ s|\bexamples\b||" -i -- Makefile.am
+	rsed -e "/^SUBDIRS/ s|\bexamples\b||" -i -- Makefile.am
 
-	esed -e "/^bin_PROGRAMS/ s|wget2_noinstall||" -e "/^wget2_noinstall/d" -i -- src/Makefile.am
+	rsed -e "/^bin_PROGRAMS/ s|wget2_noinstall||" -e "/^wget2_noinstall/d" -i -- src/Makefile.am
 
 	./bootstrap --no-git --gnulib-srcdir="${EROOT}"/usr/share/gnulib $(usex nls '' '--skip-po') || die
 

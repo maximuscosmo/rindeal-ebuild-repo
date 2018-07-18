@@ -101,11 +101,11 @@ pkg_setup() {
 src_prepare() {
 	eapply_user
 
-	esed -r -e 's:lua5.[0-9]+:lua:' -i -- Makefile
-	esed -e "s:%%PREFIX%%:${EPREFIX}/usr:" -i -- dnsmasq.conf.example
+	rsed -r -e 's:lua5.[0-9]+:lua:' -i -- Makefile
+	rsed -e "s:%%PREFIX%%:${EPREFIX}/usr:" -i -- dnsmasq.conf.example
 
 	## change default opts
-	esed -e 's|CACHESIZ 150|CACHESIZ 2000|' \
+	rsed -e 's|CACHESIZ 150|CACHESIZ 2000|' \
 		-e 's|CHUSER "nobody"|CHUSER "dnsmasq"|' \
 		-e 's|CHGRP "dip"|CHGRP "dnsmasq"|' \
 		-i -- src/config.h

@@ -55,7 +55,7 @@ src_prepare() {
 	eapply_user
 
 	if ! use nls ; then
-		esed -e '/add_subdirectory( *po *)/d' -i -- CMakeLists.txt
+		rsed -e '/add_subdirectory( *po *)/d' -i -- CMakeLists.txt
 	fi
 
 	kde5_src_prepare

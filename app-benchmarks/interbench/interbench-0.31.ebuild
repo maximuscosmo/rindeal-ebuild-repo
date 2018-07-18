@@ -28,7 +28,7 @@ src_prepare() {
 	eapply "${FILESDIR}"/718667cb5dbc92e9142de61ed7fbdfa227ac788b.patch
 
 	# do not hardcode sched_priority (taken from FreeBSD Ports)
-	esed -e 's|sched_priority = 99|sched_priority = sched_get_priority_max(SCHED_FIFO)|' \
+	rsed -e 's|sched_priority = 99|sched_priority = sched_get_priority_max(SCHED_FIFO)|' \
 		-e 's|set_fifo(96)|set_fifo(sched_get_priority_max(SCHED_FIFO) - 1)|' \
 		-e 's|\(set_thread_fifo(thi->pthread,\) 95|\1 sched_get_priority_max(SCHED_FIFO) - 1|' \
 		-i -- ${PN}.c

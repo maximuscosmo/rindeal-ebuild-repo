@@ -48,7 +48,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 python_prepare_all() {
-	esed -r -e "/typeshed_dir = os.path/ s| = .*| = os.path.join('/', '${EPREFIX}', 'usr', 'share', 'typeshed')|" \
+	rsed -r -e "/typeshed_dir = os.path/ s| = .*| = os.path.join('/', '${EPREFIX}', 'usr', 'share', 'typeshed')|" \
 		-i -- "${PN}/build.py"
 
 	distutils-r1_python_prepare_all

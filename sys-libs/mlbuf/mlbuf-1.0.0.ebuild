@@ -35,7 +35,7 @@ src_prepare() {
 	default
 
 	# use global utlist.h instead of bundled copy
-	esed -r -e 's|(#include *)"utlist.h"|\1<utlist.h>|g' \
+	rsed -r -e 's|(#include *)"utlist.h"|\1<utlist.h>|g' \
 		-i -- *.{c,h}
 }
 

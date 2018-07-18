@@ -1,5 +1,0 @@
-- EAPI6
-- arm
-- fixed deps
-- simplified
-- fixed some QA issues

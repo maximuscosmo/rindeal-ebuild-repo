@@ -6,7 +6,8 @@ inherit rindeal
 
 ## git-hosting.eclass
 GH_RN="github:zealdocs"
-GH_REF="v${PV}"
+# GH_REF="v${PV}"
+GH_REF="9bf296a"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

@@ -41,7 +41,7 @@ src_prepare() {
 	default
 
 	# prevent cmake from using anything from this dir
-	erm -r 3rdparty
+	rrm -r 3rdparty
 
 	# add libvdpau deps
 	gawk -i inplace '

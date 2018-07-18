@@ -53,7 +53,7 @@ src_prepare() {
 	rpopd
 
 	# remove bundled jars
-	erm -r "${OLD_S}/libraries"/{junit*,CopyLibs,*.jar}
+	rrm -r "${OLD_S}/libraries"/{junit*,CopyLibs,*.jar}
 
 	# fix path to javacc.jar
 	local javacc_home="$(java-pkg_getjars javacc)"

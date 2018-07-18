@@ -45,12 +45,12 @@ src_prepare() {
 
 	# Delete the unnecessary Java-related stuff and other tools as they
 	# bloat the stage3 tarballs massively. See bug #575818.
-	erm -r extensions/ tools/
+	rrm -r extensions/ tools/
 	find \( -name build.xml -o -name build.properties \) \
 		 -printf "removed %p\n" -delete || die
 
 	if ! use ruby ; then
-	   erm -r epub/
+	   rrm -r epub/
 	fi
 }
 
@@ -78,7 +78,7 @@ src_install() {
 			if [[ -e "${doc}" ]]; then
 				rmv ${doc} ${doc}.${i}
 				dodoc ${doc}.${i}
-				erm ${doc}.${i}
+				rrm ${doc}.${i}
 			fi
 		done
 
@@ -102,7 +102,7 @@ EOF
 	local u
 	for u in slides params webhelp images fo ; do
 		if ! use $u ; then
-			NO_V=1 erm -r "${ED}"/usr/share/sgml/docbook/xsl-stylesheets/${u}
+			NO_V=1 rrm -r "${ED}"/usr/share/sgml/docbook/xsl-stylesheets/${u}
 		fi
 	done
 }

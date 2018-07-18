@@ -58,12 +58,12 @@ src_install() {
 	einstalldocs
 
 	### installed via fuse-common
-	erm -r "${ED}"/etc
-	erm -r "${ED}"/$(get_udevdir)
+	rrm -r "${ED}"/etc
+	rrm -r "${ED}"/$(get_udevdir)
 
-	erm "${ED}"/usr/sbin/mount.fuse*
-	erm "${ED}"/usr/share/man/*/mount.fuse*
+	rrm "${ED}"/usr/sbin/mount.fuse*
+	rrm "${ED}"/usr/share/man/*/mount.fuse*
 
 	### handled by the device manager
-	erm -r "${ED}"/dev
+	rrm -r "${ED}"/dev
 }

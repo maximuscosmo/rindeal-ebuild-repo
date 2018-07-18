@@ -81,8 +81,8 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
-		erm -f "doc/man/po4a/po/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
+		rrm -f "doc/man/po4a/po/${pre}${l}${post}"
 	done
 }
 
@@ -92,9 +92,9 @@ src_prepare() {
 	src_prepare-locales
 
 	### COC
-	erm CODE_OF_CONDUCT.md
-	erm src/mkvtoolnix-gui/main_window/code_of_conduct_dialog.{cpp,h}
-	erm src/mkvtoolnix-gui/forms/main_window/code_of_conduct_dialog.ui
+	rrm CODE_OF_CONDUCT.md
+	rrm src/mkvtoolnix-gui/main_window/code_of_conduct_dialog.{cpp,h}
+	rrm src/mkvtoolnix-gui/forms/main_window/code_of_conduct_dialog.ui
 
 	esed -e '/CODE_OF_CONDUCT.md/d' -i -- src/mkvtoolnix-gui/qt_resources.qrc
 	esed -e '/code_of_conduct_dialog.ui/d' -i -- src/mkvtoolnix-gui/mkvtoolnix-gui.pro

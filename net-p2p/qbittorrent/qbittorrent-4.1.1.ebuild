@@ -78,7 +78,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app $(usex nls off all)
 	for l in ${locales} ; do
-		erm "${loc_dir}/${loc_pre}${l}${loc_post}"
+		rrm "${loc_dir}/${loc_pre}${l}${loc_post}"
 		esed -e "/qbittorrent_${l}.qm/d" -i -- src/lang.qrc
 	done
 }

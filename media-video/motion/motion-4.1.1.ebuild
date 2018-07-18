@@ -107,7 +107,7 @@ src_install() {
 	ermdir "${ED%/}"/usr/share/doc/${PN}
 
 	rpushd "${ED}/usr/share/doc/${PF}"
-	erm examples/*FreeBSD*
+	rrm examples/*FreeBSD*
 	rpopd
 
 	# TODO: remove

@@ -108,7 +108,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
 	done
 }
 
@@ -172,14 +172,14 @@ src_install() {
 	if use utils ; then
 		python_replicate_script "${ED}"/usr/bin/gtester-report
 	else
-		erm "${ED}/usr/bin/gtester-report"
+		rrm "${ED}/usr/bin/gtester-report"
 	fi
 
 	# Do not install charset.alias even if generated, leave it to libiconv
-	erm -f "${ED}/usr/lib/charset.alias"
+	rrm -f "${ED}/usr/lib/charset.alias"
 
 	# Don't install gdb python macros, bug 291328
-	erm -r "${ED}/usr/share/gdb/" "${ED}/usr/share/glib-2.0/gdb/"
+	rrm -r "${ED}/usr/share/gdb/" "${ED}/usr/share/glib-2.0/gdb/"
 }
 
 pkg_preinst() {
@@ -208,8 +208,8 @@ pkg_postinst() {
 
 pkg_postrm() {
 	if [[ -z ${REPLACED_BY_VERSION} ]]; then
-		erm -f "${EROOT}${GIOMODULE_CACHE}"
-		erm -f "${EROOT}${GSCHEMAS_CACHE}"
+		rrm -f "${EROOT}${GIOMODULE_CACHE}"
+		rrm -f "${EROOT}${GSCHEMAS_CACHE}"
 	fi
 
 	gnome2_giomodule_cache_update || die

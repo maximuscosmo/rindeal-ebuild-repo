@@ -79,9 +79,9 @@ src_configure() {
 src_install() {
 	default
 
-	erm -rf "${ED}${MY_DB_PATH}"
+	rrm -rf "${ED}${MY_DB_PATH}"
 
-	use examples || erm -r "${ED}"/usr/share/doc/${PF}/example*
+	use examples || rrm -r "${ED}"/usr/share/doc/${PF}/example*
 
 	find "${D}" -type d -empty -print -delete || die
 }

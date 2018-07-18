@@ -59,7 +59,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
 		esed -e "s|<file>locale/${l}.qm</file>||" \
 			-i -- resources/speedcrunch.qrc
 	done

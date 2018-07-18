@@ -37,7 +37,7 @@ inherit arrays
 python_prepare_all() {
 	esed -r -e "/packages *=/ s|\[[^]]*\]\+||" -i -- setup.py
 
-	erm -r examples
+	rrm -r examples
 
 	distutils-r1_python_prepare_all
 }

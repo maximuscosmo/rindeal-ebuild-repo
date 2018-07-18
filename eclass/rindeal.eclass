@@ -160,7 +160,7 @@ rchmod() {
 	chmod $(_NO_V) "${@}" || die -n
 }
 
-erm() {
+rrm() {
 	rm $(_NO_V) --interactive=never --preserve-root --one-file-system "${@}" || die -n
 }
 

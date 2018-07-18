@@ -85,7 +85,7 @@ src_prepare-locales() {
 				esed -r -e "/^SUBDIRS/ s, ${l}( |$), ," -i -- man/Makefile.am
 				local f="man/${dir}/${pre}${l}${post}"
 				[[ -e "${f}" ]] && \
-					erm "${f}"
+					rrm "${f}"
 			fi
 		done
 	fi
@@ -272,7 +272,7 @@ src_install() {
 		fi
 
 		# Remove pam.d files provided by sys-auth/pambase
-		erm "${ED}"/etc/pam.d/{login,passwd,su}
+		rrm "${ED}"/etc/pam.d/{login,passwd,su}
 	else #!use pam
 		insinto /etc
 		insopts -m0600
@@ -307,7 +307,7 @@ src_install() {
 }
 
 pkg_preinst() {
-	nonfatal erm "${EROOT}"etc/pam.d/system-auth.new \
+	nonfatal rrm "${EROOT}"etc/pam.d/system-auth.new \
 		"${EROOT}"etc/login.defs.new
 }
 

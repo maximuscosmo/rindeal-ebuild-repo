@@ -102,7 +102,7 @@ src_prepare() {
 	)
 	local d
 	for d in "${autogen_sh_submodules[@]}" ; do
-		erm -rf "${d}"
+		rrm -rf "${d}"
 		esed -r -e "/^SUBMODULES/ s,( |\")${d}(/[^ ]*)?,\1,g"  -i -- autogen.sh
 	done
 

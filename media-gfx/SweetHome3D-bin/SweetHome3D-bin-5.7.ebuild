@@ -34,7 +34,7 @@ INST_DIR="/opt/${P}"
 src_prepare() {
 	xdg_src_prepare
 
-	erm -r linux/ macosx/ windows/
+	rrm -r linux/ macosx/ windows/
 }
 
 src_configure() {

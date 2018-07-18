@@ -169,7 +169,7 @@ my_run_installer() {
 my_cleanup_inst_dir() {
 	if ! use doc ; then
 		einfo "Deleting documentation ..."
-		NO_V=1 erm -r Documentation
+		NO_V=1 rrm -r Documentation
 	fi
 
 	einfo "Deleting 32-bit Linux files and files for other OSes ..."
@@ -178,7 +178,7 @@ my_cleanup_inst_dir() {
 		if [[ "${d}" == *"/Linux"* ]] ; then
 			# delete only if a 64-bit variant exists
 			if [[ -d "${d}-x86-64" ]] ; then
-				erm -r "${d}"
+				rrm -r "${d}"
 				continue
 			fi
 		fi
@@ -187,7 +187,7 @@ my_cleanup_inst_dir() {
 		for m in {Windows,MaxOSX}{,-x86-64} ; do
 			# delete only if the dir fully matches
 			if [[ "${d}" == *"/${m}/"* ]] || [[ "${d}" == *"/${m}" ]] ; then
-				erm -r "${d}"
+				rrm -r "${d}"
 				continue 2
 			fi
 		done

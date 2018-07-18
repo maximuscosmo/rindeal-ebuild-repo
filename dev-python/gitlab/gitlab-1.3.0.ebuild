@@ -48,7 +48,7 @@ inherit arrays
 
 python_prepare_all() {
 	use test || \
-		erm -r 'gitlab/tests'
+		rrm -r 'gitlab/tests'
 
 	distutils-r1_python_prepare_all
 }

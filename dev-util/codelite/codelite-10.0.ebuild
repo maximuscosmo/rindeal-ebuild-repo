@@ -56,7 +56,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm -r "${dir}/${l}"
+		rrm -r "${dir}/${l}"
 	done
 }
 
@@ -98,7 +98,7 @@ src_configure() {
 src_install() {
 	cmake-utils_src_install
 
-	erm "${ED}"/usr/share/applications/${PN}.desktop
+	rrm "${ED}"/usr/share/applications/${PN}.desktop
 	local make_desktop_entry_args=(
 		"${EPREFIX}/usr/bin/${PN} %f"    # exec
 		"CodeLite"	# name

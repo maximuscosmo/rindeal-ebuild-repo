@@ -75,7 +75,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm -v "${dir}/${pre}${l}${post}"
+		rrm -v "${dir}/${pre}${l}${post}"
 	done
 }
 
@@ -152,5 +152,5 @@ python_install_all() {
 			"${ED}/usr"/lib*/py*/*-packages/deluge/data/pixmaps/ )
 	fi
 
-	erm -r "${rm_paths[@]}"
+	rrm -r "${rm_paths[@]}"
 }

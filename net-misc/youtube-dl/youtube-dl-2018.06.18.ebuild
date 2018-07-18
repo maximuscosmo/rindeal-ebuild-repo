@@ -73,6 +73,6 @@ python_install_all() {
 
 	distutils-r1_python_install_all
 
-	erm -r "${ED}"/usr/etc
-	erm -r "${ED}"/usr/share/doc/youtube_dl
+	rrm -r "${ED}"/usr/etc
+	rrm -r "${ED}"/usr/share/doc/youtube_dl
 }

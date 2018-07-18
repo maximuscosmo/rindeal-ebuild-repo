@@ -164,7 +164,7 @@ src_install() {
 
 	if ! use nls ; then
 		# patching Makefile.am in this case would be cumbersome
-		erm -r "${ED}"/usr/share/man/??
+		rrm -r "${ED}"/usr/share/man/??
 	fi
 
 	keepdir /usr/src/rpm/{SRPMS,SPECS,SOURCES,RPMS,BUILD}

@@ -217,7 +217,7 @@ src_install() {
 			python_optimize
 	fi
 
-	erm -r "${ED}"/usr/share/doc/${P}
+	rrm -r "${ED}"/usr/share/doc/${P}
 	einstalldocs
 
 	prune_libtool_files --modules

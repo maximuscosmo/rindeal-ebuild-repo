@@ -80,7 +80,7 @@ src_prepare() {
 	eapply_user
 
 	## remove ads
-	erm src/app/resources/browser/welcome.html
+	rrm src/app/resources/browser/welcome.html
 	esed -e '/welcome.html/d' -i -- src/app/resources/zeal.qrc
 	esed -e '/WelcomePageUrl\[] =/ s|welcome.html|welcome-noad.html|' -i -- src/libs/ui/mainwindow.cpp
 

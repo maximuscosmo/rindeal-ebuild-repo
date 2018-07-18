@@ -108,7 +108,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
 	done
 }
 
@@ -118,8 +118,8 @@ src_prepare() {
 	cd "${S}"
 
 	# prevent these from interfering with the build
-	NO_V=1 erm -r "${S_OLD}"/{exiv2-*,expat,installer,zlib-*}
-	NO_V=1 erm -r "${S}"/3rdparty/quazip-*
+	NO_V=1 rrm -r "${S_OLD}"/{exiv2-*,expat,installer,zlib-*}
+	NO_V=1 rrm -r "${S}"/3rdparty/quazip-*
 
 	esed -e 's|QStringList libPaths = QCoreApplication::libraryPaths();|QStringList libPaths;|' \
 		-e "s|libPaths.append(QCoreApplication::applicationDirPath() + \"/plugins\");|libPaths.append(\"${EPREFIX}/usr/$(get_libdir)/nomacs-plugins\");|" \

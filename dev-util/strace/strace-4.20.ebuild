@@ -77,7 +77,7 @@ src_install() {
 
 	newdoc CREDITS{.in,}
 	# empty
-	erm "${ED}"/usr/share/doc/${PF}/AUTHORS
+	rrm "${ED}"/usr/share/doc/${PF}/AUTHORS
 
-	use perl || erm "${ED}"/usr/bin/strace-graph
+	use perl || rrm "${ED}"/usr/bin/strace-graph
 }

@@ -56,7 +56,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
 		sed -e "/${l}/d" -i -- "${dir}"/LINGUAS || die
 	done
 }

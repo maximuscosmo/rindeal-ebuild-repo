@@ -332,7 +332,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		erm "${dir}/${pre}${l}${post}"
+		rrm "${dir}/${pre}${l}${post}"
 	done
 }
 
@@ -429,7 +429,7 @@ _EOF_
 	if use nls ; then
 		src_prepare-locales
 	else
-		erm po/*.po
+		rrm po/*.po
 	fi
 	# this allows ./configure to generate Makefile
 	./po/update-potfiles || die

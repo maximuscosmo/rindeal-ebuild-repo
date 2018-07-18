@@ -82,11 +82,11 @@ src_install() {
 	fi
 
 	### installed via fuse-common
-	erm -r "${ED%/}"/{etc,$(get_udevdir)}
+	rrm -r "${ED%/}"/{etc,$(get_udevdir)}
 
-	erm "${ED%/}"/sbin/mount.fuse*
-	erm "${ED%/}"/usr/share/man/man8/mount.fuse*
+	rrm "${ED%/}"/sbin/mount.fuse*
+	rrm "${ED%/}"/usr/share/man/man8/mount.fuse*
 
 	### handled by the device manager
-	erm -r "${D%/}"/dev
+	rrm -r "${D%/}"/dev
 }

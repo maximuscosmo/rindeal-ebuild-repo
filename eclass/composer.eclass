@@ -55,7 +55,7 @@ composer_pkg_setup() {
 		COMPOSER_BIN_DIR "${T}/composer/bin"
 
 	# this dir shouldn't exist for now
-	NO_V=1 erm -rf "${S}"
+	NO_V=1 rrm -rf "${S}"
 }
 
 ecomposer() {

@@ -50,7 +50,7 @@ python_prepare_all() {
 
 	# this app contains too many locales to bother to manage them all, thus
 	# use nls flag to either keep or remove all
-	use nls || erm -r po/*.po
+	use nls || rrm -r po/*.po
 
 	# fix doc path
 	sed -i "s|share/doc/${PN}|share/doc/${PF}|" setup.py || die
@@ -68,7 +68,7 @@ python_install_all() {
 			usr/bin/${PN}-gui
 			usr/share/{applications,man/man1/${PN}-gui*,nautilus-python,pixmaps}
 		)
-		erm -r "${rm_locs[@]}"
+		rrm -r "${rm_locs[@]}"
 		rpopd
 	fi
 }

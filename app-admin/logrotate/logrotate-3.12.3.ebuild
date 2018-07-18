@@ -43,7 +43,7 @@ src_prepare() {
 	sed -e '/CFLAGS =/ s|-Werror||' -i -- Makefile.am || die
 
 	# prevent these from installing
-	erm README.{HPUX,Solaris}
+	rrm README.{HPUX,Solaris}
 
 	eautoreconf
 }

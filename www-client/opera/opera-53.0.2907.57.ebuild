@@ -87,21 +87,21 @@ src_prepare() {
 	rmkdir "${OPERA_HOME#/}"
 
 	# delete broken symlink, proper one will be created in src_install()
-	erm "usr/bin/${PN}"
+	rrm "usr/bin/${PN}"
 
 	## fix libdir
 	rmv -T "usr/lib/x86_64-linux-gnu/${PN}" "${OPERA_HOME#/}"
 	# delete the rest
-	erm -r "usr/lib"
+	rrm -r "usr/lib"
 
 	### BEGIN - /usr/share mods
 	rpushd "usr/share"
 
 	# delete debian-specific files
-	erm -r {lintian,menu}
+	rrm -r {lintian,menu}
 
 	# unbundle licence
-	erm "doc/opera-stable/copyright"
+	rrm "doc/opera-stable/copyright"
 	# fix doc path
 	rmv "doc"/{opera-stable,${PF}}
 
@@ -133,7 +133,7 @@ src_prepare() {
 	### END - /usr/share mods
 
 	# optionally delete autoupdater
-	use autoupdate || erm "${OPERA_HOME#/}/opera_autoupdate"
+	use autoupdate || rrm "${OPERA_HOME#/}/opera_autoupdate"
 
 	## locales
 	rpushd "${OPERA_HOME#/}/localization"

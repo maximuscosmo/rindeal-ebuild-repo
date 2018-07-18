@@ -118,7 +118,7 @@ src_prepare() {
 	src_prepare-locales
 
 	# Prevent build failure in stage3 where pkgconfig is not available, bug #481056
-	emv -f "${WORKDIR}"/pkg-config-*/pkg.m4 "${S}"/m4macros/
+	rmv -f "${WORKDIR}"/pkg-config-*/pkg.m4 "${S}"/m4macros/
 
 	# Don't build tests, also prevents extra deps, bug gentoo#512022
 	esed -e "s/subdir('tests')//" -i -- meson.build

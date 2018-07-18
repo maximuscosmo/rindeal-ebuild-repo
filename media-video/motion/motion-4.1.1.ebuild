@@ -103,7 +103,7 @@ src_install() {
 	meson_src_install
 
 	# meson doesn't know about docdir; https://github.com/mesonbuild/meson/issues/825
-	emv "${ED%/}"/usr/share/doc/{${PN}/*,${PF}}
+	rmv "${ED%/}"/usr/share/doc/{${PN}/*,${PF}}
 	ermdir "${ED%/}"/usr/share/doc/${PN}
 
 	rpushd "${ED}/usr/share/doc/${PF}"

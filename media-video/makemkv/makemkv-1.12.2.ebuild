@@ -173,7 +173,7 @@ src_install-oss() {
 		doins -r "${dir}"
 
 		instincdir="${ED}/${insdir}/${libdirname}/inc"
-		emv "${instincdir}"/* "${instincdir%%"/inc"}"
+		rmv "${instincdir}"/* "${instincdir%%"/inc"}"
 		ermdir "${instincdir}"
 	done
 	assert

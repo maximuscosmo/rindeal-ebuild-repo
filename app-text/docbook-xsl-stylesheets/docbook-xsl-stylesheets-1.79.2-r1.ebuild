@@ -76,7 +76,7 @@ src_install() {
 		cd "${S}"/${i}
 		for doc in ChangeLog README; do
 			if [[ -e "${doc}" ]]; then
-				emv ${doc} ${doc}.${i}
+				rmv ${doc} ${doc}.${i}
 				dodoc ${doc}.${i}
 				erm ${doc}.${i}
 			fi

@@ -43,7 +43,7 @@ src_prepare() {
 	default
 
 	## change `man 1 lid` to `man 1 libuser-lid`
-	emv apps/{,libuser-}lid.1
+	rmv apps/{,libuser-}lid.1
 	esed -e 's@ apps/lid\.1 @ apps/libuser-lid.1 @' \
 		-i -- Makefile.am
 

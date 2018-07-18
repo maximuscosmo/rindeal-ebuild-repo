@@ -113,9 +113,9 @@ src_install() {
 	#dodoc sysctl.conf
 
 	dodir /bin
-	emv "${ED}"/usr/bin/ps "${ED}"/bin/
+	rmv "${ED}"/usr/bin/ps "${ED}"/bin/
 	if use kill ; then
-		emv "${ED}"/usr/bin/kill "${ED}"/bin/
+		rmv "${ED}"/usr/bin/kill "${ED}"/bin/
 	fi
 
 	gen_usr_ldscript -a procps

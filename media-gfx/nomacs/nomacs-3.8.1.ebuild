@@ -98,7 +98,7 @@ src_unpack() {
 	default
 
 	[[ -d "${S}"/plugins ]] && die
-	emv "${WORKDIR}"/*plugins* "${S}/plugins"
+	rmv "${WORKDIR}"/*plugins* "${S}/plugins"
 }
 
 src_prepare-locales() {

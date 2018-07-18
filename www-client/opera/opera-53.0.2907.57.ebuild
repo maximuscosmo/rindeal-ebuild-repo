@@ -90,7 +90,7 @@ src_prepare() {
 	erm "usr/bin/${PN}"
 
 	## fix libdir
-	emv -T "usr/lib/x86_64-linux-gnu/${PN}" "${OPERA_HOME#/}"
+	rmv -T "usr/lib/x86_64-linux-gnu/${PN}" "${OPERA_HOME#/}"
 	# delete the rest
 	erm -r "usr/lib"
 
@@ -103,17 +103,17 @@ src_prepare() {
 	# unbundle licence
 	erm "doc/opera-stable/copyright"
 	# fix doc path
-	emv "doc"/{opera-stable,${PF}}
+	rmv "doc"/{opera-stable,${PF}}
 
 	## fix icon paths
 	local s
 	for s in 16 32 48 128 256 ; do
-		emv "icons/hicolor/${s}x${s}/apps"/{${PN},${PN_SLOTTED}}.png
+		rmv "icons/hicolor/${s}x${s}/apps"/{${PN},${PN_SLOTTED}}.png
 	done
-	emv "pixmaps"/{${PN},${PN_SLOTTED}}.xpm
+	rmv "pixmaps"/{${PN},${PN_SLOTTED}}.xpm
 
 	# fix mime package path
-	emv "mime/packages"/{${PN}-stable,${PN_SLOTTED}}.xml
+	rmv "mime/packages"/{${PN}-stable,${PN_SLOTTED}}.xml
 
 	local sedargs=(
 		# delete invalid and "unity shell"-specific lines
@@ -127,7 +127,7 @@ src_prepare() {
 	esed -r "${sedargs[@]}" \
 		-i -- "applications/${PN}.desktop"
 	# fix menu entry path
-	emv "applications"/{${PN},${PN_SLOTTED}}.desktop
+	rmv "applications"/{${PN},${PN_SLOTTED}}.desktop
 
 	rpopd
 	### END - /usr/share mods

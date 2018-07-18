@@ -144,7 +144,7 @@ rcp() {
 	cp $(_NO_V) "${@}" || die -n
 }
 
-emv() {
+rmv() {
 	mv $(_NO_V) "${@}" || die -n
 }
 

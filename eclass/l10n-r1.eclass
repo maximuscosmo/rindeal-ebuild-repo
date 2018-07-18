@@ -380,7 +380,7 @@ l10n_find_changes_in_dir() {
 		[[ -v _L10N_LOCALES_MASK["${l}"] ]] && continue
 		found+=( ["${l}"]="${l}" )
 	done
-	epopd
+	rpopd
 
 	local locales
 	l10n_get_locales locales app all

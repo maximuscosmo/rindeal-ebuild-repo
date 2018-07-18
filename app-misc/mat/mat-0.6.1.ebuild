@@ -69,6 +69,6 @@ python_install_all() {
 			usr/share/{applications,man/man1/${PN}-gui*,nautilus-python,pixmaps}
 		)
 		erm -r "${rm_locs[@]}"
-		epopd
+		rpopd
 	fi
 }

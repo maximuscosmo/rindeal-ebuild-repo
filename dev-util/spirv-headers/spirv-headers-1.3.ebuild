@@ -44,7 +44,7 @@ src_install() {
 	_cmake_check_build_dir
 	rpushd "${BUILD_DIR}"
 	${CMAKE_BINARY} --build . --target install-headers
-	epopd
+	rpopd
 
 	einstalldocs
 }

@@ -268,7 +268,7 @@ jetbrains-intellij_src_install() {
 	## now let's push into the image dir and change few things in there
 	rpushd "${ED%/}${JBIJ_INSTALL_DIR}"
 	_jetbrains-intellij_src_install-fix
-	epopd
+	rpopd
 
 	_jetbrains-intellij_src_install-post
 }

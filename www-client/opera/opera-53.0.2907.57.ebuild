@@ -129,7 +129,7 @@ src_prepare() {
 	# fix menu entry path
 	emv "applications"/{${PN},${PN_SLOTTED}}.desktop
 
-	epopd
+	rpopd
 	### END - /usr/share mods
 
 	# optionally delete autoupdater
@@ -138,7 +138,7 @@ src_prepare() {
 	## locales
 	rpushd "${OPERA_HOME#/}/localization"
 	chromium_remove_language_paks
-	epopd
+	rpopd
 }
 
 src_install() {

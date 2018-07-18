@@ -63,7 +63,7 @@ my_multibuild_foreach_variant() {
 
 		"$@" || die
 
-		epopd
+		rpopd
 	}
 
 	multibuild_foreach_variant run__ "$@"

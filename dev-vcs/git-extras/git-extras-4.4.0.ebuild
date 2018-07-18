@@ -42,7 +42,7 @@ src_install() {
 # 		[[ "${cmd}" != "${PN}" ]] && \
 # 			bashcomp_alias "${PN}" "${cmd}"
 	done
-	epopd
+	rpopd
 
 	doman man/*.1
 }

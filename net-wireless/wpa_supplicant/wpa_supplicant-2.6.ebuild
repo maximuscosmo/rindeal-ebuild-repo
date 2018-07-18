@@ -143,7 +143,7 @@ src_prepare() {
 	echo 'SystemdService=wpa_supplicant.service' \
 		| tee -a dbus/*.service >/dev/null || die
 
-	epopd # "${PN}"
+	rpopd # "${PN}"
 }
 
 src_configure() {
@@ -261,12 +261,12 @@ src_configure() {
 # 		printf "%s\n" "${unhandled_options[@]}"
 # 	fi
 
-	epopd # "${PN}"
+	rpopd # "${PN}"
 
 	if use gui ; then
 		rpushd "${PN}/wpa_gui-qt4" # yes, even for qt5
 		eqmake5 wpa_gui.pro
-		epopd
+		rpopd
 	fi
 }
 
@@ -298,7 +298,7 @@ src_install() {
 	insinto "/etc/${PN}"
 	doins "${FILESDIR}/${PN}.conf"
 
-	epopd # "${PN}"
+	rpopd # "${PN}"
 
 	if use gui ; then
 		rpushd "${PN}/wpa_gui-qt4"
@@ -315,7 +315,7 @@ src_install() {
 		make_desktop_entry "${make_desktop_entry_args[@]}" \
 			"$( printf '%s\n' "${make_desktop_entry_extras[@]}" )"
 
-		epopd
+		rpopd
 	fi
 
 	if use dbus ; then
@@ -327,7 +327,7 @@ src_install() {
 		insinto "/usr/share/dbus-1/system-services"
 		doins "fi.epitest.hostap.WPASupplicant.service" "fi.w1.${PN}1.service"
 
-		epopd
+		rpopd
 	fi
 }
 

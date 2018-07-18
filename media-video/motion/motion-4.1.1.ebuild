@@ -108,7 +108,7 @@ src_install() {
 
 	rpushd "${ED}/usr/share/doc/${PF}"
 	erm examples/*FreeBSD*
-	epopd
+	rpopd
 
 	# TODO: remove
 	newinitd "${FILESDIR}"/${PN}.initd-r3 ${PN}

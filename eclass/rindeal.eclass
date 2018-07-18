@@ -132,7 +132,7 @@ rpushd() {
 	pushd "${@}" >/dev/null || die -n
 }
 
-epopd() {
+rpopd() {
 	popd "${@}" >/dev/null || die -n
 }
 

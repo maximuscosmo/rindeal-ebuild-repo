@@ -38,7 +38,7 @@ src_install() {
 	rpushd "${BUILD_DIR}"
 	emkdir "${libdir}"
 	ecp --no-dereference out/${PN}.so* "${libdir}"
-	epopd
+	rpopd
 
 	doheader ui.h ui_unix.h
 

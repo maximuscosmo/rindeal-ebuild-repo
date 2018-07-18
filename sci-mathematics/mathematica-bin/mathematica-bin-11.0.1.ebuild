@@ -248,7 +248,7 @@ src_install() {
 		newins "vnd.wolfram.player-${s}.png"				"application-vnd.wolfram.player.png"
 		newins "vnd.wolfram.wl-${s}.png"					"application-vnd.wolfram.wl.png"
 	done
-	epopd
+	rpopd
 
 	einfo "Installing man pages ..."
 	doman SystemFiles/SystemDocumentation/Unix/*.1

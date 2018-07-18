@@ -44,7 +44,7 @@ for_each_extra_tool() {
 	for x in "${MY_EXTRA_TOOLS[@]}" ; do
 		rpushd "${x}"
 		"$@" "${x}"
-		epopd
+		rpopd
 	done
 }
 

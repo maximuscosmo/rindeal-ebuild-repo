@@ -189,7 +189,7 @@ src_configure() {
 my_python_emake() {
 	rpushd "${BUILD_DIR}/python"
 	emake top_builddir="${S}" "$@"
-	epopd
+	rpopd
 }
 
 src_compile() {

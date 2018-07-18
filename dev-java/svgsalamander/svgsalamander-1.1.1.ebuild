@@ -50,7 +50,7 @@ src_prepare() {
 	eapply "${FILESDIR}/0005-dont-call-netbeans-ant-tasks.patch"
 	eapply "${FILESDIR}/0006-modify-broken-upstream-pom.patch"
 	eapply "${FILESDIR}/0007-CVE-2017-5617-Allow-only-data-scheme.patch"
-	epopd
+	rpopd
 
 	# remove bundled jars
 	erm -r "${OLD_S}/libraries"/{junit*,CopyLibs,*.jar}

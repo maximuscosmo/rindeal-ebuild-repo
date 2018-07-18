@@ -35,7 +35,7 @@ my_for_each_test_dir() {
 		for d in "${test_dirs[@]}" ; do
 			rpushd "${d}"
 			"${@}" || die
-			epopd
+			rpopd
 		done
 	fi
 }

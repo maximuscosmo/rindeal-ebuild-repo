@@ -75,7 +75,7 @@ src_install() {
 }
 
 pkg_preinst() {
-	echown root:portage "${ED}"/var/log/sandbox
+	rchown root:portage "${ED}"/var/log/sandbox
 	echmod 0770 "${ED}"/var/log/sandbox
 
 	local v

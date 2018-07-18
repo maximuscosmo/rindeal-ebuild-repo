@@ -152,7 +152,7 @@ rln() {
 	ln $(_NO_V) "${@}" || die -n
 }
 
-echown() {
+rchown() {
 	chown $(_NO_V) "${@}" || die -n
 }
 

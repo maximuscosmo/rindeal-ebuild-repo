@@ -174,7 +174,7 @@ src_install-oss() {
 
 		instincdir="${ED}/${insdir}/${libdirname}/inc"
 		rmv "${instincdir}"/* "${instincdir%%"/inc"}"
-		ermdir "${instincdir}"
+		rrmdir "${instincdir}"
 	done
 	assert
 

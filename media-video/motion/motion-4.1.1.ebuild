@@ -104,7 +104,7 @@ src_install() {
 
 	# meson doesn't know about docdir; https://github.com/mesonbuild/meson/issues/825
 	rmv "${ED%/}"/usr/share/doc/{${PN}/*,${PF}}
-	ermdir "${ED%/}"/usr/share/doc/${PN}
+	rrmdir "${ED%/}"/usr/share/doc/${PN}
 
 	rpushd "${ED}/usr/share/doc/${PF}"
 	rrm examples/*FreeBSD*

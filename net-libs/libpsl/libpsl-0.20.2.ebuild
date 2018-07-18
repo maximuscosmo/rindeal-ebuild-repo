@@ -88,7 +88,7 @@ inherit arrays
 src_unpack() {
 	git-hosting_src_unpack
 
-	ermdir "${S}/list"
+	rrmdir "${S}/list"
 	git-hosting_unpack "${DISTDIR}/${PSL_LIST_DISTFILE}" "${S}/list"
 }
 

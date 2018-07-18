@@ -198,7 +198,7 @@ src_install() {
 		install$(use nls && echo "-i18n")
 
 	[[ -d "${D}"/usr/share/locale/ ]] && \
-		ermdir --ignore-fail-on-non-empty "${ED}"/usr/share/locale/
+		rrmdir --ignore-fail-on-non-empty "${ED}"/usr/share/locale/
 
 	dodoc CHANGELOG CHANGELOG.archive FAQ dnsmasq.conf.example
 

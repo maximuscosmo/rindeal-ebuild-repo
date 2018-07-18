@@ -18,7 +18,7 @@ LICENSE="GPL-3"
 
 SLOT="0"
 
-KEYWORDS="~amd64 ~arm ~arm64"
+KEYWORDS="amd64 arm arm64"
 
 CDEPEND_A=(
 	"sys-libs/ncurses:0="

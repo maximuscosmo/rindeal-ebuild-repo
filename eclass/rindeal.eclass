@@ -156,7 +156,7 @@ rchown() {
 	chown $(_NO_V) "${@}" || die -n
 }
 
-echmod() {
+rchmod() {
 	chmod $(_NO_V) "${@}" || die -n
 }
 

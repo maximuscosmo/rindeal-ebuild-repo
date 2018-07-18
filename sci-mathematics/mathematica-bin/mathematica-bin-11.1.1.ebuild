@@ -254,7 +254,7 @@ src_install() {
 	doman SystemFiles/SystemDocumentation/Unix/*.1
 
 	einfo "Fixing file permissions ..."
-	NO_V=1 echmod --recursive go-w .
+	NO_V=1 rchmod --recursive go-w .
 }
 
 QA_PREBUILT="*"

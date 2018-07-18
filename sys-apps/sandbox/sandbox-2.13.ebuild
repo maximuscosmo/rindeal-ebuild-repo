@@ -76,7 +76,7 @@ src_install() {
 
 pkg_preinst() {
 	rchown root:portage "${ED}"/var/log/sandbox
-	echmod 0770 "${ED}"/var/log/sandbox
+	rchmod 0770 "${ED}"/var/log/sandbox
 
 	local v
 	for v in ${REPLACING_VERSIONS} ; do
@@ -94,7 +94,7 @@ pkg_postinst() {
 	local v
 	for v in ${REPLACING_VERSIONS} ; do
 		if [[ ${v} == 1.* ]] ; then
-			echmod 0755 "${EROOT}"/etc/sandbox.d #265376
+			rchmod 0755 "${EROOT}"/etc/sandbox.d #265376
 		fi
 	done
 }

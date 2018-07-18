@@ -207,20 +207,20 @@ _jetbrains-intellij_src_install-fix() {
 	[[ -f "bin/${JBIJ_STARTUP_SCRIPT_NAME}" ]] || die "'bin/${JBIJ_STARTUP_SCRIPT_NAME}' not found"
 
 	## fix permissions
-	echmod a+x bin/${JBIJ_STARTUP_SCRIPT_NAME}
-	echmod a+x bin/fsnotifier*
+	rchmod a+x bin/${JBIJ_STARTUP_SCRIPT_NAME}
+	rchmod a+x bin/fsnotifier*
 
 	if ! use system-jre ; then
 		# upstream renames/moves this dir very often
 		# https://github.com/rindeal/gentoo-overlay/issues/160
 		# https://github.com/rindeal/gentoo-overlay/issues/165
 		eshopts_push -s globstar
-		echmod a+x **/jre*/**/bin/*
+		rchmod a+x **/jre*/**/bin/*
 		eshopts_pop
 	fi
 
 	if [[ -v JBIJ_ADDITIONAL_EXECUTABLES[@] ]] ; then
-		echmod a+x "${JBIJ_ADDITIONAL_EXECUTABLES[@]}"
+		rchmod a+x "${JBIJ_ADDITIONAL_EXECUTABLES[@]}"
 	fi
 }
 

@@ -55,7 +55,7 @@ src_install() {
 	done
 
 	## make scripts executable
-	echmod a+x "${ED%/}${install_dir}/"{bin,lib}/*.sh
+	rchmod a+x "${ED%/}${install_dir}/"{bin,lib}/*.sh
 
 	## install symlink to /usr/bin
 	dosym "${install_dir}/bin/${PN}.sh" "/usr/bin/${PN_SLOTTED}"

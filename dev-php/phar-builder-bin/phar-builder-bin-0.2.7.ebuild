@@ -29,7 +29,7 @@ inherit arrays
 S="${WORKDIR}"
 
 src_unpack() {
-	ecp "${DISTDIR}/${DISTFILE}" "${PN_NB}"
+	rcp "${DISTDIR}/${DISTFILE}" "${PN_NB}"
 }
 
 src_configure() { : ; }

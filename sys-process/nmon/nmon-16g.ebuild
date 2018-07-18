@@ -37,7 +37,7 @@ inherit arrays
 S="${WORKDIR}"
 
 src_unpack() {
-	ecp -f "${DISTDIR}/${MY_DISTFILE}" "${S}/${PN}.c"
+	rcp -f "${DISTDIR}/${MY_DISTFILE}" "${S}/${PN}.c"
 }
 
 src_configure() {

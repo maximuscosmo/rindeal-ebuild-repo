@@ -94,7 +94,7 @@ composer_list_bin() {
 
 composer_copy_install_all() {
 	rmkdir "${ED}${COMPOSER_INSTALL_DIR}"
-	NO_V=1 ecp -r "${S}"/* "${ED}${COMPOSER_INSTALL_DIR}"
+	NO_V=1 rcp -r "${S}"/* "${ED}${COMPOSER_INSTALL_DIR}"
 }
 
 composer_install_bins() {

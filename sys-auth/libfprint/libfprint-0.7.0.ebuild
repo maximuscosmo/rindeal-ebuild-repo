@@ -42,7 +42,7 @@ inherit arrays
 
 src_prepare() {
 	# these pacthes are non-intrusive so do not make them conditional
-	ecp -r "${FILESDIR}/validity-driver" "libfprint/drivers/validity"
+	rcp -r "${FILESDIR}/validity-driver" "libfprint/drivers/validity"
 	eapply "${FILESDIR}/vcsFPService_driver.patch"
 
 	eapply_user

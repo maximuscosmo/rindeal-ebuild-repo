@@ -140,7 +140,7 @@ rmkdir() {
 	mkdir $(_NO_V) -p "${@}" || die -n
 }
 
-ecp() {
+rcp() {
 	cp $(_NO_V) "${@}" || die -n
 }
 

@@ -37,7 +37,7 @@ src_install() {
 	local libdir="${ED}/usr/$(get_libdir)"
 	rpushd "${BUILD_DIR}"
 	rmkdir "${libdir}"
-	ecp --no-dereference out/${PN}.so* "${libdir}"
+	rcp --no-dereference out/${PN}.so* "${libdir}"
 	rpopd
 
 	doheader ui.h ui_unix.h

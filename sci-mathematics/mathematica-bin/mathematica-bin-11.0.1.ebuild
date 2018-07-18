@@ -119,7 +119,7 @@ src_prepare() {
 	default
 
 	# DEBUG: make a backup of the original file to ease debugging
-	(( WM_DEBUG == 1 )) && ecp "${WM_INSTALLER_PATH}" "${WM_INSTALLER_PATH}.bak"
+	(( WM_DEBUG == 1 )) && rcp "${WM_INSTALLER_PATH}" "${WM_INSTALLER_PATH}.bak"
 
 	# replace the stderr logging exec call with one that prints the stderr to the console as well as to the logfile
 	# https://stackoverflow.com/a/44710375/2566213

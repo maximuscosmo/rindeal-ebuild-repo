@@ -29,7 +29,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 inherit arrays
 
 src_prepare() {
-	ecp "${FILESDIR}/1.6-Makefile" Makefile
+	rcp "${FILESDIR}/1.6-Makefile" Makefile
 
 	eapply_user
 }

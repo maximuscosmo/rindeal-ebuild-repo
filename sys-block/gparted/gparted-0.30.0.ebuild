@@ -92,7 +92,7 @@ src_install() {
 	local _ddir="${ED}"/usr/share/applications
 
 	if use kde ; then
-		ecp "${_ddir}"/gparted{,-kde}.desktop
+		rcp "${_ddir}"/gparted{,-kde}.desktop
 		esed -e 's:Exec=:Exec=kdesu5 :' -i -- "${_ddir}"/gparted-kde.desktop
 		echo 'OnlyShowIn=KDE;' >> "${_ddir}"/gparted-kde.desktop
 		echo 'NotShowIn=KDE;' >> "${_ddir}"/gparted.desktop

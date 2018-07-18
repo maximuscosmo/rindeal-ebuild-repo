@@ -32,7 +32,7 @@ S="${WORKDIR}"
 MY_DB_PATH="/var/db/smartmontools"
 
 src_unpack() {
-	ecp "${DISTDIR}"/*"drivedb.h" "drivedb.h"
+	rcp "${DISTDIR}"/*"drivedb.h" "drivedb.h"
 }
 
 src_prepare() {

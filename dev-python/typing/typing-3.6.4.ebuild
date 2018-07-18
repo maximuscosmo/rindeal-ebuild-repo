@@ -36,9 +36,9 @@ python_test() {
 	cd "${BUILD_DIR}" || die
 
 	if [[ ${EPYTHON} == python2* || ${EPYTHON} == pypy ]] ; then
-		ecp "${S}"/python2/test_typing.py .
+		rcp "${S}"/python2/test_typing.py .
 	else
-		ecp "${S}"/src/test_typing.py .
+		rcp "${S}"/src/test_typing.py .
 	fi
 
 	"${EPYTHON}" test_typing.py || die "tests failed under ${EPYTHON}"

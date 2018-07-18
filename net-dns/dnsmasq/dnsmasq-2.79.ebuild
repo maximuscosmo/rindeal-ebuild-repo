@@ -232,11 +232,11 @@ src_install() {
 pkg_preinst() {
 	# temporary workaround to (hopefully) prevent leases file from being removed
 	[[ -f /var/lib/misc/dnsmasq.leases ]] && \
-		ecp /var/lib/misc/dnsmasq.leases "${T}"
+		rcp /var/lib/misc/dnsmasq.leases "${T}"
 }
 
 pkg_postinst() {
 	# temporary workaround to (hopefully) prevent leases file from being removed
 	[[ -f "${T}"/dnsmasq.leases ]] && \
-		ecp "${T}"/dnsmasq.leases /var/lib/misc/dnsmasq.leases
+		rcp "${T}"/dnsmasq.leases /var/lib/misc/dnsmasq.leases
 }

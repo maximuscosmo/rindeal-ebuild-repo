@@ -38,7 +38,7 @@ inherit arrays
 src_unpack() {
 	git-hosting_src_unpack
 
-	ecp "${S}"/nad/README{,.NAD}
+	rcp "${S}"/nad/README{,.NAD}
 }
 
 src_prepare() {

@@ -58,7 +58,7 @@ src_prepare() {
 	default
 
 	# the following step is normally done in `autogen.sh`
-	ecp "${EPREFIX}"/usr/share/gettext/gettext.h "${S}"/include
+	rcp "${EPREFIX}"/usr/share/gettext/gettext.h "${S}"/include
 
 	eautoreconf
 }

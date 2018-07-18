@@ -185,14 +185,14 @@ src_install() {
 pkg_preinst() {
 	## Make gschemas.compiled belong to glib alone
 	if [[ -e ${EROOT}${GSCHEMAS_CACHE} ]]; then
-		ecp "${EROOT}"${GSCHEMAS_CACHE} "${ED}"/${GSCHEMAS_CACHE}
+		rcp "${EROOT}"${GSCHEMAS_CACHE} "${ED}"/${GSCHEMAS_CACHE}
 	else
 		touch "${ED}"/${GSCHEMAS_CACHE} || die
 	fi
 
 	## Make giomodule.cache belong to glib alone
 	if [[ -e ${EROOT}${GIOMODULE_CACHE} ]]; then
-		ecp "${EROOT}${GIOMODULE_CACHE}" "${ED}/${GIOMODULE_CACHE}"
+		rcp "${EROOT}${GIOMODULE_CACHE}" "${ED}/${GIOMODULE_CACHE}"
 	else
 		touch "${ED}/${GIOMODULE_CACHE}" || die
 	fi

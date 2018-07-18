@@ -259,7 +259,7 @@ jetbrains-intellij_src_install() {
 	rmkdir "${ED%/}${JBIJ_INSTALL_DIR}"
 
 	# use `cp` as `doins()` is too slow
-	NO_V=1 ecp -r . "${ED%/}${JBIJ_INSTALL_DIR}"
+	NO_V=1 rcp -r . "${ED%/}${JBIJ_INSTALL_DIR}"
 
 	# normalize permissions as `install` would
 	find "${ED%/}${JBIJ_INSTALL_DIR}" -type f -print0 | xargs -0 chmod 644 --

@@ -40,5 +40,5 @@ src_install() {
 	cd "package" || die
 
 	rmkdir "${instdir}"
-	ecp -r * "${instdir}"
+	rcp -r * "${instdir}"
 }

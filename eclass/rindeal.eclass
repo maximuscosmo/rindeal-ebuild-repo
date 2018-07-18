@@ -128,7 +128,7 @@ _NO_V() {
 	echo "$( (( NO_V )) || echo '--verbose' )"
 }
 
-epushd() {
+rpushd() {
 	pushd "${@}" >/dev/null || die -n
 }
 

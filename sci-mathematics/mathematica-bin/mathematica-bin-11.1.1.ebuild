@@ -236,7 +236,7 @@ src_install() {
 		"$( printf '%s\n' "${make_desktop_entry_extras[@]}" )"
 
 	einfo "Installing icons ..."
-	epushd "SystemFiles/FrontEnd/SystemResources/X"
+	rpushd "SystemFiles/FrontEnd/SystemResources/X"
 	local s
 	for s in 32 64 128 ; do
 		newicon -s ${s} "App-${s}.png" "${PN%-bin}.png"

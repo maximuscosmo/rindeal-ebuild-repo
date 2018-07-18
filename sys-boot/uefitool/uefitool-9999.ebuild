@@ -42,7 +42,7 @@ my_eqmake() {
 for_each_extra_tool() {
 	local MY_EXTRA_TOOLS=( UEFIExtract UEFIFind UEFIPatch )
 	for x in "${MY_EXTRA_TOOLS[@]}" ; do
-		epushd "${x}"
+		rpushd "${x}"
 		"$@" "${x}"
 		epopd
 	done

@@ -45,7 +45,7 @@ S+="/svg-core"
 src_prepare() {
 	default
 
-	epushd "${OLD_S}"
+	rpushd "${OLD_S}"
 	eapply "${FILESDIR}/0002-Disable-useless-automated-jar-signing.patch"
 	eapply "${FILESDIR}/0005-dont-call-netbeans-ant-tasks.patch"
 	eapply "${FILESDIR}/0006-modify-broken-upstream-pom.patch"

@@ -124,7 +124,7 @@ src_prepare() {
 
 	eapply_user
 
-	epushd "${PN}"
+	rpushd "${PN}"
 
 	# People seem to take the example configuration file too literally (bug gentoo#102361)
 	esed \
@@ -150,7 +150,7 @@ src_configure() {
 	# Toolchain setup
 	tc-export CC
 
-	epushd "${PN}"
+	rpushd "${PN}"
 
 	# copy all uncommented non-config lines
 	egrep -v '^(#|CONFIG_|[ \t]*$)' defconfig > .config
@@ -264,7 +264,7 @@ src_configure() {
 	epopd # "${PN}"
 
 	if use gui ; then
-		epushd "${PN}/wpa_gui-qt4" # yes, even for qt5
+		rpushd "${PN}/wpa_gui-qt4" # yes, even for qt5
 		eqmake5 wpa_gui.pro
 		epopd
 	fi
@@ -279,7 +279,7 @@ src_compile() {
 }
 
 src_install() {
-	epushd "${PN}"
+	rpushd "${PN}"
 
 	dosbin "${PN}"
 	dobin wpa_cli wpa_passphrase
@@ -301,7 +301,7 @@ src_install() {
 	epopd # "${PN}"
 
 	if use gui ; then
-		epushd "${PN}/wpa_gui-qt4"
+		rpushd "${PN}/wpa_gui-qt4"
 
 		dobin "wpa_gui"
 		doicon -s scalable "icons/wpa_gui.svg"
@@ -319,7 +319,7 @@ src_install() {
 	fi
 
 	if use dbus ; then
-		epushd "${PN}/dbus"
+		rpushd "${PN}/dbus"
 
 		insinto "/etc/dbus-1/system.d"
 		newins "dbus-${PN}.conf" "${PN}.conf"

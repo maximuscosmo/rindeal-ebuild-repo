@@ -372,7 +372,7 @@ l10n_find_changes_in_dir() {
 	declare -A found known
 
 	## do the search
-	epushd "${dir}"
+	rpushd "${dir}"
 	for l in "${pre}"*"${post}" ; do
 		l="${l#"${pre}"}"
 		l="${l%"${post}"}"

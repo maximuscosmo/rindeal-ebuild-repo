@@ -95,7 +95,7 @@ src_prepare() {
 	erm -r "usr/lib"
 
 	### BEGIN - /usr/share mods
-	epushd "usr/share"
+	rpushd "usr/share"
 
 	# delete debian-specific files
 	erm -r {lintian,menu}
@@ -136,7 +136,7 @@ src_prepare() {
 	use autoupdate || erm "${OPERA_HOME#/}/opera_autoupdate"
 
 	## locales
-	epushd "${OPERA_HOME#/}/localization"
+	rpushd "${OPERA_HOME#/}/localization"
 	chromium_remove_language_paks
 	epopd
 }

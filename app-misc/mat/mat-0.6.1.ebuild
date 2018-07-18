@@ -63,7 +63,7 @@ python_install_all() {
 	distutils-r1_python_install_all
 
 	if ! use gui ; then
-		epushd "${ED}"
+		rpushd "${ED}"
 		local rm_locs=(
 			usr/bin/${PN}-gui
 			usr/share/{applications,man/man1/${PN}-gui*,nautilus-python,pixmaps}

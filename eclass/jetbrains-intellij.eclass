@@ -266,7 +266,7 @@ jetbrains-intellij_src_install() {
 	assert
 
 	## now let's push into the image dir and change few things in there
-	epushd "${ED%/}${JBIJ_INSTALL_DIR}"
+	rpushd "${ED%/}${JBIJ_INSTALL_DIR}"
 	_jetbrains-intellij_src_install-fix
 	epopd
 

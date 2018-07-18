@@ -36,7 +36,7 @@ src_install() {
 	insinto /usr/share/zsh/site-functions
 	newins etc/git-extras-completion.zsh "_${PN}"
 
-	epushd bin
+	rpushd bin
 	for cmd in * ; do
 		dobin "${cmd}"
 # 		[[ "${cmd}" != "${PN}" ]] && \

@@ -35,7 +35,7 @@ src_configure() {
 
 src_install() {
 	local libdir="${ED}/usr/$(get_libdir)"
-	epushd "${BUILD_DIR}"
+	rpushd "${BUILD_DIR}"
 	emkdir "${libdir}"
 	ecp --no-dereference out/${PN}.so* "${libdir}"
 	epopd

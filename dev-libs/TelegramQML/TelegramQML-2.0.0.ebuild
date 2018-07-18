@@ -59,7 +59,7 @@ src_prepare() {
 my_multibuild_foreach_variant() {
 	run__() {
 		mkdir -p "${BUILD_DIR}" >/dev/null
-		epushd "${BUILD_DIR}"
+		rpushd "${BUILD_DIR}"
 
 		"$@" || die
 

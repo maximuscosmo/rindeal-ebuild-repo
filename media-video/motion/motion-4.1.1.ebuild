@@ -106,7 +106,7 @@ src_install() {
 	emv "${ED%/}"/usr/share/doc/{${PN}/*,${PF}}
 	ermdir "${ED%/}"/usr/share/doc/${PN}
 
-	epushd "${ED}/usr/share/doc/${PF}"
+	rpushd "${ED}/usr/share/doc/${PF}"
 	erm examples/*FreeBSD*
 	epopd
 

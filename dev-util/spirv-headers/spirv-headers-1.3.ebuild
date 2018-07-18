@@ -42,7 +42,7 @@ src_compile() { : ; }
 
 src_install() {
 	_cmake_check_build_dir
-	epushd "${BUILD_DIR}"
+	rpushd "${BUILD_DIR}"
 	${CMAKE_BINARY} --build . --target install-headers
 	epopd
 

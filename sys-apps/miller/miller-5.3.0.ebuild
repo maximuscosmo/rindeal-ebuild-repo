@@ -33,7 +33,7 @@ my_for_each_test_dir() {
 	local test_dirs=( c/{reg,unit}_test )
 	if use test ; then
 		for d in "${test_dirs[@]}" ; do
-			epushd "${d}"
+			rpushd "${d}"
 			"${@}" || die
 			epopd
 		done

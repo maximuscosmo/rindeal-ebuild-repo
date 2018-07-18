@@ -52,7 +52,7 @@ python_prepare_all() {
 }
 
 python_compile_all() {
-	epushd "src"
+	rpushd "src"
 	my_make
 	epopd
 
@@ -60,7 +60,7 @@ python_compile_all() {
 }
 
 python_install_all() {
-	epushd "src"
+	rpushd "src"
 	dobin "accuraterip-checksum"
 	epopd
 

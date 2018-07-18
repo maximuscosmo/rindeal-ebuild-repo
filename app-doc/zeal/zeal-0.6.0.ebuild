@@ -10,8 +10,10 @@ GH_REF="v${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
 
@@ -75,6 +77,26 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 src_prepare() {
 	eapply_user
+
+	## remove ads
+	erm src/app/resources/browser/welcome.html
+	esed -e '/welcome.html/d' -i -- src/app/resources/zeal.qrc
+	esed -e '/WelcomePageUrl\[] =/ s|welcome.html|welcome-noad.html|' -i -- src/libs/ui/mainwindow.cpp
+
+	## disable update checks
+	esed -e '/ReleasesApiUrl/ s|".*"|""|' -i -- src/libs/core/application.cpp
+	esed -e '/QUrl(ReleasesApiUrl)/i return;' -i -- src/libs/core/application.cpp
+
+	## change default settings
+	esed -e '/"disable_ad"/ s|false|true|' -i -- src/libs/core/settings.cpp
+	esed -e '/"check_for_update"/ s|true|false|' -i -- src/libs/core/settings.cpp
+	esed -e '/"smooth_scrolling"/ s|false|true|' -i -- src/libs/core/settings.cpp
+	esed -e '/"fuzzy_search_enabled"/ s|false|true|' -i -- src/libs/core/settings.cpp
+
+	## disable tracking and analytics
+	esed -e '/installId =/,+2d' -i -- src/libs/core/settings.cpp
+	esed -e '/setValue.*"install_id"/d' -i -- src/libs/core/settings.cpp
+	esed -e '/Application::userAgentJson/ {n;a return QString(); '$'\n''}' -i -- src/libs/core/application.cpp
 
 	xdg_src_prepare
 	cmake-utils_src_prepare

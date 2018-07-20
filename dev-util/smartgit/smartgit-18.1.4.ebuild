@@ -6,8 +6,10 @@ inherit rindeal
 
 ## functions: get_major_version, get_version_component_range
 inherit versionator
+
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
+
 ## functions: newicon, make_desktop_entry
 inherit desktop
 
@@ -28,6 +30,7 @@ SRC_URI_A=(
 )
 
 KEYWORDS="~amd64"
+IUSE_A=( +system-jre )
 
 RDEPEND_A=(
 	# SmartGit can be started with Java 9 if smartgit.startup.allowJava9=true is set
@@ -40,13 +43,19 @@ inherit arrays
 
 S="${WORKDIR}/${PN}"
 
+src_prepare() {
+	eapply_user
+
+	use system-jre && NO_V=1 rrm -r jre
+}
+
 src_install() {
 	local -r VENDOR="syntevo"
 	local -r install_dir="/opt/${VENDOR}/${PN_SLOTTED}"
 
 	## copy files to the install image
-	insinto "${install_dir}"
-	doins -r .
+	rmkdir "${ED}/${install_dir}"
+	NO_V=1 rcp -r . "${ED}/${install_dir}"
 
 	## install icons
 	local s
@@ -62,10 +71,10 @@ src_install() {
 
 	## generate .desktop entry
 	local make_desktop_entry_args=(
-		"${PN_SLOTTED} %U"	# exec
-		"SmartGit ${SLOT}"	# name
-		"${PN_SLOTTED}"	# icon
-		"Development"	# categories
+		"${PN_SLOTTED} %U"  # exec
+		"SmartGit ${SLOT}"  # name
+		"${PN_SLOTTED}"     # icon
+		"Development"       # categories
 	)
 	local make_desktop_entry_extras=(
 	)

@@ -8,7 +8,7 @@ inherit rindeal
 PYTHON_COMPAT=( python3_6 )
 
 ## git-hosting.eclass:
-GH_RN="bitbucket:rindeal_py"
+GH_RN="github:rindeal"
 GH_REF="v${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack

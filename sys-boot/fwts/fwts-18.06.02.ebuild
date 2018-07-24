@@ -26,29 +26,28 @@ SLOT="0"
 SRC_URI="https://launchpad.net/ubuntu/+archive/primary/+files/${PN}_${PV}.orig.tar.gz"
 
 KEYWORDS="~amd64"
-IUSE=""
+IUSE_A=()
 
 CDEPEND_A=(
 	"sys-apps/dtc:0"  # libfdt
-	"sys-apps/pciutils"  # libpci, pci/pci.h
-
-	">=dev-libs/json-c-0.10-r1"
+	"sys-apps/pciutils:0"  # libpci, pci/pci.h
+	"dev-libs/json-c:0"
 	"dev-libs/glib:2"  # pkg-config --cflags glib-2.0 gio-2.0
 )
 DEPEND_A=(
 	"${CDEPEND_A[@]}"
 	"virtual/pkgconfig"
-	"sys-devel/libtool"  # AC_PROG_LIBTOOL
-	"sys-devel/flex"  # AC_PROG_LEX
-	"sys-devel/bison"
-	"virtual/yacc"  # AC_PROG_YACC
-	"sys-kernel/linux-headers"  # mtd/mtd-abi.h
+	"sys-devel/libtool:*"  # AC_PROG_LIBTOOL
+	"sys-devel/flex:0"  # AC_PROG_LEX
+	"sys-devel/bison:0"
+	"virtual/yacc:0"  # AC_PROG_YACC
+	"sys-kernel/linux-headers:0"  # mtd/mtd-abi.h
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	# `gentoo` repo pkg name
 	"!sys-apps/fwts"
 
-	"sys-apps/dmidecode"  # used in dump logs
+	"sys-apps/dmidecode:0"  # used in dump logs
 )
 
 inherit arrays

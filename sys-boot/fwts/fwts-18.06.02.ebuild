@@ -29,24 +29,26 @@ KEYWORDS="~amd64"
 IUSE=""
 
 CDEPEND_A=(
+	"sys-apps/dtc:0"  # libfdt
+	"sys-apps/pciutils"  # libpci, pci/pci.h
+
 	">=dev-libs/json-c-0.10-r1"
-	"dev-libs/glib:2"
-	"dev-libs/libpcre"
-	"sys-apps/pciutils"
-	"sys-power/iasl"
-	"sys-power/pmtools"
-	"sys-apps/dmidecode"
+	"dev-libs/glib:2"  # pkg-config --cflags glib-2.0 gio-2.0
 )
 DEPEND_A=(
 	"${CDEPEND_A[@]}"
-	"sys-devel/libtool"
-	"sys-devel/flex"
+	"virtual/pkgconfig"
+	"sys-devel/libtool"  # AC_PROG_LIBTOOL
+	"sys-devel/flex"  # AC_PROG_LEX
 	"sys-devel/bison"
-	"virtual/yacc"
+	"virtual/yacc"  # AC_PROG_YACC
+	"sys-kernel/linux-headers"  # mtd/mtd-abi.h
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	# `gentoo` repo pkg name
 	"!sys-apps/fwts"
+
+	"sys-apps/dmidecode"  # used in dump logs
 )
 
 inherit arrays
@@ -54,19 +56,17 @@ inherit arrays
 S="${WORKDIR}"
 
 src_prepare(){
-	default
+	eapply_user
 
-	grep -r --files-with-matches ' -Werror' | xargs \
-		sed -e 's| -Werror||' \
-			-i --
+	grep -r --files-with-matches ' -Werror' | xargs sed -e 's| -Werror||' -i --
 	assert
+
 	rsed -e 's:/usr/bin/lspci:'$(type -p lspci)':' \
 		-i -- src/lib/include/fwts_binpaths.h
 
 	# Fix json-c includes
 	rsed -e 's|^#include <json.h>|#include <json-c/json.h>|' \
-		-i -- src/lib/include/fwts_json.h \
-			src/utilities/kernelscan.c
+		-i -- src/lib/include/fwts_json.h src/utilities/kernelscan.c
 
 	eautoreconf
 
@@ -82,6 +82,9 @@ src_configure() {
 
 src_install() {
 	default
+
+	dobin "live-image/fwts-frontend-text"
+	dobin "scripts/fwts-collect"
 
 	prune_libtool_files
 }

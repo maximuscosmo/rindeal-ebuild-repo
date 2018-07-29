@@ -23,7 +23,7 @@ PermissionsStartOnly=true
 User=@VFS_USER@
 Group=@VFS_GROUP@
 # libvfsFprintWrapper.so will still be creating files in with explicit 0777/0666 perms.
-# To overcome this we'4re using LD_PRELOAD wrapper.
+# To overcome this we're using LD_PRELOAD wrapper.
 UMask=@VFS_UMASK@
 
 # The daemon already requires public `/tmp` so let's put his CWD there as well.

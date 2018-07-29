@@ -1,4 +1,4 @@
-## Copyright 2016 Jan Chren (rindeal)
+## Copyright 2016,2018 Jan Chren (rindeal)
 ## Distributed under the terms of the GNU General Public License v2
 
 ## vcsFPService.service
@@ -13,9 +13,9 @@ Description=Validity Fingerprint Service
 Before=multi-user.target
 
 [Service]
-# clean up `/tmp/vcsSemKey_* junk`
+# clean up `/tmp/vcsSemKey_*` junk
 ExecStartPre=/usr/bin/find /tmp -maxdepth 1 -type f -name "vcsSemKey_*" -delete
-# clean up `/tmp/CH_* junk`
+# clean up `/tmp/CH_*` junk
 ExecStartPre=/usr/bin/find /tmp -maxdepth 1 -type p -name "CH_*" -delete
 
 # permissions applied to ExecStart only
@@ -23,7 +23,7 @@ PermissionsStartOnly=true
 User=@VFS_USER@
 Group=@VFS_GROUP@
 # libvfsFprintWrapper.so will still be creating files in with explicit 0777/0666 perms.
-# To overcome this we're using LD_PRELOAD wrapper.
+# To overcome this we'4re using LD_PRELOAD wrapper.
 UMask=@VFS_UMASK@
 
 # The daemon already requires public `/tmp` so let's put his CWD there as well.
@@ -45,8 +45,7 @@ NoNewPrivileges=true
 SystemCallFilter=~ @clock @cpu-emulation @debug @keyring @module @mount @obsolete @privileged @raw-io
 
 Type=forking
-ExecStart=/bin/sh -c \
-    'LD_PRELOAD=/usr/libexec/vcsFPService_preload.so @VCSFPSERVICE_INST_DIR@/vcsFPService'
+ExecStart=/usr/sbin/vcsFPService
 TimeoutSec=10s
 Restart=on-abort
 

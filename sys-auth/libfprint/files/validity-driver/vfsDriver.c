@@ -5,7 +5,7 @@
 * This file contains the libfprint interface functions for validity fingerprint sensor device.
 *
 * Copyright 2006 Validity Sensors, Inc.
-
+*
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
@@ -23,11 +23,11 @@
 
 #include <errno.h>
 #include <string.h>
-#include <glib.h>
-#include <usb.h>
-#include <fp_internal.h>
 #include <stdio.h>
 #include <dlfcn.h>
+
+#include <glib.h> // g_free, g_memmove, g_malloc0
+#include "drivers_api.h"
 
 #include "vfsDriver.h"
 #include "vfsWrapper.h"
@@ -81,7 +81,7 @@ vfs_extract_image (
 	struct fp_img * const img,
 	size_t const data_len)
 {
-	validity_dev * const vdev = dev->priv;
+	validity_dev * const vdev = fpi_imgdev_get_user_data(dev);
 	int result = 0;
 
 	VFS_LOAD_FUNC_SYM(handle, vfs_get_img_width);
@@ -117,7 +117,7 @@ cleanup:
 static int
 dev_activate(struct fp_img_dev * dev, enum fp_imgdev_state state)
 {
-	validity_dev * const vdev = dev->priv;
+	validity_dev * const vdev = fpi_imgdev_get_user_data(dev);
 	struct fp_img * img = NULL;
 	int result = 0;
 
@@ -205,12 +205,12 @@ dev_open(struct fp_img_dev * dev, unsigned long driver_data)
 {
 	validity_dev *vdev = NULL;
 
-    /* Set enroll stage number */
-	dev->dev->nr_enroll_stages = VFS_NR_ENROLL;
+	/* Set enroll stage number */
+	fpi_dev_set_nr_enroll_stages(fpi_imgdev_get_dev(dev), VFS_NR_ENROLL);
 
-    /* Initialize private structure */
+	/* Initialize private structure */
 	vdev = g_malloc0(sizeof(validity_dev));
-	dev->priv = vdev;
+	fpi_imgdev_set_user_data(dev, vdev);
 
 	/* Notify open complete */
 	fpi_imgdev_open_complete(dev, 0);
@@ -222,7 +222,7 @@ static void
 dev_close(struct fp_img_dev * dev)
 {
 	/* Release private structure */
-	g_free(dev->priv);
+	g_free(fpi_imgdev_get_user_data(dev));
 
 	/* Notify close complete */
 	fpi_imgdev_close_complete(dev);

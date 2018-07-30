@@ -14,8 +14,6 @@ inherit udev
 ## EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
 inherit meson
 
-inherit flag-o-matic
-
 DESCRIPTION="Library for fingerprint reader support"
 HOMEPAGE="https://cgit.freedesktop.org/${PN}/${PN}"
 LICENSE="LGPL-2.1"
@@ -23,7 +21,10 @@ LICENSE="LGPL-2.1"
 # NOTE: upstream changes case of the 'v' letter from time to time
 MY_PV="V_${PV//./_}"
 SLOT="0"
-SRC_URI="https://gitlab.freedesktop.org/${PN}/${PN}/-/archive/${MY_PV}/${P}.tar.bz2"
+SRC_URI_A=(
+	"https://gitlab.freedesktop.org/${PN}/${PN}/-/archive/${MY_PV}/${P}.tar.bz2"
+	"validity-driver? ( https://github.com/rindeal/libfprint-validity-driver/archive/v0.8.x.tar.gz -> validity-driver-v0.8.x.tar.gz )"
+)
 
 # no arm until profiles are set up
 KEYWORDS="~amd64"
@@ -49,32 +50,35 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
+src_unpack() {
+	vcs-snapshot_src_unpack
+
+	rmv validity-driver*/validity "${S}"/libfprint/drivers
+}
+
 src_prepare() {
 	eapply_user
 
-	rsed -e "/mathlib_dep *=/a libdl_dep = cc.find_library('dl')" -i -- meson.build
-
 	if use validity-driver ; then
-		rcp -r "${FILESDIR}/validity-driver" "libfprint/drivers/validity"
-# 		eapply "${FILESDIR}/vcsFPService_driver.patch"
-		rsed -r -e "/^all_drivers *=/ s|(]$)|, 'validity'\1|" -i -- meson.build
-		local validity_driver="$(
-			echo -n "    if driver == 'validity'\n"
-			echo -n "        drivers_sources += [ 'drivers/validity/vfsDriver.c', 'drivers/validity/vfsDriver.h' , 'drivers/validity/vfsWrapper.h' ]\n"
-			echo -n "    endif\n"
-		)"
-		rsed -e "/foreach driver: drivers/a \\${validity_driver}" -i -- libfprint/meson.build
-		rsed -r -e "/deps *=/ s|(]$)|, libdl_dep\1|" -i -- libfprint/meson.build
+		rsed -e "/^all_drivers *=/r"<(
+				echo "all_drivers += [ 'validity' ]"
+			) -i -- meson.build
+		rpushd libfprint
+		rsed -e "/^drivers_sources =/r"<(
+				echo "if drivers.contains('validity')"
+				echo "    drivers_sources += [ $(printf "'%s'," drivers/validity/*.{c,h}) ]"
+				echo "endif"
+			) -i -- meson.build
+		rpopd
+		rsed -e "/^deps *=/r"<(
+				echo "deps += [ cc.find_library('dl') ]"
+			) -i -- libfprint/meson.build
 	fi
 
 	use examples || rsed -e "/subdir('examples')/d" -i -- meson.build
 }
 
 src_configure() {
-	if use validity-driver ; then
-		append-cflags -Wno-format-zero-length
-	fi
-
 	local emesonargs=(
 		# TODO: split to USE=all-drivers / USE=<driver> ...
 		-D drivers=all

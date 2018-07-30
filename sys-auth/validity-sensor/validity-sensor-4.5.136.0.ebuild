@@ -4,20 +4,20 @@
 EAPI=6
 inherit rindeal
 
-## functions: rindeal:expand_vars
-inherit rindeal-utils
+## functions: ver_cut
+inherit eapi7-ver
 
 ## functions: rpm_unpack
 inherit rpm
+
+## functions: rindeal:expand_vars
+inherit rindeal-utils
 
 ## functions: systemd_dounit, systemd_newtmpfilesd, systemd_get_utildir
 inherit systemd
 
 ## functions: enewgroup, enewuser
 inherit user
-
-## functions: ver_cut
-inherit eapi7-ver
 
 DESCRIPTION="Validity Fingerprint Reader Driver"
 HOMEPAGE="https://support.hp.com/in-en/drivers/selfservice/swdetails/a/5359405/swItemId/ob-203205-1"

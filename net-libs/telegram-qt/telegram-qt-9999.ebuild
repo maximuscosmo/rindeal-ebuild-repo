@@ -1,66 +1,56 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016, 2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit rindeal
 
-inherit git-r3 cmake-utils
+## git-hosting.eclass:
+GH_RN="github:Kaffeine"
+
+## EXPORT_FUNCTIONS: src_unpack
+inherit git-hosting
+
+## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
+inherit cmake-utils
 
 DESCRIPTION="Telegram binding for Qt"
-HOMEPAGE="https://github.com/Kaffeine/telegram-qt"
 LICENSE="LGPL-2.1+"
-EGIT_REPO_URI="https://github.com/Kaffeine/telegram-qt.git"
 
-SLOT="0"
-KEYWORDS="~amd64"
-IUSE="qt4 qt5"
+SLOT="0/0.2"
+KEYWORDS="~amd64 ~arm ~arm64"
+IUSE_A=( widgets-client qml-import doc generator debug )
 
-REQUIRED_USE="|| ( qt4 qt5 )"
+CDEPEND_A=(
+	"dev-qt/qtcore:5"
+	"dev-qt/qtnetwork:5"
+	"widgets-client? ("
+		"dev-qt/qtgui:5"
+		"dev-qt/qtwidgets:5"
+	")"
+	"dev-libs/openssl:0"
+	"sys-libs/zlib:0"
+)
+DEPEND_A=( "${CDEPEND_A[@]}" )
+RDEPEND_A=( "${CDEPEND_A[@]}" )
 
-DEPEND="
-	qt4? ( dev-qt/qtcore:4 )
-	qt5? ( dev-qt/qtcore:5 )
-"
-RDEPEND="${DEPEND}"
+REQUIRED_USE_A=(  )
+RESTRICT+=""
+
+inherit arrays
 
 CMAKE_USE_DIR="${S}"
 BUILD_DIR="${WORKDIR}/telegram-qt-build"
-BUILD_DIR4="${BUILD_DIR}4"
-BUILD_DIR5="${BUILD_DIR}5"
 
 src_configure() {
-	if use qt4 ;then
-		BUILD_DIR="${BUILD_DIR4}"
-		local mycmakeargs=(
-			'-DUSE_QT4=true'
-		)
-		cmake-utils_src_configure
-	fi
-	if use qt5 ;then
-		BUILD_DIR="${BUILD_DIR5}"
-		local mycmakeargs=()
-		cmake-utils_src_configure
-	fi
-}
+	local mycmakeargs=(
+		-D ENABLE_TESTS=FALSE
+		-D BUILD_WIDGETS_CLIENT=$(usex widgets-client)
+		-D ENABLE_QML_IMPORT=$(usex qml-import)
+		-D ENABLE_QCH_BUILD=$(usex doc)
+		-D STATIC_BUILD=OFF
+		-D BUILD_GENERATOR=$(usex generator)
+		-D DEVELOPER_BUILD=$(usex debug)
+	)
 
-src_compile() {
-	if use qt4 ;then
-		BUILD_DIR="${BUILD_DIR4}"
-		cmake-utils_src_compile
-	fi
-	if use qt5 ;then
-		BUILD_DIR="${BUILD_DIR5}"
-		cmake-utils_src_compile
-	fi
-}
-
-src_install() {
-	if use qt4 ;then
-		BUILD_DIR="${BUILD_DIR4}"
-		cmake-utils_src_install
-	fi
-	if use qt5 ;then
-		BUILD_DIR="${BUILD_DIR5}"
-		cmake-utils_src_install
-	fi
+	cmake-utils_src_configure
 }

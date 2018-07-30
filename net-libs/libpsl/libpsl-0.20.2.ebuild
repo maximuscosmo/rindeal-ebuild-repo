@@ -95,6 +95,13 @@ src_unpack() {
 src_prepare() {
 	default
 
+	if ! use doc ; then
+		## this copies ./autogen.sh
+		rrm -f gtk-doc.make
+		echo "EXTRA_DIST =" >gtk-doc.make || die
+		echo "CLEANFILES =" >>gtk-doc.make || die
+	fi
+
 	eautoreconf
 }
 

@@ -2,14 +2,13 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="person">
-    <email>dev.rindeal+gentoo-overlay@gmail.com</email>
+    <email>dev.rindeal+ebuild-repo@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
   <use>
     <flag name="opencv">Add support for OpenCV (<pkg>media-libs/opencv</pkg>)</flag>
     <flag name="plugins">Add support for plugins + build some default ones</flag>
     <flag name="zip">Enable opening .zip archives</flag>
-
     <flag name="plugins_affine_transformation">TODO</flag>
     <flag name="plugins_fake_miniatures">TODO</flag>
     <flag name="plugins_filter">TODO</flag>

@@ -2,7 +2,7 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="person">
-    <email>dev.rindeal+gentoo-overlay@gmail.com</email>
+    <email>dev.rindeal+ebuild-repo@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
   <use>
@@ -14,19 +14,16 @@
     <flag name="symvers">Library symbol versioning</flag>
     <flag name="largefile">support for large files</flag>
     <flag name="rpath">Hardcode runtime library paths</flag>
-
-<!--     <flag name="caps">build setpriv helper (run programs with diff capabilities)</flag> -->
-<!--     <flag name="cramfs">build mkfs/fsck helpers for cramfs filesystems</flag> -->
-<!--     <flag name="fdformat">build fdformat (floppy disk format)</flag> -->
-<!--     <flag name="kill">build the kill program</flag> -->
-<!--     <flag name="pam">build runuser helper</flag> -->
-<!--     <flag name="suid"> -->
-<!--       install mount/umount as setuid so non-root users may mount/umount devices, -->
-<!--       and wall/write as setgid so non-root users can notify other users -->
-<!--     </flag> -->
-<!--     <flag name="tty-helpers">install the mesg/wall/write tools for talking to local users</flag> -->
-
-
+    <!--     <flag name="caps">build setpriv helper (run programs with diff capabilities)</flag> -->
+    <!--     <flag name="cramfs">build mkfs/fsck helpers for cramfs filesystems</flag> -->
+    <!--     <flag name="fdformat">build fdformat (floppy disk format)</flag> -->
+    <!--     <flag name="kill">build the kill program</flag> -->
+    <!--     <flag name="pam">build runuser helper</flag> -->
+    <!--     <flag name="suid"> -->
+    <!--       install mount/umount as setuid so non-root users may mount/umount devices, -->
+    <!--       and wall/write as setgid so non-root users can notify other users -->
+    <!--     </flag> -->
+    <!--     <flag name="tty-helpers">install the mesg/wall/write tools for talking to local users</flag> -->
     <!-- ### Libraries -->
     <flag name="libblkid">libblkid(3) - block device identification library</flag>
     <flag name="libfdisk">libfdisk library - manipulation with partition tables</flag>
@@ -36,8 +33,6 @@
     <flag name="libsmartcols">libsmartcols library - smart adaptive formatting of tabular data</flag>
     <flag name="libuuid">uuid(3) library - DCE compatible Universally Unique Identifier library</flag>
     <flag name="libuuid-force-uuidd">support uuidd even though the daemon is not built</flag>
-
-
     <!-- ### Utilities -->
     <flag name="agetty">agetty(8) - (alternative Linux getty) Open a terminal and set its mode</flag>
     <flag name="bfs">mkfs.bfs(8) - make an SCO bfs filesystem</flag>
@@ -98,20 +93,15 @@
     <flag name="wdctl">wdctl(8) - show hardware watchdog status</flag>
     <flag name="write">write(1) - write to another user; obsolete</flag>
     <flag name="zramctl">zramctl(8) - set up and control zram devices</flag>
-
-
     <!-- ### Other -->
     <flag name="uuidd">uuid daemon</flag>
     <flag name="pylibmount">Python bindings for the libmount library</flag>
-
-
     <!-- ### Options -->
     <flag name="colors-default">colorize output from utils by default</flag>
     <flag name="plymouth-support">Care about plymouth in sylogin(8) and agetty(8)</flag>
     <flag name="sulogin-emergency-mount">Use emergency mount of /dev and /proc for sulogin</flag>
     <flag name="use-tty-group">install wall and write setgid tty</flag>
-    <flag name="usrdir-path">use only /usr paths in PATH env. variable (recommended on systems with /bin -> /usr/bin symlinks)</flag>
-
+    <flag name="usrdir-path">use only /usr paths in PATH env. variable (recommended on systems with /bin -&gt; /usr/bin symlinks)</flag>
     <!-- ### Optional lib deps -->
     <flag name="btrfs">build with support for btrfs</flag>
     <flag name="cap-ng">compile with libcap-ng</flag>
@@ -124,12 +114,10 @@
     <flag name="user">compile with libuser (remote chsh); obsolete</flag>
     <flag name="utempter">compile script(1) with libutempter</flag>
     <flag name="util">Compile with libutil, part of libc</flag>
-
     <!-- ### Extras -->
     <flag name="fdisk">fdisk(8) - manipulate disk partition table</flag>
     <flag name="sfdisk">sfdisk(8) - display or manipulate a disk partition table; script-oriented</flag>
     <flag name="cfdisk">cfdisk(8) - display or manipulate a disk partition table; curses-based</flag>
-
     <flag name="uuidgen">uuidgen(1) - create a new UUID value</flag>
     <flag name="uuidparse">uuidparse(1) - utility to parse unique identifiers</flag>
     <flag name="blkid">blkid(8) - locate/print block device attributes</flag>
@@ -137,19 +125,15 @@
     <flag name="wipefs">wipefs(8) - wipe a signature from a device</flag>
     <flag name="findmnt">findmnt(8) - find a filesystem</flag>
     <flag name="blkzone">blkzone(8) - run zone command on a device</flag>
-
     <flag name="mkfs">mkfs(8) - build a Linux filesystem</flag>
     <flag name="isosize">isosize(8) - output the length of an iso9660 filesystem</flag>
     <flag name="fstrim">fstrim(8) - discard unused blocks on a mounted filesystem</flag>
     <flag name="swapon">swapon(8), swapoff(8) - enable/disable devices and files for paging and swapping</flag>
     <flag name="lsblk">lsblk(8) - list block devices</flag>
     <flag name="lscpu">lscpu(1) - display information about the CPU architecture</flag>
-
     <flag name="chcpu">chcpu(8) - configure CPUs in a multi-processor system</flag>
-
     <flag name="swaplabel">swaplabel(8) - print or change the label or UUID of a swap area</flag>
     <flag name="mkswap">mkswap(8) - set up a Linux swap area</flag>
-
     <flag name="look">look(1) - display lines beginning with a given string</flag>
     <flag name="mcookie">mcookie(1) - generate magic cookies for xauth</flag>
     <flag name="namei">namei(1) - follow a pathname until a terminal point is found</flag>
@@ -158,10 +142,8 @@
     <flag name="blockdev">blockdev(8) - call block device ioctls from the command line</flag>
     <flag name="prlimit">prlimit(1) - get and set process resource limits</flag>
     <flag name="lslocks">lslocks(8) - list local system locks</flag>
-
     <flag name="flock">flock(1) - manage locks from shell scripts</flag>
     <flag name="ipcmk">ipcmk(1) - make various IPC resources</flag>
-
     <flag name="lsipc">lsipc(1) - show information on IPC facilities currently employed in the system</flag>
     <flag name="lsns">lsns(8) - list namespaces</flag>
     <flag name="renice">renice(1) - alter priority of running processes</flag>
@@ -184,7 +166,6 @@
     <flag name="hexdump">hexdump(1) - display file contents in hexadecimal, decimal, octal, or ascii</flag>
     <flag name="rev">rev(1) - reverse lines characterwise</flag>
     <flag name="fincore">fincore(1) - count pages of file contents in core</flag>
-
     <flag name="ionice">ionice(1) - set or get process I/O scheduling class and priority</flag>
     <flag name="taskset">taskset(1) - set or retrieve a process's CPU affinity</flag>
     <flag name="chrt">chrt(1) - manipulate the real-time attributes of a process</flag>

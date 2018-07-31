@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github:pyca"
 
 ## python-*.eclass (distutils-r1.eclass):
-PYTHON_COMPAT=( python2_7 python3_{5,6} pypy{,3} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} pypy{,3} )
 PYTHON_REQ_USE="threads(+)"
 
 ## EXPORT_FUNCTIONS: src_unpack

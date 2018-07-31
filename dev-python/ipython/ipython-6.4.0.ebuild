@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{5,6} )
+PYTHON_COMPAT=( python3_{5,6,7} )
 PYTHON_REQ_USE='readline,sqlite,threads(+)'
 
 ## EXPORT_FUNCTIONS: src_unpack

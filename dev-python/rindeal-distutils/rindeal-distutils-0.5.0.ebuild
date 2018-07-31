@@ -5,7 +5,7 @@ EAPI=6
 inherit rindeal
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_6 )
+PYTHON_COMPAT=( python3_{6,7} )
 
 ## distutils-r1.eclass:
 DISTUTILS_SINGLE_IMPL=true

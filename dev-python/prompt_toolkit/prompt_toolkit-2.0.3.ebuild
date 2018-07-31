@@ -8,7 +8,7 @@ inherit rindeal
 GH_RN="github:jonathanslenders:python-prompt-toolkit"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

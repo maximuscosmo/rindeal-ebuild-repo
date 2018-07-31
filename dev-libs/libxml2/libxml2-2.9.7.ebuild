@@ -10,7 +10,7 @@ GH_RN="github:GNOME"
 GH_REF="v${PV}"
 
 ## python-r1.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 PYTHON_REQ_USE="xml"
 
 # TODO order these

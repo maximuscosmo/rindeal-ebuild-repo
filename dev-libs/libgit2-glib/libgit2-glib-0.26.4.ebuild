@@ -9,7 +9,7 @@ GH_RN="github:GNOME"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{5,6} )
+PYTHON_COMPAT=( python3_{5,6,7} )
 
 ## vala.eclass:
 VALA_USE_DEPEND="vapigen"

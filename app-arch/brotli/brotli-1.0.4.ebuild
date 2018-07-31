@@ -10,7 +10,7 @@ GH_RN="github:google"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6} pypy )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} pypy )
 
 ## distutils-r1.eclass:
 DISTUTILS_OPTIONAL="1"

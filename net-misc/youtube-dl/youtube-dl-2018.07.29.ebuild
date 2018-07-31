@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github:rg3"
 
 ## python-*.eclass
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 ## functions: newbashcomp
 inherit bash-completion-r1

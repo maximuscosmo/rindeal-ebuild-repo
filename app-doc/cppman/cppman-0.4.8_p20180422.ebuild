@@ -9,7 +9,7 @@ GH_RN="github:aitjcize"
 GH_REF="ccd4824"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{5,6} )
+PYTHON_COMPAT=( python3_{5,6,7} )
 PYTHON_REQ_USE="sqlite,threads"
 
 ## distutils-r1.eclass:

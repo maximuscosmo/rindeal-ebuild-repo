@@ -7,7 +7,7 @@ inherit rindeal
 
 GH_RN="github:Kozea:CairoSVG"
 
-PYTHON_COMPAT=( python3_{5,6} )
+PYTHON_COMPAT=( python3_{5,6,7} )
 
 inherit git-hosting
 inherit distutils-r1

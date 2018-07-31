@@ -6,7 +6,7 @@ inherit rindeal
 
 GH_RN="github:projectcalico:posix_spawn"
 
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 # EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

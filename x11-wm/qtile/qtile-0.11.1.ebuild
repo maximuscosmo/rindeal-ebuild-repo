@@ -10,7 +10,7 @@ GH_RN="github"
 GH_REF="v${PV}"
 
 ## distutils-r1.eclass:
-PYTHON_COMPAT=( python3_{5,6} )
+PYTHON_COMPAT=( python3_{5,6,7} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

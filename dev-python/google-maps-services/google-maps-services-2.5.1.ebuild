@@ -5,7 +5,7 @@ EAPI=6
 inherit rindeal
 
 GH_RN="github:googlemaps:${PN}-python"
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1

@@ -5,7 +5,7 @@ EAPI=6
 inherit rindeal
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_6 )
+PYTHON_COMPAT=( python3_{6,7} )
 
 ## git-hosting.eclass:
 GH_RN="github:rindeal"

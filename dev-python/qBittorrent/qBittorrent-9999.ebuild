@@ -5,7 +5,7 @@ EAPI=6
 inherit rindeal
 
 GH_RN="github:v1k45:python-qBittorrent"
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 # EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

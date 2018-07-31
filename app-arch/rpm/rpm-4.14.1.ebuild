@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github:rpm-software-management"
 GH_REF="${P}-release"
 
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE

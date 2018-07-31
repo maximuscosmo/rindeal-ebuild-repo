@@ -10,7 +10,7 @@ GH_RN="gentoo:proj:portage.git"
 GH_REF="${P}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 PYTHON_REQ_USE='bzip2(+)'
 
 ## EXPORT_FUNCTIONS: src_unpack

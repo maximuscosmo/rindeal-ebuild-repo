@@ -135,8 +135,9 @@ src_install() {
 		into /usr
 		newsbin \
 			<(
-				echo '#!/bin/sh'
+				echo "#!/bin/sh"
 				echo "export LD_PRELOAD='/usr/libexec/vcsFPService_preload.so'"
+				echo "[ -e \"\${LD_PRELOAD}\" ] || { echo \"'\${LD_PRELOAD}' doesn't exist\"; exit 1; }"
 				echo "exec '/opt/${PN}/usr/sbin/${f}'" '"${@}"'
 			) \
 			"${f}"
@@ -147,6 +148,8 @@ src_install() {
 	## systemd files
 	systemd_dounit "${T}/vcsFPService.service"
 	systemd_newtmpfilesd "${FILESDIR}/vcsFPService.tmpfilesd.conf" "vcsFPService.conf"
+	# TODO: periodically run this cmd to prevent the vcsFPService from flooding /tmp
+	# find /tmp -maxdepth 1 -user validity -group fingerprint -regextype posix-extended -regex ".*/CH_(OUTPUT|EVENT)[0-9]+$" -delete
 	exeinto "$(systemd_get_utildir)/system-sleep"
 	doexe "${FILESDIR}/65-vcsFPService-SuspendResume.sh"
 }

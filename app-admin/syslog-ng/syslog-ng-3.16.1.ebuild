@@ -11,7 +11,7 @@ GH_REF="${P}"
 
 ## python-*.eclass:
 # python3 support is tracked here https://github.com/balabit/syslog-ng/issues/1832
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
 ## variables: EPYTHON
 inherit python-utils-r1

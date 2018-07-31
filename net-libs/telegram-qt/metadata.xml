@@ -5,4 +5,9 @@
     <email>dev.rindeal+gentoo-overlay@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
+  <use>
+    <flag name="generator">Build protocol code generator</flag>
+    <flag name="qml-import">Enable compilation of qml import plugin</flag>
+    <flag name="widgets-client">Build a widgets-based client</flag>
+  </use>
 </pkgmetadata>

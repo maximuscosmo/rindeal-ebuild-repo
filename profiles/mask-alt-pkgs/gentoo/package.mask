@@ -7,6 +7,7 @@ app-arch/rpm::gentoo
 app-crypt/ima-evm-utils::gentoo
 app-dicts/sword-czecep::gentoo
 app-dicts/sword-czekms::gentoo
+app-doc/cppman::gentoo
 app-doc/zeal::gentoo
 app-emulation/qt-virt-manager::gentoo
 app-emulation/sen::gentoo
@@ -30,14 +31,17 @@ dev-libs/glib::gentoo
 dev-libs/gnulib::gentoo
 dev-libs/libgit2::gentoo
 dev-libs/libgit2-glib::gentoo
+dev-libs/libmaxminddb::gentoo
 dev-libs/libxml2::gentoo
 dev-libs/uthash::gentoo
 dev-python/PyGithub::gentoo
 dev-python/bitstring::gentoo
 dev-python/cffi::gentoo
 dev-python/fusepy::gentoo
+dev-python/ipython::gentoo
 dev-python/mypy::gentoo
 dev-python/posix_ipc::gentoo
+dev-python/prompt_toolkit::gentoo
 dev-python/pycurl::gentoo
 dev-python/pyopenssl::gentoo
 dev-python/terminaltables::gentoo
@@ -89,8 +93,10 @@ sys-apps/shadow::gentoo
 sys-apps/util-linux::gentoo
 sys-auth/libfprint::gentoo
 sys-block/gparted::gentoo
+sys-fs/fuse::gentoo
 sys-fs/fuse-common::gentoo
 sys-fs/ntfs3g::gentoo
+sys-libs/e2fsprogs-libs::gentoo
 sys-process/htop::gentoo
 sys-process/lsof::gentoo
 sys-process/nmon::gentoo

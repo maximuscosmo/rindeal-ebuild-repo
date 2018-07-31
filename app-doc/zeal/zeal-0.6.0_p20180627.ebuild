@@ -68,6 +68,9 @@ CDEPEND_A=(
 	##   - `find_package(SQLite REQUIRED)`
 	"dev-qt/qtcore:5"
 	"dev-db/sqlite:3"
+
+	# previous versions are buggy
+	">=dev-qt/qtwebkit-5.212.0_pre20180120:5"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"kde-frameworks/extra-cmake-modules"

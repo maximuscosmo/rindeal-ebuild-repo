@@ -1,36 +1,42 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit rindeal
 
-# wxwidgets.eclass
+## wxwidgets.eclass
 WX_GTK_VER="3.0"
-# git-hosting.eclass
+
+## git-hosting.eclass
 GH_RN='github:eranif'
 
+## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
-# functions: setup-wxwidgets
+
+## functions: setup-wxwidgets
 inherit wxwidgets
-# EXPORT_FUNCTIONS: src_prepare, src_configure, src_compile, src_test, src_install
+
+## EXPORT_FUNCTIONS: src_prepare, src_configure, src_compile, src_test, src_install
 inherit cmake-utils
-# EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
+
+## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
 
 DESCRIPTION="Free, open source, cross platform C,C++,PHP and Node.js IDE"
-HOMEPAGE="http://www.codelite.org ${GH_HOMEPAGE}"
+HOMEPAGE="https://www.codelite.org ${GH_HOMEPAGE}"
 LICENSE="GPL-2"
 
 SLOT="0"
 
 KEYWORDS="~amd64"
-IUSE_A=( +clang flex lldb mysql pch +sftp webview +wxAuiNotebook wxCrafter )
+IUSE_A=( +clang flex lldb mysql pch sftp webview +wxAuiNotebook wxCrafter +plugins )
 
 CDEPEND_A=(
 	"dev-db/sqlite:3"
 	"x11-libs/wxGTK:3.0"
-	"clang? ( sys-devel/clang:0 )"
-	"flex? ( sys-devel/flex )"
+	"|| ( x11-libs/gtk+:3 x11-libs/gtk+:2 )"
+
+	"clang? ( sys-devel/clang:* )"
 	"lldb? ( || ("
 		"<sys-devel/llvm-3.9[lldb]"
 		"dev-util/lldb"
@@ -38,15 +44,22 @@ CDEPEND_A=(
 	"mysql? ( virtual/mysql )"
 	"sftp? ( net-libs/libssh )"
 )
-DEPEND_A=( "${CDEPEND_A[@]}" )
+DEPEND_A=( "${CDEPEND_A[@]}"
+	"flex? ( sys-devel/flex )"
+)
 RDEPEND_A=( "${CDEPEND_A[@]}" )
+
+REQUIRED_USE_A=(
+	"sftp? ( plugins )"
+	"lldb? ( plugins )"
+)
 
 inherit arrays
 
 CHECKREQS_DISK_BUILD='2G'
 inherit check-reqs
 
-L10N_LOCALES=( cs zh_CN )
+L10N_LOCALES=( cs ru_RU zh_CN )
 inherit l10n-r1
 
 src_prepare-locales() {
@@ -70,27 +83,54 @@ src_prepare() {
 
 	src_prepare-locales
 
+	# respect CXXFLAGS
+	rsed -e '/set.*CMAKE_CXX_FLAGS/ s|-O2| |' -i -- CMakeLists.txt
+
+	rsed -e '/# *define USE_AUI_NOTEBOOK/d' -i -- CodeLite/cl_defs.h
+
 	xdg_src_prepare
 	cmake-utils_src_prepare
-
-	# respect CXXFLAGS
-	sed -e '/CXX_FLAGS/ s|-O2||' -i -- CMakeLists.txt || die
 }
 
 src_configure() {
+	my_usex() {
+		usex $1 1 0
+	}
+
 	local mycmakeargs=(
-		-DENABLE_CLANG=$(usex clang 1 0)
-		-DENABLE_SFTP=$(usex sftp 1 0)
-		-DENABLE_LLDB=$(usex lldb 1 0)
+		-D WITH_FLEX=$(my_usex flex)
+		# no automagic ccache
+		-D CCACHE_FOUND=false
+		-D ENABLE_LLDB=$(my_usex lldb)
+		-D ENABLE_SFTP=$(my_usex sftp)
+		-D WITH_PCH=$(my_usex pch)
+		-D ENABLE_CLANG=$(my_usex clang)
+		-D WITH_WXC=$(my_usex wxCrafter)
+		-D COPY_WX_LIBS=0  # do not package the wx libs
+		-D USE_AUI_NOTEBOOK=$(my_usex wxAuiNotebook)
+		-D MAKE_DEB=0
+		-D NO_CORE_PLUGINS=$(usex "!plugins")
 
-		-DWITH_FLEX=$(usex flex 1 0)
-		-DWITH_MYSQL=$(usex mysql 1 0)
-		-DWITH_PCH=$(usex pch 1 0)
-		-DWITH_WEBVIEW=$(usex webview 1 0)
-		-DWITH_WXC=$(usex wxCrafter 1 0)
-
-		-DGTK_USE_NATIVEBOOK=$(usex !wxAuiNotebook 1 0)
+		# `sdk/databaselayer/CMakeLists.txt`
+		# `DatabaseExplorer/CMakeLists.txt`
+		-D WITH_MYSQL=$(my_usex mysql)
 	)
+	if use plugins ; then
+		mycmakeargs+=(
+			# `codelitephp/CMakeLists.txt`
+			-D WITH_WEBVIEW=$(my_usex webview)
+		)
+	fi
+
+	if use clang ; then
+		local clang_path="$(type -a -p clang 2>/dev/null | grep -v ccache | head -1)"
+		[[ -z "${clang_path}" ]] && die
+		local clang_root_path="${clang_path%%"/bin/clang"}"
+		mycmakeargs+=(
+			-D LIBCLANG_T="${clang_root_path}/$(get_libdir)/libclang.so"
+			-D LIBCLANG_INCLUDE_T="${clang_root_path}/include"
+		)
+	fi
 
 	cmake-utils_src_configure
 }
@@ -100,7 +140,7 @@ src_install() {
 
 	rrm "${ED}"/usr/share/applications/${PN}.desktop
 	local make_desktop_entry_args=(
-		"${EPREFIX}/usr/bin/${PN} %f"    # exec
+		"${PN} %f"    # exec
 		"CodeLite"	# name
 		"${PN}"		# icon
 		'Development;IDE;' # categories; https://standards.freedesktop.org/menu-spec/latest/apa.html

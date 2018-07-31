@@ -13,5 +13,6 @@
     <flag name="webview">Enable Internal Web Browser</flag>
     <flag name="wxAuiNotebook">Use wxAuiNotebook instead of the native notebook</flag>
     <flag name="wxCrafter">Build wxCrafter (http://wxcrafter.codelite.org/)</flag>
+    <flag name="plugins">Build and install a lot of non-core plugins</flag>
   </use>
 </pkgmetadata>

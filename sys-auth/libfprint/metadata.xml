@@ -6,7 +6,7 @@
     <name>Jan Chren (rindeal)</name>
   </maintainer>
   <use>
-    <flag name="validity-driver">
+    <flag name="vfs_proprietary-driver">
       Add support for validity sensor driver provided by <pkg>sys-auth/validity-sensor</pkg> package
     </flag>
   </use>

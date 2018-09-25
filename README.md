@@ -9,9 +9,6 @@ _Packages done right™_
 [![Last Commit Status][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)
 [![Commit Activity in 4 Weeks][commit-activity-4w-badge]](https://github.com/rindeal/rindeal-ebuild-repo/pulse/monthly)
 [![Commit Activity in a year][commit-activity-y-badge]](https://github.com/rindeal/rindeal-ebuild-repo/pulse/monthly)
-<br/>
-[![Issue Closure Stats][issue-closure-stats-badge]](http://issuestats.com/github/rindeal/rindeal-ebuild-repo)
-[![Pull Request Closure Stats][pr-closure-stats-badge]](http://issuestats.com/github/rindeal/rindeal-ebuild-repo)
 
 
 Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following:
@@ -143,5 +140,3 @@ to the main [Gentoo™] ebuild repository.
 [last-commit-badge]:         https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square
 [commit-activity-4w-badge]:  https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/commit-activity/4w/rindeal/rindeal-ebuild-repo.svg?style=flat-square
 [commit-activity-y-badge]:   https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?style=flat-square
-[issue-closure-stats-badge]: https://badge-proxy.janchren.eu/ttl=3600/https://img.shields.io/issuestats/i/long/github/rindeal/rindeal-ebuild-repo.svg?style=flat-square
-[pr-closure-stats-badge]:    https://badge-proxy.janchren.eu/ttl=3600/https://img.shields.io/issuestats/p/long/github/rindeal/rindeal-ebuild-repo.svg?style=flat-square

@@ -26,15 +26,19 @@ LICENSE="LGPL-2.1"
 
 # NOTE: upstream changes case of the 'v' letter from time to time
 MY_PV="V_${PV//./_}"
+vfs_proprietary_ref="v0.9.0"
+
 SLOT="0"
 SRC_URI_A=(
 	"https://gitlab.freedesktop.org/${PN}/${PN}/-/archive/${MY_PV}/${P}.tar.bz2"
-	"validity-driver? ( https://github.com/rindeal/libfprint-validity-driver/archive/v0.8.x-r1.tar.gz -> validity-driver-v0.8.x-r1.tar.gz )"
+	"vfs_proprietary-driver? ("
+		"https://github.com/rindeal/libfprint-vfs_proprietary-driver/archive/${vfs_proprietary_ref}.tar.gz -> vfs_proprietary-driver-${vfs_proprietary_ref}.tar.gz"
+	")"
 )
 
 # no arm until profiles are set up
 KEYWORDS="~amd64"
-IUSE_A=( doc examples validity-driver )
+IUSE_A=( doc examples vfs_proprietary-driver )
 
 CDEPEND_A=(
 	"virtual/libusb:1"
@@ -51,7 +55,7 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"virtual/pkgconfig"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	"amd64? ( validity-driver? ( sys-auth/validity-sensor ) )"
+	"amd64? ( vfs_proprietary-driver? ( sys-auth/validity-sensor ) )"
 )
 
 RESTRICT+=" mirror"
@@ -63,12 +67,13 @@ FP_GROUP='fingerprint'
 src_unpack() {
 	vcs-snapshot_src_unpack
 
-	rmv validity-driver*/validity "${S}"/libfprint/drivers
+	rmv vfs_proprietary-driver*/vfs_proprietary "${S}"/libfprint/drivers
 }
 
 src_prepare() {
 	eapply_user
 
+	## set fp usb dev permissions, this is what Debian does
 	rsed -e "\|ATTR{power/control}|r"<(
 			echo 'printf ("SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"%04x\", ATTRS{idProduct}==\"%04x\", ",'
 			echo '            driver->id_table[i].vendor, driver->id_table[i].product);'
@@ -77,22 +82,11 @@ src_prepare() {
 			echo 'printf ("\n");'
 		) -i -- libfprint/fprint-list-udev-rules.c
 
-	if use validity-driver ; then
-		append-cppflags -DVFS_LIBVFSFPRINTWRAPPER_PATH='\"/opt/validity-sensor/usr/lib64/libvfsFprintWrapper.so\"'
+	if use vfs_proprietary-driver ; then
+		local driver_name="vfs_proprietary"
 
-		rsed -e "/^all_drivers *=/r"<(
-				echo "all_drivers += [ 'validity' ]"
-			) -i -- meson.build
-		rpushd libfprint
-		rsed -e "/^drivers_sources =/r"<(
-				echo "if drivers.contains('validity')"
-				echo "    drivers_sources += [ $(printf "'%s'," drivers/validity/*.{c,h}) ]"
-				echo "endif"
-			) -i -- meson.build
-		rpopd
-		rsed -e "/^deps *=/r"<(
-				echo "deps += [ cc.find_library('dl') ]"
-			) -i -- libfprint/meson.build
+		rsed -e "/^all_drivers *=/a all_drivers += [ '${driver_name}' ]" -i -- meson.build
+		rsed -e "/^libfprint *=/i subdir('drivers/${driver_name}')" -i -- libfprint/meson.build
 	fi
 
 	use examples || rsed -e "/subdir('examples')/d" -i -- meson.build

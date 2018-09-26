@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -7,18 +7,22 @@ inherit rindeal
 ## git-hosting.eclass:
 GH_RN="github:nsf"
 GH_REF="v${PV}"
+
 ## python-*.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6} )
 # threads are for waf
 PYTHON_REQ_USE="threads"
+
 ## distutils-r1.eclass:
 DISTUTILS_OPTIONAL="TRUE"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: distutils-r1_src_prepare, distutils-r1_src_configure, distutils-r1_src_compile, distutils-r1_src_install
 ## variables: PYTHON_DEPS, PYTHON_USEDEP, PYTHON_REQUIRED_USE
 inherit distutils-r1
+
 ## functions: waf-utils_src_configure, waf-utils_src_compile
 ## variables: WAF_BINARY
 inherit waf-utils
@@ -53,15 +57,15 @@ src_prepare() {
 	default
 
 	# respect flags
-	sed -e '/append.*CFLAGS/ s|-O[0-9]||' \
-		-i -- wscript || die
+	rsed -e '/append.*CFLAGS/ s|-O[0-9]||' \
+		-i -- wscript
 	# fix compiler error
 	# https://github.com/nsf/termbox/issues/89
 	eapply "${FILESDIR}"/1.1-d4fa2c2fd3db741da6690cc68a461dab54abfb11.patch
 	# do not build examples
 	if ! use examples ; then
-		sed -e '/bld.recurse("demo")/d' \
-			-i -- src/wscript || die
+		rsed -e '/bld.recurse("demo")/d' \
+			-i -- src/wscript
 	fi
 
 	use python && \

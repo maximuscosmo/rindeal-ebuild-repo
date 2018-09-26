@@ -5,9 +5,4 @@
     <email>dev.rindeal+ebuild-repo@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
-  <longdescription lang="en">
-	</longdescription>
-  <upstream>
-    <remote-id type="github">JukkaL/mypy</remote-id>
-  </upstream>
 </pkgmetadata>

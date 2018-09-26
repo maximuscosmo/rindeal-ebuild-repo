@@ -10,7 +10,7 @@ GH_RN="github:python"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{5,6,7} )
+PYTHON_COMPAT=( python3_{5,6} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE

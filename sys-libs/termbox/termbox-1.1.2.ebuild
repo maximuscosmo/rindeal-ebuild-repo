@@ -8,7 +8,7 @@ inherit rindeal
 GH_RN="github:nsf"
 GH_REF="v${PV}"
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 # threads are for waf
 PYTHON_REQ_USE="threads"
 ## distutils-r1.eclass:

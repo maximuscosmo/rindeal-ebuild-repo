@@ -13,7 +13,7 @@ inherit git-hosting
 inherit distutils-r1
 
 DESCRIPTION="Simple cairo based SVG converter with support for PDF, PostScript and PNG"
-HOMEPAGE="http://cairosvg.org/ ${GH_HOMEPAGE}"
+HOMEPAGE="https://cairosvg.org/ ${GH_HOMEPAGE}"
 LICENSE="LGPL-3"
 
 SLOT="0"

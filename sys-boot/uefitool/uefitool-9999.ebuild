@@ -17,18 +17,12 @@ LICENSE="BSD-2"
 SLOT="0"
 
 KEYWORDS=""
-IUSE="qt5"
+IUSE=""
 
 CDEPEND_A=(
-	"qt5? ("
-		"dev-qt/qtcore:5"
-		"dev-qt/qtgui:5"
-		"dev-qt/qtwidgets:5"
-	")"
-	"!qt5? ("
-		"dev-qt/qtcore:4"
-		"dev-qt/qtgui:4"
-	")"
+	"dev-qt/qtcore:5"
+	"dev-qt/qtgui:5"
+	"dev-qt/qtwidgets:5"
 )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
@@ -36,7 +30,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 inherit arrays
 
 my_eqmake() {
-	eqmake$(usex qt5 5 4) "$@"
+	eqmake5 "$@"
 }
 
 for_each_extra_tool() {

@@ -9,7 +9,7 @@ inherit rindeal
 GH_RN="github:Kozea:CairoSVG"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python3_{5,6,7} )
+PYTHON_COMPAT=( python3_{5,6} )
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

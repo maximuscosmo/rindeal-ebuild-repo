@@ -6,7 +6,7 @@ inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:python"
-GH_REF="6cf97b8" # mypy-0.580
+GH_REF="8ed0159" # mypy-0.630
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

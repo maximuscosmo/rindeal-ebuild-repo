@@ -6,7 +6,6 @@ EAPI=6
 inherit rindeal
 
 GH_RN="github:GNOME"
-GH_REF="3c76114e73fb98a01403b2349a600161d362e5fe"
 
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 

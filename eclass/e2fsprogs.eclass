@@ -53,8 +53,12 @@ e2fsprogs_src_unpack() {
 e2fsprogs_src_prepare() {
 	default
 
+	rcp doc/RelNotes/v${PV}.txt ChangeLog
+
 	## don't bother with docs, Gentoo-Bug: 305613
 	printf 'all:\n%%:;@:\n' > doc/Makefile.in || die
+
+	NO_V=1 rrm -r doc
 
 	eautoreconf
 }
@@ -85,6 +89,7 @@ e2fsprogs_src_configure() {
 		$(use_enable debug testio-debug)
 		--disable-libuuid  # using newer and better versions from util-linux
 		--disable-libblkid  # using newer and better versions from util-linux
+		--disable-subset  # enable if needed
 		--disable-backtrace
 		--disable-debugfs  # enable if needed
 		--disable-imager  # enable if needed
@@ -128,6 +133,8 @@ e2fsprogs_src_install() {
 	)
 
 	emake "${_emake_args[@]}"
+
+	einstalldocs
 
 	prune_libtool_files
 

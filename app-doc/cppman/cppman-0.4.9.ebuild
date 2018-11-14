@@ -6,7 +6,6 @@ inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:aitjcize"
-# GH_REF="ccd4824"
 
 ## python-*.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )

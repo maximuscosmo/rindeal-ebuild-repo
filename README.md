@@ -7,8 +7,6 @@ _Packages done right™_
 [![Docker Build Status][docker-label-badge]][docker-hub-project][![Docker Build Status][docker-badge]][docker-hub-project]
 <br/>
 [![Last Commit Status][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)
-[![Commit Activity in 4 Weeks][commit-activity-4w-badge]](https://github.com/rindeal/rindeal-ebuild-repo/pulse/monthly)
-[![Commit Activity in a year][commit-activity-y-badge]](https://github.com/rindeal/rindeal-ebuild-repo/pulse/monthly)
 
 
 Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following:
@@ -138,5 +136,3 @@ to the main [Gentoo™] ebuild repository.
 [docker-label-badge]:        https://badge-proxy.janchren.eu/ttl=86400/https://img.shields.io/badge/docker-image-gray.svg?style=flat-square&longCache=true
 [docker-badge]:              https://badge-proxy.janchren.eu/ttl=60/https://semaphoreci.com/api/v1/rindeal/portage-docker-images/branches/master/shields_badge.svg
 [last-commit-badge]:         https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square
-[commit-activity-4w-badge]:  https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/commit-activity/4w/rindeal/rindeal-ebuild-repo.svg?style=flat-square
-[commit-activity-y-badge]:   https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?style=flat-square

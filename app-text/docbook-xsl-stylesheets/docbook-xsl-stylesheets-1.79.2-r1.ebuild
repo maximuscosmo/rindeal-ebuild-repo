@@ -34,9 +34,6 @@ RDEPEND_A=(
 
 S="${WORKDIR}/${MY_P}"
 
-# Makefile is broken since 1.76.0
-RESTRICT=test
-
 inherit arrays
 
 src_prepare() {
@@ -56,10 +53,6 @@ src_prepare() {
 
 # The makefile runs tests, not builds.
 src_compile() { : ; }
-
-src_test() {
-	emake check
-}
 
 src_install() {
 	# The changelog is now zipped, and copied as the RELEASE-NOTES, so we

@@ -49,6 +49,7 @@ CDEPEND_A=(
 	"examples? ("
 		"x11-libs/libX11:0"
 		"x11-libs/libXv:0"
+		"x11-libs/gtk+:3"
 	")"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
@@ -68,6 +69,7 @@ src_unpack() {
 	vcs-snapshot_src_unpack
 
 	rmv vfs_proprietary-driver*/vfs_proprietary "${S}"/libfprint/drivers
+	append-cppflags "-DVFS_PROPRIETARY_TRACE"
 }
 
 src_prepare() {
@@ -99,6 +101,7 @@ src_configure() {
 		-D udev_rules=true  # Whether to create a udev rules file
 		-D udev_rules_dir="$(get_udevdir)/rules.d"
 		$(meson_use examples x11-examples)
+		$(meson_use examples gtk-examples)
 		$(meson_use doc)  # Whether to build the API documentation
 	)
 

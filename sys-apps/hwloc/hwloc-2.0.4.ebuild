@@ -1,8 +1,8 @@
 # Copyright 1999-2017 Gentoo Foundation
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -32,7 +32,7 @@ IUSE_A=( cairo debug gl opencl +pci plugins svg static-libs xml X )
 CDEPEND_A=(
 	">=sys-libs/ncurses-5.9-r3:0"
 	"cairo? ( >=x11-libs/cairo-1.12.14-r4[X?,svg?] )"
-	"gl? ( || ( x11-drivers/nvidia-drivers[static-libs,tools] media-video/nvidia-settings ) )"
+	"gl? ( x11-drivers/nvidia-drivers[static-libs,tools] )"
 	"pci? ("
 		">=sys-apps/pciutils-3.3.0-r2"
 		">=x11-libs/libpciaccess-0.13.1-r1"

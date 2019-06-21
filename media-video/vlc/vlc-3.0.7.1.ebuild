@@ -1,8 +1,8 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -12,8 +12,6 @@ EGIT_SUBMODULES=()
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
-## functions: prune_libtool_files
-inherit ltprune
 ## functions: eautoreconf
 inherit autotools
 ## functions: append-cxxflags, append-ldflags
@@ -106,6 +104,7 @@ IUSE_A=(
 	+postproc
 	faad
 	aom
+	dav1d
 	+vpx
 	twolame
 	fdkaac
@@ -121,7 +120,6 @@ IUSE_A=(
 	theora
 	oggspots
 	daala
-	schroedinger
 	png
 	jpeg
 	bpg
@@ -224,6 +222,7 @@ CDEPEND_A=(
 	"libcddb? ( >=media-libs/libcddb-1.2:0 )"
 	"chromaprint? ( >=media-libs/chromaprint-0.6:0 )"
 	"chromecast? ( >=dev-libs/protobuf-2.5.0 )"
+	"dav1d? ( media-libs/dav1d )"
 	"dbus? ( >=sys-apps/dbus-1.6:0 )"
 	"dc1394? ( >=sys-libs/libraw1394-2.0.1:0 >=media-libs/libdc1394-2.1:2 )"
 	"dts? ( >=media-libs/libdca-0.0.5:0 )"
@@ -292,7 +291,6 @@ CDEPEND_A=(
 			">=net-fs/samba-4:0[client]"
 		")"
 	")"
-	"schroedinger? ( >=media-libs/schroedinger-1.0.10:0 )"
 	"sdl? ( >=media-libs/libsdl-1.2.10:0"
 		"sdl-image? ("
 			">=media-libs/sdl-image-1.2.10:0"
@@ -331,7 +329,7 @@ CDEPEND_A=(
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"xcb? ( x11-base/xorg-proto:0 )"
 	"app-arch/xz-utils:0"
-	"dev-lang/yasm:*"
+	"amd64? ( dev-lang/yasm:* )"
 	">=sys-devel/gettext-0.19.6:*"
 	"virtual/pkgconfig:*"
 )
@@ -341,9 +339,13 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 	"vorbis? ( >=media-libs/libvorbis-1.1:0 )"
 	"vpx? ( media-libs/libvpx:0= )"
 	"X? ( x11-libs/libX11:0 )"
-	"x264? ( >=media-libs/x264-0.0.20090923:0= )"
+	"x264? ( >=media-libs/x264-0.0.20190214:= )"
 	"x265? ( media-libs/x265:0= )"
-	"xcb? ( >=x11-libs/libxcb-1.6:0 >=x11-libs/xcb-util-0.3.4:0 >=x11-libs/xcb-util-keysyms-0.3.4:0 )"
+	"xcb? ("
+		">=x11-libs/libxcb-1.6:0"
+		">=x11-libs/xcb-util-0.3.4:0"
+		">=x11-libs/xcb-util-keysyms-0.3.4:0"
+	")"
 	"xml? ( >=dev-libs/libxml2-2.5:2 )"
 	"zvbi? ( >=media-libs/zvbi-0.2.28:0 )"
 )
@@ -511,6 +513,7 @@ src_configure() {
 		$(use_enable postproc)
 		$(use_enable faad)
 		$(use_enable aom)
+		$(use_enable dav1d)
 		$(use_enable vpx)
 		$(use_enable twolame)
 		$(use_enable fdkaac)
@@ -527,7 +530,8 @@ src_configure() {
 		$(use_enable theora)
 		$(use_enable oggspots)
 		$(use_enable daala)
-		$(use_enable schroedinger)
+		# dependency removed from Gentoo repository
+		--disable-schroedinger
 		$(use_enable png)
 		$(use_enable jpeg)
 		$(use_enable bpg)
@@ -654,7 +658,7 @@ src_install() {
 	DOCS=( AUTHORS THANKS NEWS README doc/fortunes.txt )
 	default
 
-	prune_libtool_files
+	find "${D}" -name '*.la' -print -delete || die
 }
 
 pkg_postinst() {

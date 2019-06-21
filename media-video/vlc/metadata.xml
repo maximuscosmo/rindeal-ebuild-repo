@@ -76,6 +76,7 @@
     <flag name="postproc">ibpostproc image post-processing</flag>
     <flag name="faad">faad codec</flag>
     <flag name="aom">experimental AV1 codec</flag>
+    <flag name="dav1d">Enable support for <pkg>media-libs/dav1d</pkg> AV1 decoder</flag>
     <flag name="vpx">libvpx VP8/VP9 encoder and decoder</flag>
     <flag name="twolame">MPEG Audio Layer 2 encoder</flag>
     <flag name="fdkaac">FDK-AAC encoder</flag>
@@ -92,7 +93,6 @@
     <flag name="theora">experimental theora codec</flag>
     <flag name="oggspots">experimental OggSpots codec</flag>
     <flag name="daala">experimental daala codec</flag>
-    <flag name="schroedinger">dirac decoder and encoder using schroedinger</flag>
     <flag name="png">PNG support</flag>
     <flag name="jpeg">JPEG support</flag>
     <flag name="bpg">BPG support</flag>

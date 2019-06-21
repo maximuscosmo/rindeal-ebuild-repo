@@ -15,8 +15,8 @@ inherit portage-patches
 if [[ -z "${_RINDEAL_ECLASS}" ]] ; then
 
 case "${EAPI:-0}" in
-    6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 | 7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 

@@ -1,8 +1,8 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -28,10 +28,10 @@ LICENSE="GPL-2"
 SLOT="0"
 
 KEYWORDS="amd64 arm arm64"
-IUSE_A=( nls )
+IUSE_A=( )
 
 CDEPEND_A=(
-	">=sys-apps/portage-2.3.14[${PYTHON_USEDEP}]"
+	">=sys-apps/portage-2.3.43[${PYTHON_USEDEP}]"
 	">=dev-python/lxml-3.6.0[${PYTHON_USEDEP}]"
 	"dev-python/pyyaml[${PYTHON_USEDEP}]"
 )
@@ -61,12 +61,9 @@ python_install() {
 		--bindir="$(python_get_scriptdir)"
 		--docdir="${EPREFIX}/usr/share/doc/${PF}"
 		--htmldir="${EPREFIX}/usr/share/doc/${PF}/html"
-		# Install sbin scripts to bindir for python-exec linking
-		# they will be relocated in pkg_preinst()
 		--sbindir="$(python_get_scriptdir)"
 		--sysconfdir="${EPREFIX}/etc"
-		"${@}"
 	)
 
-	distutils-r1_python_install "${my_args[@]}"
+	distutils-r1_python_install "${my_args[@]}" "${@}"
 }

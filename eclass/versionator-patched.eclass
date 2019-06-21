@@ -9,8 +9,8 @@
 
 
 case "${EAPI:-0}" in
-    5|6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 inherit rindeal

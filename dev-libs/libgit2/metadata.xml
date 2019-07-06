@@ -11,8 +11,11 @@
     <flag name="ssh">Enable SSH transport support</flag>
     <flag name="trace">Enable tracing support</flag>
     <flag name="https">Secure HTTP support</flag>
+    <flag name="https_openssl">OpenSSL HTTPS backend</flag>
+    <flag name="https_mbedtls">mbedTLS HTTPS backend</flag>
     <flag name="sha1_collision_detection">CollisionDetection SHA1 backend</flag>
     <flag name="sha1_generic">Generic SHA1 backend</flag>
     <flag name="sha1_openssl">OpenSSL SHA1 backend</flag>
+    <flag name="sha1_mbedtls">mbedTLS SHA1 backend</flag>
   </use>
 </pkgmetadata>

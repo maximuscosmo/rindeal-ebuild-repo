@@ -26,20 +26,24 @@ LICENSE="GPL-2-with-linking-exception"
 SLOT="0/$(ver_cut 2)"
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE_A=( debug +curl examples gssapi +ssh test +threads trace +https
+IUSE_A=( debug examples gssapi +ssh test +threads trace +https
 	"$(rindeal:dsf:prefix_flags \
 		sha1_ \
-			generic +openssl collision_detection)"
+			generic +openssl mbedtls collision_detection)"
+	"$(rindeal:dsf:prefix_flags \
+		https_ \
+			+openssl mbedtls)"
 )
 
 CDEPEND_A=(
-	# used for https as well as for SHA1 crypto if chosen
 	"$(rindeal:dsf:eval \
-		'sha1_openssl|https' \
+		'sha1_openssl|https_openssl' \
 			"dev-libs/openssl:0=")"
+	"$(rindeal:dsf:eval \
+		'sha1_mbedtls|https_mbedtls' \
+			"net-libs/mbedtls:0=")"
 	"sys-libs/zlib"
 	"=net-libs/http-parser-2*:="
-	"curl? ( net-misc/curl:= )"
 	"gssapi? ( virtual/krb5 )"
 	"ssh? ( net-libs/libssh2 )"
 )
@@ -51,9 +55,12 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 REQUIRED_USE_A=(
 	"^^ ( $(rindeal:dsf:prefix_flags \
 		sha1_ \
-			generic openssl collision_detection) )"
+			generic openssl mbedtls collision_detection) )"
+	"https? ( ^^ ( $(rindeal:dsf:prefix_flags \
+		https_ \
+			openssl mbedtls) ) )"
 )
-RESTRICT+=""
+RESTRICT+=" test"
 
 inherit arrays
 
@@ -66,39 +73,29 @@ src_configure() {
 		-D THREADSAFE=$(usex threads)
 		-D BUILD_CLAR=$(usex test)
 		-D BUILD_EXAMPLES=OFF
+		-D BUILD_FUZZERS=OFF
 		-D TAGS=OFF  # ctags
 		-D PROFILE=OFF
 		-D ENABLE_TRACE=$(usex trace)
 		-D LIBGIT2_FILENAME=OFF
-		-D SHA1_BACKEND=$(usex sha1_generic "Generic" $(usex sha1_openssl "OpenSSL" $(usex sha1_collision_detection "CollisionDetection" "die")))
+		-D SHA1_BACKEND=$(usex sha1_generic "Generic" $(usex sha1_openssl "OpenSSL" $(usex sha1_mbedtls "mbedTLS" $(usex sha1_collision_detection "CollisionDetection" "die"))))
 		-D USE_SSH=$(usex ssh)
-		-D USE_HTTPS="OpenSSL"
+		-D USE_HTTPS=$(usex https_openssl "OpenSSL" $(usex https_mbedtls "mbedTLS"))
 		-D USE_GSSAPI=$(usex gssapi)
+		-D USE_STANDALONE_FUZZERS=OFF
 		-D VALGRIND=$(usex debug)
-		-D CURL=$(usex curl)
 		-D USE_EXT_HTTP_PARSER=ON
 		-D DEBUG_POOL=$(usex debug)
 		-D ENABLE_WERROR=OFF
 		-D USE_BUNDLED_ZLIB=OFF
+		-D DEPRECATE_HARD=OFF
 		-D ENABLE_REPRODUCIBLE_BUILDS=OFF
 	)
 	cmake-utils_src_configure
 }
 
-src_test() {
-	if [[ ${EUID} -eq 0 ]]
-	then
-		# repo::iterator::fs_preserves_error fails if run as root
-		# since root can still access dirs with 0000 perms
-		ewarn "Skipping tests: non-root privileges are required for all tests to pass"
-	else
-		local TEST_VERBOSE=1
-		cmake-utils_src_test
-	fi
-}
-
 src_install() {
-	DOCS=( AUTHORS CONTRIBUTING.md CONVENTIONS.md README.md )
+	DOCS=( AUTHORS README.md )
 
 	cmake-utils_src_install
 

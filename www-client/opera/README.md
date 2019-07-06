@@ -1,6 +1,0 @@
-- initial motivation: <https://bugs.gentoo.org/show_bug.cgi?id=582272>
-- EAPI6
-- pax-mark (gentoo-bug #562038)
-- install into `/opt` (gentoo-bug #573052)
-- make autoupdate binary optional
-- slotted by every major version

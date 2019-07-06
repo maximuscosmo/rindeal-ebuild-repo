@@ -1,4 +1,4 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rindeal.eclass
@@ -12,7 +12,8 @@
 inherit portage-patches
 
 
-if [[ -z "${_RINDEAL_ECLASS}" ]] ; then
+if [[ -z "${_RINDEAL_ECLASS}" ]]
+then
 
 case "${EAPI:-0}" in
 6 | 7 ) ;;

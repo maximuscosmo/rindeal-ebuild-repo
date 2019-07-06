@@ -6,7 +6,8 @@
 # Jan Chren (rindeal) <dev.rindeal+gentoo@gmail.com>
 # @BLURB: Support eclass for packages hosted on online git hosting services like GitHub
 
-if [ -z "${_GH_ECLASS}" ] ; then
+if [[ -z "${_RINDEAL_UTILS_ECLASS}" ]]
+then
 
 case "${EAPI:-0}" in
 6 | 7 ) ;;

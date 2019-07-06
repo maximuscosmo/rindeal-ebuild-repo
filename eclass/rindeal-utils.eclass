@@ -1,17 +1,19 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016, 2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rindeal-utils.eclass
 # @MAINTAINER:
 # Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
-# @BLURB: Collection of handy functions for my overlay
+# @BLURB: Collection of handy functions
 # @DESCRIPTION:
 
-if [ -z "${_RINDEAL_UTILS_ECLASS}" ] ; then
+
+if [[ -z "${_RINDEAL_UTILS_ECLASS}" ]]
+then
 
 case "${EAPI:-0}" in
-	6) ;;
-	*) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 | 7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 
@@ -72,7 +74,8 @@ _rindeal:dsf:eval_cnf() {
 
 	### group the conditions
 	local t
-	for t in "${_tokens[@]}" ; do
+	for t in "${_tokens[@]}"
+	do
 		case "${t}" in
 		'&' )
 			# start a new group
@@ -95,17 +98,20 @@ _rindeal:dsf:eval_cnf() {
 
 	local grp_ptrs=()
 	# TODO: delete this loop
-	for (( i=1; i<=grp_cnt; i++ )) ; do
+	for (( i=1; i<=grp_cnt; i++ ))
+	do
 		grp_ptrs[i]=0
 	done
 
 	### print the permutations
 	local end_loop_1=0
-	while ! (( end_loop_1 )) ; do
+	while ! (( end_loop_1 ))
+	do
 
 		## gather values from each group
 		local conditions=()
-		for (( i = 1; i <= grp_cnt; i++ )) ; do
+		for (( i = 1; i <= grp_cnt; i++ ))
+		do
 			local grp_name="$(_get_grp_name ${i})"
 			eval "conditions+=( \${${grp_name}[${grp_ptrs[i]}]} )"
 		done
@@ -115,19 +121,22 @@ _rindeal:dsf:eval_cnf() {
 		## re-adjust pointers
 		local end_loop_2=0
 		local bump_group=1
-		while ! (( end_loop_2 )) ; do
+		while ! (( end_loop_2 ))
+		do
 			local grp_name="$(_get_grp_name "${bump_group}")"
 
 			# first bump whatever group we're looping through at the moment
 			(( grp_ptrs[bump_group]++ ))
 			# now check if we've run past the last member of the current group
-			if (( grp_ptrs[bump_group] >= $(eval "echo \${#${grp_name}[*]}") )) ; then
+			if (( grp_ptrs[bump_group] >= $(eval "echo \${#${grp_name}[*]}") ))
+			then
 				# if so, reset the pointer in the group
 				(( grp_ptrs[bump_group]=0 ))
 				# and move on to the next group
 				(( bump_group++ ))
 				# and check if we've run past the last group
-				if (( bump_group > grp_cnt )) ; then
+				if (( bump_group > grp_cnt ))
+				then
 					# if so, then we're at the end of our mission
 					end_loop_2=1
 					end_loop_1=1
@@ -165,7 +174,8 @@ _rindeal:dsf:eval_dnf() {
 	local payload="${2}"
 
 	local t conditions=()
-	for t in "${_tokens[@]}" ; do
+	for t in "${_tokens[@]}"
+	do
 		case "${t}" in
 		'|' )
 			# at the end of a group, print the buffer
@@ -212,7 +222,8 @@ _rindeal:dsf:tokenize() {
 	)
 	local regex="^\s*($(IFS=\|; echo "${token_regexes[*]}"))\s*"
 
-	while (( ${#str} )) ; do
+	while (( ${#str} ))
+	do
 		# regex match the token
 		[[ "${str}" =~ ${regex} ]] || die
 		local m="${BASH_REMATCH[1]}"
@@ -244,7 +255,8 @@ _rindeal:dsf:get_expr_type() {
 
 	# algorithm: find the first &/| character outside of a group
 	local t in_group=0
-	for t in "${tokens[@]}" ; do
+	for t in "${tokens[@]}"
+	do
 		case "${t}" in
 		'(' ) in_group=1 ;;
 		')' ) in_group=0 ;;
@@ -304,8 +316,10 @@ rindeal:expand_vars() {
 
 	local sed_args=()
 	local v vars=( $( grep -Eo '@[A-Z0-9_]+@' -- "${f_in}" | tr -d '@') )
-	for v in "${vars[@]}" ; do
-		if [[ -v "${v}" ]] ; then
+	for v in "${vars[@]}"
+	do
+		if [[ -v "${v}" ]]
+		then
 			sed_args+=( -e "s|@${v}@|${!v}|g" )
 		else
 			einfo "${FUNCNAME}: var '${v}' doesn't exist"
@@ -315,7 +329,7 @@ rindeal:expand_vars() {
 	local basedir="$(dirname "${WORKDIR}")"
 	echo "Converting '${f_in#"${basedir}/"}' -> '${f_out#"${basedir}/"}"
 
-	sed "${sed_args[@]}" -- "${f_in}" >"${f_out}" || die
+	rsed "${sed_args[@]}" -- "${f_in}" >"${f_out}"
 }
 
 rindeal:dsf:prefix_flags() {
@@ -325,7 +339,8 @@ rindeal:dsf:prefix_flags() {
 	local f flags=( "$@" )
 	local regex="^([+-])?(.*)"
 
-	for f in "${flags[@]}" ; do
+	for f in "${flags[@]}"
+	do
 		[[ "${f}" =~ ${regex} ]] || die
 		printf "%s%s%s\n" "${BASH_REMATCH[1]}" "${prefix}" "${BASH_REMATCH[2]}"
 	done

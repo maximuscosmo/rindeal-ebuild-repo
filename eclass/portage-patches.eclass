@@ -1,4 +1,4 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016, 2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: portage-patches.eclass
@@ -31,49 +31,90 @@ rindeal::has() {
 has() { rindeal::has "${@}" ; }
 
 rindeal::has_version() {
-	local atom eroot host_root=false root=${ROOT}
-	if [[ $1 == --host-root ]] ; then
-		host_root=true
-		shift
-	fi
+	local atom root root_arg
+	local -a cmd=()
+	case $1 in
+		--host-root|-r|-d|-b)
+			root_arg=$1
+			shift ;;
+	esac
 	atom=$1
 	shift
-	[ $# -gt 0 ] && die "${FUNCNAME[0]}: unused argument(s): $*"
+	[ $# -gt 0 ] && die "${FUNCNAME[1]}: unused argument(s): $*"
 
-	if ${host_root} ; then
-		if ! ___eapi_best_version_and_has_version_support_--host-root; then
-			die "${FUNCNAME[0]}: option --host-root is not supported with EAPI ${EAPI}"
-		fi
-		root=/
-	fi
+	case ${root_arg} in
+		"") if ___eapi_has_prefix_variables
+			then
+				root=${ROOT%/}/${EPREFIX#/}
+			else
+				root=${ROOT}
+			fi ;;
+		--host-root)
+			if ! ___eapi_best_version_and_has_version_support_--host-root
+			then
+				die "${FUNCNAME[1]}: option ${root_arg} is not supported with EAPI ${EAPI}"
+			fi
+			if ___eapi_has_prefix_variables
+			then
+				# Since portageq requires the root argument be consistent
+				# with EPREFIX, ensure consistency here (bug 655414).
+				root=/${PORTAGE_OVERRIDE_EPREFIX#/}
+				cmd+=(env EPREFIX="${PORTAGE_OVERRIDE_EPREFIX}")
+			else
+				root=/
+			fi ;;
+		-r|-d|-b)
+			if ! ___eapi_best_version_and_has_version_support_-b_-d_-r
+			then
+				die "${FUNCNAME[1]}: option ${root_arg} is not supported with EAPI ${EAPI}"
+			fi
+			if ___eapi_has_prefix_variables
+			then
+				case ${root_arg} in
+					-r) root=${ROOT%/}/${EPREFIX#/} ;;
+					-d) root=${ESYSROOT} ;;
+					-b)
+						# Use /${PORTAGE_OVERRIDE_EPREFIX#/} which is equivalent
+						# to BROOT, except BROOT is only defined in src_* phases.
+						root=/${PORTAGE_OVERRIDE_EPREFIX#/}
+						cmd+=(env EPREFIX="${PORTAGE_OVERRIDE_EPREFIX}")
+						;;
+				esac
+			else
+				case ${root_arg} in
+					-r) root=${ROOT} ;;
+					-d) root=${SYSROOT} ;;
+					-b) root=/ ;;
+				esac
+			fi ;;
+	esac
 
-	if ___eapi_has_prefix_variables; then
-		# [[ ${root} == / ]] would be ambiguous here,
-		# since both prefixes can share root=/ while
-		# having different EPREFIX offsets.
-		if ${host_root} ; then
-			eroot=${root%/}${PORTAGE_OVERRIDE_EPREFIX}/
-		else
-			eroot=${root%/}${EPREFIX}/
-		fi
+	### BEGIN: patched section
+	# these variables cause the helpers mark `*::repo` expressions as invalid package atom
+	cmd+=( env -u EBUILD_PHASE -u EAPI )
+	### END: patched section
+
+	if [[ -n $PORTAGE_IPC_DAEMON ]]
+	then
+		cmd+=("${PORTAGE_BIN_PATH}"/ebuild-ipc "${FUNCNAME[1]}" "${root}" "${atom}")
 	else
-		eroot=${root}
+		cmd+=("${PORTAGE_BIN_PATH}"/ebuild-helpers/portageq "${FUNCNAME[1]}" "${root}" "${atom}")
 	fi
-
-	sh -c "unset EBUILD_PHASE EAPI; '${PORTAGE_BIN_PATH}/ebuild-helpers/portageq' has_version '${eroot}' '${atom}'"
+	"${cmd[@]}"
 	local retval=$?
 	case "${retval}" in
 		0|1)
 			return ${retval}
 			;;
 		2)
-			die "${FUNCNAME[0]}: invalid atom: ${atom}"
+			die "${FUNCNAME[1]}: invalid atom: ${atom}"
 			;;
 		*)
-			if [[ -n ${PORTAGE_IPC_DAEMON} ]]; then
-				die "${FUNCNAME[0]}: unexpected ebuild-ipc exit code: ${retval}"
+			if [[ -n ${PORTAGE_IPC_DAEMON} ]]
+			then
+				die "${FUNCNAME[1]}: unexpected ebuild-ipc exit code: ${retval}"
 			else
-				die "${FUNCNAME[0]}: unexpected portageq exit code: ${retval}"
+				die "${FUNCNAME[1]}: unexpected portageq exit code: ${retval}"
 			fi
 			;;
 	esac

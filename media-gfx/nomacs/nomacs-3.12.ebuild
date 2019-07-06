@@ -67,16 +67,16 @@ CDEPEND_A=(
 	"dev-qt/qtsvg:5"
 	"dev-qt/qtwidgets:5"
 
-	">=media-gfx/exiv2-0.25:="
+	"media-gfx/exiv2:="
 
-	"opencv? ( >=media-libs/opencv-2.4.6:=[qt5(+)] )"
-	"raw? ( >=media-libs/libraw-0.17.0:= )"
+	"opencv? ( media-libs/opencv:=[qt5(+)] )"
+	"raw? ( media-libs/libraw:= )"
 	"tiff? ("
 		"media-libs/tiff:0"
 		# https://bugs.gentoo.org/630764
 		"dev-qt/qtimageformats:5"
 	")"
-	"zip? ( dev-libs/quazip[qt5(+)] )"
+	"zip? ( dev-libs/quazip )"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-qt/linguist-tools:5"
@@ -87,11 +87,14 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 REQUIRED_USE_A=(
 	"raw? ( opencv )"
 	"tiff? ( opencv )"
+
+	"!amd64? ( !plugins_nikon )"
 )
 
 inherit arrays
 
-L10N_LOCALES=( ar ru uk nl de az hr es en ko fr bg sk pt sl zh cs bs sr pl als ja it )
+L10N_LOCALES=( ar ru uk nl de hr es ko fr bg sk pt zh cs bs sr pl als ja it fi hu id sv tr )
+L10N_LOCALES_MASK=( br_pt tw_zh )
 inherit l10n-r1
 
 S_OLD="${S}"
@@ -111,7 +114,8 @@ src_prepare-locales() {
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
 	l10n_get_locales locales app off
-	for l in ${locales} ; do
+	for l in ${locales}
+	do
 		rrm "${dir}/${pre}${l}${post}"
 	done
 }
@@ -121,18 +125,12 @@ src_prepare() {
 	eapply_user
 	cd "${S}"
 
-	# prevent these from interfering with the build
-	NO_V=1 rrm -r "${S_OLD}"/{exiv2-*,expat,installer,zlib-*}
-	NO_V=1 rrm -r "${S}"/3rdparty/quazip-*
-
+	## fix path to plugins directory
 	rsed -e 's|QStringList libPaths = QCoreApplication::libraryPaths();|QStringList libPaths;|' \
 		-e "s|libPaths.append(QCoreApplication::applicationDirPath() + \"/plugins\");|libPaths.append(\"${EPREFIX}/usr/$(get_libdir)/nomacs-plugins\");|" \
 		-i -- src/DkCore/DkPluginManager.cpp
-
-	if use plugins ; then
-		rsed -e "s|DESTINATION lib/nomacs-plugins|DESTINATION $(get_libdir)/nomacs-plugins|" \
+	rsed -e "s|DESTINATION lib/nomacs-plugins|DESTINATION $(get_libdir)/nomacs-plugins|" \
 			-i -- plugins/cmake/Utils.cmake
-	fi
 
 	src_prepare-locales
 
@@ -143,27 +141,19 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-D USE_SYSTEM_QUAZIP=ON
-		# this app uses patched libqpsd + libqpsd is not in the tree
-		# -D USE_SYSTEM_LIBQPSD=ON
+		# this app uses patched libqpsd + libqpsd is not in the tree, so definitely use the interal one
+		-D USE_SYSTEM_LIBQPSD=OFF
 
 		-D ENABLE_OPENCV=$(usex opencv)
 		-D ENABLE_RAW=$(usex raw)
 		-D ENABLE_TIFF=$(usex tiff)
 		-D ENABLE_QT_DEBUG=$(usex debug)
+		-D ENABLE_QUAZIP=$(usex zip)
 # 		-D ENABLE_INCREMENTER
-		-D ENABLE_READ_BUILD=OFF
 		-D ENABLE_TRANSLATIONS=$(use nls)
+		-D ENABLE_READ_BUILD=OFF
 		-D ENABLE_PLUGINS=$(usex plugins)
 		-D ENABLE_CODE_COV=OFF
-
-		# upnp support requires:
-		# 	- fork herqq to a github/gitlab repo / use hupnp-ng
-		# 		- because HUpnpAV is currently only in original SVN repo
-		# 	- create a new herqq package which would use that fork/*-ng
-		# 	- patch build system to use upnp on linux (-DWITH_UPNP)
-		# 	- test everything works as probably no one used nomacs with upnp before
-		#-D ENABLE_UPNP=$(usex upnp)
-		-D ENABLE_QUAZIP=$(usex zip)
 
 		### Plugins:
 		-D ENABLE_FAKE_MINIATURES=$(usex plugins_fake_miniatures)

@@ -48,6 +48,8 @@ python_prepare_all() {
 
 	rsed -e '/gentooheader/d' -i -- cnf/repository/repository.yaml
 
+	rsed -e '/"ltprune": False,/d' -i -- lib/repoman/modules/linechecks/deprecated/inherit.py
+
 	distutils-r1_python_prepare_all
 }
 

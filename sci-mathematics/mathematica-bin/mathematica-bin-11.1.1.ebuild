@@ -1,11 +1,9 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
-# functions: get_version_component_range
-inherit versionator
 inherit xdg
 
 DESCRIPTION="World's definitive system for modern technical computing"
@@ -14,7 +12,7 @@ LICENSE="Wolfram-Mathematica"
 
 declare -g -r -- WM_SELFEXTRACTOR_FILENAME="Mathematica_${PV}_LINUX.sh"
 
-SLOT="$(get_version_component_range 1-2)"
+SLOT="$(ver_cut 1-2)"
 SRC_URI="${WM_SELFEXTRACTOR_FILENAME}"
 
 KEYWORDS="-* ~amd64"

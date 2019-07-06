@@ -1,12 +1,13 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github"
+
 ## cmake-utils.eclass:
 # ninja build fails at parsing stage with message:
 # `ninja: error: build.ninja:845: bad $-escape (literal $ must be written as $$)`
@@ -15,10 +16,13 @@ CMAKE_MAKEFILE_GENERATOR="emake"
 
 ## functions: rindeal:dsf:prefix_flags
 inherit rindeal-utils
+
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
 
@@ -27,7 +31,7 @@ HOMEPAGE="https://www.nomacs.org/ ${GH_HOMEPAGE}"
 LICENSE="GPL-3+"
 
 SLOT="0"
-git-hosting_gen_snapshot_url "github:${PN}:${PN}-plugins" "${GH_REF}" plugins_snap_url plugins_distfile
+git-hosting_gen_snapshot_url "github:${PN}:${PN}-plugins" "3.12.0" plugins_snap_url plugins_distfile
 SRC_URI+="
 	plugins? ( ${plugins_snap_url} -> ${plugins_distfile} )"
 

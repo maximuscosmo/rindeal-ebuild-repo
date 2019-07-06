@@ -1,11 +1,8 @@
-# Copyright 2015-2018 Jan Chren (rindeal)
+# Copyright 2015-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
-
-## functions: get_major_version, get_version_component_range
-inherit versionator
 
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
@@ -19,8 +16,8 @@ LICENSE="${PN}"
 
 # slot number is based on the upstream slotting mechanism which creates a new subdir
 # in `~/.smartgit/` for each new major release. The subdir name corresponds with SLOT.
-PV_MAJ="$(get_major_version)"
-PV_MIN="$(get_version_component_range 2)"
+PV_MAJ="$(ver_cut 1)"
+PV_MIN="$(ver_cut 2)"
 
 SLOT="${PV_MAJ}$( (( PV_MIN )) && echo ".${PV_MIN}" )"
 PN_SLOTTED="${PN}${SLOT}"

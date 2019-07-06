@@ -1,28 +1,29 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github"
 GH_REF="v${PV}"
 
+## functions: rindeal:dsf:prefix_flags, rindeal:dsf:eval
 inherit rindeal-utils
+
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
-## functions: get_version_component_range
-inherit versionator
 
 DESCRIPTION="Linkable library implementation of Git"
 HOMEPAGE="${GH_HOMEPAGE} https://libgit2.github.com/"
 LICENSE="GPL-2-with-linking-exception"
 
-SLOT="0/$(get_version_component_range 2)"
+SLOT="0/$(ver_cut 2)"
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( debug +curl examples gssapi +ssh test +threads trace +https
@@ -85,7 +86,8 @@ src_configure() {
 }
 
 src_test() {
-	if [[ ${EUID} -eq 0 ]] ; then
+	if [[ ${EUID} -eq 0 ]]
+	then
 		# repo::iterator::fs_preserves_error fails if run as root
 		# since root can still access dirs with 0000 perms
 		ewarn "Skipping tests: non-root privileges are required for all tests to pass"
@@ -100,7 +102,8 @@ src_install() {
 
 	cmake-utils_src_install
 
-	if use examples ; then
+	if use examples
+	then
 		find examples -name '.gitignore' -delete || die
 		dodoc -r examples
 		docompress -x /usr/share/doc/${PF}/examples

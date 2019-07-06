@@ -4,7 +4,7 @@
 ##
 # @ECLASS: l10n-r1.eclass
 # @MAINTAINER:
-#   Jan Chren <dev.rindeal+gentoo@gmail.com>
+#   Jan Chren <dev.rindeal@gmail.com>
 # @BLURB: convenience functions to handle localizations
 # @DESCRIPTION:
 # The l10n-r1 (localization) eclass offers a number of functions to more
@@ -17,8 +17,6 @@
 
 if [[ -z "${_RINDEAL_L10N_R1_ECLASS}" ]]
 then
-
-[[ -v _L10N_ECLASS ]] && die "You've inheritted both l10n.eclass and l10n-r1.eclass"
 
 case "${EAPI:-0}" in
 6 | 7 ) ;;

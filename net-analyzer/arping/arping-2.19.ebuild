@@ -1,25 +1,29 @@
 # Copyright 1999-2017 Gentoo Foundation
-# Copyright 2017 Jan Chren (rindeal)
+# Copyright 2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
+## git-hosting.eclass:
 GH_RN="github:ThomasHabets"
 GH_REF="arping-${PV}"
 
-# EXPORT_FUNCTIONS: src_unpack
+## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
-# EXPORT_FUNCTIONS: pkg_postinst
+
+## EXPORT_FUNCTIONS: pkg_postinst
+## variables: FILECAPS
 inherit fcaps
-inherit versionator
+
+## functions: eautoreconf
 inherit autotools
 
 DESCRIPTION="A utility to see if a specific IP address is taken and what MAC address owns it"
 HOMEPAGE="http://www.habets.pp.se/synscan/programs.php?prog=arping ${GH_HOMEPAGE}"
 LICENSE="GPL-2"
 
-SLOT="$(get_major_version)"
+SLOT="$(ver_cut 1)"
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE="test"

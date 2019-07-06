@@ -1,15 +1,14 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## functions: newicon, make_desktop_entry
 inherit desktop
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
-## functions: get_major_version
-inherit versionator
 
 DESCRIPTION="Free universal database manager and SQL client"
 HOMEPAGE="http://dbeaver.jkiss.org/ https://github.com/serge-rider/dbeaver"
@@ -17,7 +16,7 @@ LICENSE="Apache-2.0"
 
 PN_NB="${PN%-bin}"
 
-DBEAVER_SLOT="$(get_major_version)"
+DBEAVER_SLOT="$(ver_cut 1)"
 SLOT="${DBEAVER_SLOT}"
 src_uri_base="https://github.com/serge-rider/${PN_NB}/releases/download/${PV}/${PN_NB}-ce-${PV}-linux.gtk"
 SRC_URI_A=(

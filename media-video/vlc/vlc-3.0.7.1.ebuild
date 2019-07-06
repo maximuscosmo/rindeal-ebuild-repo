@@ -7,19 +7,25 @@ inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:videolan:${PN}-3.0"
-EGIT_SUBMODULES=()
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: append-cxxflags, append-ldflags
 inherit flag-o-matic
+
 ## functions: Xemake
 inherit virtualx
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
+## functions: prune_libtool_files
+inherit ltprune
 
 DESCRIPTION="VLC media player - Video player and streamer"
 HOMEPAGE="https://www.videolan.org/vlc/ ${GH_HOMEPAGE}"
@@ -27,8 +33,7 @@ LICENSE="LGPL-2.1 GPL-2"
 
 SLOT="0/5-8" # vlc - vlccore
 
-[[ "${PV}" == *9999* ]] || \
-	KEYWORDS="~amd64 ~arm ~arm64"
+KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
 	### Optional Features and Packages:
 	+shared-libs
@@ -655,10 +660,9 @@ src_test() {
 }
 
 src_install() {
-	DOCS=( AUTHORS THANKS NEWS README doc/fortunes.txt )
 	default
 
-	find "${D}" -name '*.la' -print -delete || die
+	prune_libtool_files
 }
 
 pkg_postinst() {
@@ -666,14 +670,16 @@ pkg_postinst() {
 
 	## Refresh plugins cache, required to prevent error messages like:
 	##
-	##     core libvlc error: stale plugins cache: modified /usr/local/lib/vlc/plugins/video_output/libcaca_plugin.so
+	##     core libvlc error: stale plugins cache: modified /usr/local/lib/vlc/plugins/video_output/*_plugin.so
 	##
-	if [[ "$ROOT" = "/" ]] && [[ -x "/usr/$(get_libdir)/vlc/vlc-cache-gen" ]] ; then
-		einfo "Running /usr/$(get_libdir)/vlc/vlc-cache-gen on /usr/$(get_libdir)/vlc/plugins/"
-		"/usr/$(get_libdir)/vlc/vlc-cache-gen" "/usr/$(get_libdir)/vlc/plugins/"
+	local vlc_cache_gen_path="${ROOT}/usr/$(get_libdir)/vlc/vlc-cache-gen"
+	local vlc_plugins_dir="${ROOT}/usr/$(get_libdir)/vlc/plugins"
+	if [[ -z "${ROOT}" ]] && [[ -x "${vlc_cache_gen_path}" ]] ; then
+		einfo "Running '${vlc_cache_gen_path}' on '${vlc_plugins_dir}'"
+		"${vlc_cache_gen_path}" "${vlc_plugins_dir}/"
 	else
-		ewarn "We cannot run vlc-cache-gen (most likely ROOT!=/)"
-		ewarn "Please run /usr/$(get_libdir)/vlc/vlc-cache-gen manually"
+		ewarn "We cannot run vlc-cache-gen (most likely \$ROOT is not default)"
+		ewarn "Please run '${vlc_cache_gen_path}' manually"
 		ewarn "If you do not do it, vlc will take a long time to load."
 	fi
 }

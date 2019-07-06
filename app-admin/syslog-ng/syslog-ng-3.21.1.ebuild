@@ -1,8 +1,8 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -18,7 +18,7 @@ inherit python-utils-r1
 
 ## EXPORT_FUNCTIONS: pkg_setup
 ## variables: PYTHON_DEPS, PYTHON_REQUIRED_USE
-inherit python-any-r1
+inherit python-single-r1
 
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
@@ -30,11 +30,11 @@ inherit autotools
 ## functions: systemd_get_systemunitdir
 inherit systemd
 
-## functions: prune_libtool_files
-inherit ltprune
-
 ## functions: rindeal:expand_vars
 inherit rindeal-utils
+
+## functions: prune_libtool_files
+inherit ltprune
 
 DESCRIPTION="syslog replacement with advanced filtering features"
 HOMEPAGE="https://syslog-ng.com/ ${GH_HOMEPAGE}"
@@ -43,7 +43,7 @@ LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE_A=( doc test
+IUSE_A=( doc
 
 	debug env-wrapper memtrace ipv6 tcpd spoof-source sql pacct caps mongodb json amqp stomp smtp
 	http redis systemd geoip2 python man native largefile valgrind +systemd-journal
@@ -54,7 +54,7 @@ CDEPEND_A=(
 	"sql? ( dev-db/libdbi )"
 	"dev-libs/glib:2"
 	"geoip2? ( dev-libs/libmaxminddb )"
-	"dev-libs/libpcre"
+	"dev-libs/libpcre:="
 	"dev-libs/openssl:0="
 	"spoof-source? ( net-libs/libnet:1.1 )"
 	"dev-libs/ivykis"
@@ -65,20 +65,19 @@ CDEPEND_A=(
 	"redis? ( dev-libs/hiredis )"
 	"amqp? ( >=net-libs/rabbitmq-c-0.8.0 )"
 	"caps? ( sys-libs/libcap )"
-	# libuuid is not used
 	"systemd? ( sys-apps/systemd )"
 	"systemd-journal? ( sys-apps/systemd )"
 
-	# for --with-docbook-dir
+	# for --with-docbook
 	"app-text/docbook-xsl-stylesheets"
 	"${PYTHON_DEPS}"
+
+	"!dev-libs/eventlog"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"sys-devel/flex"
 	"virtual/yacc"
 	"virtual/pkgconfig"
-
-	"test? ( dev-util/criterion )"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
@@ -86,7 +85,6 @@ REQUIRED_USE_A=(
 	"man? ( doc )"
 	"${PYTHON_REQUIRED_USE}"
 )
-RESTRICT="test"
 
 inherit arrays
 
@@ -96,42 +94,52 @@ src_prepare() {
 	# remove bundled libs
 	local autogen_sh_submodules=(
 		lib/ivykis
-		modules/afmongodb/mongo-c-driver/src/libbson
-		modules/afmongodb/mongo-c-driver
 		lib/jsonc
 	)
 	local d
-	for d in "${autogen_sh_submodules[@]}" ; do
+	for d in "${autogen_sh_submodules[@]}"
+	do
 		rrm -rf "${d}"
 		rsed -r -e "/^SUBMODULES/ s,( |\")${d}(/[^ ]*)?,\1,g"  -i -- autogen.sh
 	done
 
-	if ! use doc ; then
+	if ! use doc
+	then
 		rsed -e '/^include doc/d' -i -- Makefile.am
 	fi
 
 	# drop scl modules requiring json
-	if ! use json ; then
-		rsed -r -e '/\b(osquery|nodejs|graylog2|ewmm|elasticsearch|cim)\b/d' -i -- scl/Makefile.am
+	if ! use json
+	then
+		rsed -r -e '/\b(cim|elasticsearch|ewmm|graylog2|loggly|logmatic|netskope|nodejs|osquery|slack)\b/d' -i -- scl/Makefile.am
+	fi
+
+	# drop scl modules requiring http
+	if ! use http
+	then
+		rsed -r '/slack|telegram/d' -i -- scl/Makefile.am
 	fi
 
 	# use gentoo default path
-	if use systemd ; then
+	if use systemd
+	then
 		rsed -e 's,/etc/syslog-ng.conf,/etc/syslog-ng/syslog-ng.conf,g' \
 			-e 's,/var/run,/run,g' \
 			-i -- contrib/systemd/syslog-ng@default
 	fi
 
-	if use systemd ; then
+	if use systemd
+	then
 		# TODO: change this to `systemctl restart ...`
 		local GENTOO_RESTART="systemctl kill -s HUP syslog-ng@default"
+
+		for f in "${FILESDIR}"/*logrotate*.in
+		do
+			local bn=$(basename "${f}")
+
+			rindeal:expand_vars "${f}" "${T}/${bn/.in}"
+		done
 	fi
-
-	for f in "${FILESDIR}"/*logrotate*.in ; do
-		local bn=$(basename "${f}")
-
-		rindeal:expand_vars "${f}" "${T}/${bn/.in}"
-	done
 
 	use python && python_fix_shebang .
 
@@ -198,7 +206,6 @@ src_configure() {
 # 		--with-ld-library-path=path
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		# --with-package-name=package
-		$(use_with mongodb mongoc system)
 		$(use_with json jsonc system)
 		--with-ivykis=system
 # 		--with-libesmtp=DIR
@@ -206,9 +213,9 @@ src_configure() {
 # 		--with-libhiredis=DIR
 		--with-compile-date
 		$(use_with systemd-journal systemd-journal system)
-		$(use_with python python "python-${EPYTHON##python}")
+# 		$(use_with python python "python-${EPYTHON##python}")
 		# supplement for `http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl`
-		--with-docbook-dir="${EROOT}usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl"
+		--with-docbook="${EROOT}usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl"
 # 		--with-pic
 		--with-gnu-ld
 	)
@@ -238,14 +245,15 @@ src_install() {
 
 	keepdir /etc/syslog-ng/patterndb.d /var/lib/syslog-ng
 
-	prune_libtool_files --modules
+	prune_libtool_files
 
 	use python && python_optimize
 }
 
 pkg_postinst() {
 	# bug #355257
-	if ! has_version app-admin/logrotate ; then
+	if ! has_version app-admin/logrotate
+	then
 		echo
 		elog "It is highly recommended that app-admin/logrotate be emerged to"
 		elog "manage the log files. ${PN} installs a file in /etc/logrotate.d"

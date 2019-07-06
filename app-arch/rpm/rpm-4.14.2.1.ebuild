@@ -1,8 +1,8 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -20,9 +20,6 @@ inherit autotools
 
 ## functions: append-cppflags
 inherit flag-o-matic
-
-## functions: perl_delete_localpod
-inherit perl-module
 
 ## variables: PYTHON_DEPS, PYTHON_REQUIRED_USE
 inherit python-single-r1
@@ -42,7 +39,7 @@ IUSE_A=(
 
 	zstd ndb lmdb nls rpath python plugins
 	gnu-ld
-	+nss beecrypt -openssl  # gentoo's openssl doesn't enable md2, which is mandatory
+	nss +openssl
 	archive
 	doc
 	imaevm caps acl lua dmalloc
@@ -58,8 +55,7 @@ CDEPEND_A=(
 	"lzma? ( app-arch/xz-utils:0 )"
 	"zstd? ( app-arch/zstd:0 )"
 	"elf? ( virtual/libelf:0 )"
-	"beecrypt? ( dev-libs/beecrypt:0 )"
-	"openssl? ( dev-libs/openssl:0 )"  # gentoo's version is missing MD2 support
+	"openssl? ( dev-libs/openssl:0 )"
 	"nss? ( dev-libs/nss:0 )"
 	"sys-apps/file:0"  # libmagic
 	"dev-libs/popt:0"
@@ -92,7 +88,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 REQUIRED_USE_A=(
 	"python? ( ${PYTHON_REQUIRED_USE} )"
-	"^^ ( nss beecrypt openssl )"
+	"^^ ( openssl nss )"
 	"libdw? ( elf )"
 )
 
@@ -105,8 +101,6 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-4.11.0-autotools.patch
 	eapply "${FILESDIR}"/${PN}-4.8.1-db-path.patch
 	eapply "${FILESDIR}"/${PN}-4.9.1.2-libdir.patch
-	# https://github.com/rpm-software-management/rpm/pull/453
-	eapply "${FILESDIR}"/libcrypto-md2-check.patch
 	eapply_user
 
 	# fix #356769
@@ -138,7 +132,7 @@ src_configure() {
 
 		### Optional Packages:
 		$(use_with gnu-ld)
-		--with-crypto=$(usex nss{,} $(usex beecrypt{,} $(usex openssl{,} ERROR)))
+		--with-crypto=$(usex openssl{,} $(usex nss{,} ERROR))
 		--without-internal-beecrypt
 		$(use_with archive)
 		--with-external-db  # build against an external Berkeley db
@@ -179,8 +173,9 @@ src_install() {
 
 	prune_libtool_files
 
-	# Fix perllocal.pod file collision
-	perl_delete_localpod
+	# perl_delete_localpod(): Fix perllocal.pod file collision
+	find "${D}" -type f -name perllocal.pod -delete || die
+	find "${D}" -depth -mindepth 1 -type d -empty -delete || die
 }
 
 pkg_postinst() {

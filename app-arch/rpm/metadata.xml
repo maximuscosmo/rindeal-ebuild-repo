@@ -7,7 +7,6 @@
   </maintainer>
   <use>
     <flag name="archive">Build rpm2archive</flag>
-    <flag name="beecrypt">Use beecrypt as a crypto backend</flag>
     <flag name="dmalloc">Build with dmalloc debugging support</flag>
     <flag name="elf">Pull in virtual/libelf automagic dependency</flag>
     <flag name="imaevm">Build with imaevm support</flag>

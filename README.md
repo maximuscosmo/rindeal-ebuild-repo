@@ -9,25 +9,16 @@ _Packages done right™_
 [![Last Commit Status][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)
 
 
-Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following:
+Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following features:
 
  - code in ebuilds is **clean and documented**
  - **USE flags** are provided for almost any build-time option
-     - instead of packing multitude of options under a single feature as _[Gentoo™]_ devs do
  - _mostly_ sane **default configurations** (default USE-flags, config files, ...)
-     - this means default config files of some programs is modified for a better UX from the start
  - exclusive **_systemd_** support
-     - systemd is in no way perfect, but it's definitely better than OpenRC+cron
  - no _libav_, _libressl_, ... support
-     - [because ...](https://youtu.be/92cwKCU8Z5c)
  - **locales** support (`nls`/`l10n_*` USE-flags)
-     - because I don't like having hundreds of MBs consumed by translation files
  - **x86_64**/**armv6**/**armv7**/**armv8** architectures only
-     - a lot of branching and patching goes into maintaining exotic arches
  - only the **native targets** are supported
-     - the support for non-native targets increases the complexity of ebuilds by an order of magnitude
-     - ARM arches are backwards compatible so it shouldn't be a problem to compile natively on newer HW
-     - the question of how to take care of legacy 32-bit binaries is yet to be decided
 
 You can visit a user-friendly [list of packages][LISTING], where the chances are high for you to discover some great new software!
 Also if you know about a not-yet-packaged software that is really worth packaging, you can demand it [on the issue tracker][New issue].

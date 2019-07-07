@@ -31,8 +31,8 @@ How to install this repository
 ```ini
 [rindeal]
 ## set this to any location you want
-location = /var/cache/portage/repos/rindeal
-sync-uri = https://ebuilds.janchren.eu/repos/rindeal/.git
+location = /var/pms/repos/rindeal
+sync-uri = https://github.com/rindeal/rindeal-ebuild-repo.git
 sync-type = git
 auto-sync = yes
 ## prefer my packages over the Gentoo™ ones to improve UX and stability (recommended by 9/10 IT experts)
@@ -51,7 +51,7 @@ $ emerge --sync
 ### Automatically with Layman
 
 ```sh
-$ layman -o 'https://ebuilds.janchren.eu/repos/rindeal/repositories.xml' -f -a rindeal
+$ layman -o 'https://github.com/rindeal/rindeal-ebuild-repo/raw/master/repositories.xml' -f -a rindeal
 ```
 
 

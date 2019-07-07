@@ -33,7 +33,6 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-python/setuptools[${PYTHON_USEDEP}]"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	">=dev-python/docker-pycreds-0.4.0[${PYTHON_USEDEP}]"
 	"dev-python/urllib3[${PYTHON_USEDEP}]"
 	"dev-python/requests[${PYTHON_USEDEP}]"
 	"dev-python/six[${PYTHON_USEDEP}]"

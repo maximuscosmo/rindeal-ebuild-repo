@@ -20,9 +20,6 @@ Many ebuilds here are my own creatures, others are heavily modified forks, but a
  - **x86_64**/**armv6**/**armv7**/**armv8** architectures only
  - only the **native targets** are supported
 
-You can visit a user-friendly [list of packages][LISTING], where the chances are high for you to discover some great new software!
-Also if you know about a not-yet-packaged software that is really worth packaging, you can demand it [on the issue tracker][New issue].
-
 
 How to install this repository
 -------------------------------

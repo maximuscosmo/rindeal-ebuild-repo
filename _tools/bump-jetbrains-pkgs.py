@@ -175,7 +175,7 @@ def update_pkg(cat, pn, loc_slot, loc_ver, rem_slot, rem_ver):
         run_cmd(f"git mv -v {pn}-{loc_ver}*.ebuild {pn}-{rem_ver}.ebuild")
         GIT_LOCK.release()
 
-    if run_cmd(f"repoman manifest {pn}-{rem_ver}.ebuild") != 0:
+    if run_cmd(f"repoman manifest") != 0:
         GIT_LOCK.acquire()
         run_cmd('git reset -- .')
         run_cmd('git checkout -- .')

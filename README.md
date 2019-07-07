@@ -7,6 +7,7 @@ _Packages done right™_
 [![Docker Build Status][docker-label-badge]][docker-hub-project][![Docker Build Status][docker-badge]][docker-hub-project]
 <br/>
 [![Last Commit Status][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)
+![Commit cadence][commit-cadence-badge]![Commit cadence per week][commit-cadence-week-badge]![Commit cadence per month][commit-cadence-month-badge]![Commit cadence per year][commit-cadence-year-badge]
 
 
 Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following features:
@@ -120,7 +121,11 @@ which means it **cannot** be legally contributed to the [Gentoo™] ebuild repos
 [docker-hub-project]: https://hub.docker.com/r/rindeal/portage-amd64-base/
 [Gentoo™]: https://www.gentoo.org/ "main Gentoo project website"
 
-[ci-master-badge]:           https://badge-proxy.janchren.eu/ttl=60/https://img.shields.io/travis/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square&label=CI@master
-[docker-label-badge]:        https://badge-proxy.janchren.eu/ttl=86400/https://img.shields.io/badge/docker-image-gray.svg?style=flat-square&longCache=true
-[docker-badge]:              https://badge-proxy.janchren.eu/ttl=60/https://semaphoreci.com/api/v1/rindeal/portage-docker-images/branches/master/shields_badge.svg
-[last-commit-badge]:         https://badge-proxy.janchren.eu/ttl=600/https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square
+[ci-master-badge]:              https://img.shields.io/travis/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square&label=CI@master
+[docker-label-badge]:           https://img.shields.io/badge/docker-image-gray.svg?style=flat-square&longCache=true
+[docker-badge]:                 https://semaphoreci.com/api/v1/rindeal/portage-docker-images/branches/master/shields_badge.svg
+[last-commit-badge]:            https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square
+[commit-cadence-badge]:        https://img.shields.io/badge/-commit%20cadence-gray.svg?style=flat-square
+[commit-cadence-week-badge]:   https://img.shields.io/github/commit-activity/w/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square
+[commit-cadence-month-badge]:  https://img.shields.io/github/commit-activity/m/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square
+[commit-cadence-year-badge]:   https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square

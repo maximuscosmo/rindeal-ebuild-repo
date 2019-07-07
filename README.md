@@ -72,11 +72,11 @@ So if you want to enable the full potential of this repository, make sure you ha
 ### Prevent collisions between this repository and [Gentoo™] repository
 
 Many packages here have their _inferior_ counterparts in the [Gentoo™] repository.
-All my ebuild have been coded with the assumption that if there is such an overlap, it's always resolved in favour of my repository.
+All my ebuilds have been coded with the assumption of favouring my repository in case of such an overlap exists.
 Breaking this assumption may lead to all kinds of nasty issues.
 To make sure you're using only packages from my repository, there are several regularly updated `package.mask` files in `profiles/mask-alt-pkgs` directory, which
 you can link to your `/etc/portage/package.mask` directory and thus mask all [Gentoo™] counterparts of packages from this repository.
-To help automate the setup of these symlinks, I've created a small script called `profiles/mask-alt-pkgs/link.sh`, which you can use like this:
+To help automate the setup of these symlinks, I've created a tiny script called `profiles/mask-alt-pkgs/link.sh`, which you can use like this:
 
 ```sh
 $ <RINDEAL_REPO_DIR>/profiles/mask-alt-pkgs/link.sh /etc/portage/package.mask/rindeal-mask-alt-pkgs/
@@ -96,7 +96,7 @@ To achieve this goal I'm using several safety guards:
     - [_Docker_ image](https://hub.docker.com/r/rindeal/portage-amd64-base/) builds
 - last but not least I wish _really hard_ it would all just work :unicorn: :rainbow:
 
-This all, of course, doesn't prevent build failures, missing dependencies, etc. So, should you find
+This all, of course, doesn't prevent build failures, missing dependencies, etc. Should you find
 any issues, don't like something or just want to report morning news, please send me a PR or [file an issue][New issue].
 
 
@@ -107,9 +107,9 @@ any issues, don't like something or just want to report morning news, please sen
 
 - All code in this repo is licenced under GPL-2 ([full licence](./LICENSE)), if not stated otherwise.
 - As opposed to other similar repositories the copyright to work that goes into developing this repository
-is not dedicated to the&nbsp;_Gentoo&nbsp;Foundation,&nbsp;Inc._, which means it cannot be legally copied
-to the main [Gentoo™] ebuild repository.
-<br />TL;DR: if you're trying to get a code from here to the main [Gentoo™] ebuild repository, you're out of luck.
+is not dedicated to the&nbsp;_Gentoo&nbsp;Foundation,&nbsp;Inc._ or any similar umbrella entity,
+which means it **cannot** be legally contributed to the [Gentoo™] ebuild repository as their own guidelines forbid so.
+<br />TL;DR: if you're trying to get code from here to the [Gentoo™] ebuild repository (legally), you are out of luck!
 - _Gentoo_ is a trademark of the _Gentoo Foundation, Inc._
 - [Animal vector designed by Freepik](http://www.freepik.com/free-photos-vectors/animal)
 

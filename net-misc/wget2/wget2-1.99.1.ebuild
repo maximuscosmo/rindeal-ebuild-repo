@@ -1,26 +1,35 @@
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="gitlab:gnuwget"
+[[ "${PV}" == *9999* ]] || \
+	GH_REF="${P}"
+
 ## git-r3.eclass (part of git-hosting.eclass):
 EGIT_SUBMODULES=()
 
-## functions: rindeal:dsf:eval rindeal:dsf:prefix_flags
+## functions: dsf:eval
+inherit dsf-utils
+
+## functions:  rindeal:prefix_flags
 inherit rindeal-utils
+
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="Successor of GNU Wget, a file and recursive website downloader."
 LICENSE_A=(
-	"GPL-3+" # wget2
+	"GPL-3+"  # wget2
 	"LGPL-3+" # libwget
 )
 
@@ -32,7 +41,7 @@ IUSE_A=(
 	nls static-libs assert xattr doc test
 	+openssl +gnutls
 
-	$(rindeal:dsf:prefix_flags 'compression_' \
+	$(rindeal:prefix_flags 'compression_' \
 		bzip2 +zlib lzma brotli)
 
 	+libpsl
@@ -64,7 +73,7 @@ CDEPEND_A=(
 	"libpcre? ( dev-libs/libpcre:3 )"
 	"libpcre2? ( dev-libs/libpcre2:0 )"
 
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'libidn|libidn2' \
 			'virtual/libiconv' )"
 

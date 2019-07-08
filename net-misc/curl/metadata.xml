@@ -33,6 +33,7 @@
     <flag name="proxy">Proxy support</flag>
     <flag name="libssh2">libssh2 support for (SCP, SFTP)</flag>
     <flag name="libssh">libssh support for (SCP, SFTP)</flag>
+    <flag name="alt-svc">Alternative Service HTTP header support</flag>
     <!-- ### Authentication methods -->
     <flag name="auth_digest">Digest access authentication</flag>
     <flag name="auth_gssapi">GSSAPI (Generic Security Service Application Program Interface)</flag>
@@ -68,7 +69,7 @@
     <flag name="protocol_sftp">SFTP (SSH File Transfer Protocol)</flag>
     <!-- ### SSL -->
     <flag name="ssl">Crypto engine support. After enabling, choose one of the ssl_* options.</flag>
-    <flag name="ssl_axtls">axTLS Embedded SSL</flag>
+    <flag name="openssl-auto-load-config">Automatic loading of OpenSSL configuration</flag>
     <flag name="ssl_gnutls">GnuTLS</flag>
     <flag name="ssl_mbedtls">mbed TLS (previously PolarSSL)</flag>
     <flag name="ssl_nss">Mozilla Network Security Services</flag>

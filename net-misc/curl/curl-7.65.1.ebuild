@@ -1,8 +1,8 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -12,8 +12,11 @@ GH_REF="curl-${PV//./_}"
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
 
-## functions: rindeal:dsf:eval, rindeal:dsf:prefix_flags
+## functions: rindeal:prefix_flags
 inherit rindeal-utils
+
+## functions: dsf:eval
+inherit dsf-utils
 
 ## functions: eautoreconf
 inherit autotools
@@ -38,25 +41,25 @@ IUSE_A=(
 
 	ipv6 +unix-sockets +zlib brotli dns_c-ares dns_threaded idn psl
 
-	+cookies metalink proxy libssh2 libssh
+	+cookies metalink proxy libssh2 libssh +alt-svc
 
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"auth_" \
 		+digest gssapi kerberos ntlm ntlm-wb spnego tls-srp)
 
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"protocol_" \
 		+http +https http2 +ftp +ftps +file telnet ldap ldaps dict tftp gopher pop3 pop3s imap imaps \
 		smb smbs smtp smtps rtsp rtmp scp sftp)
 
-	+ssl
-	$(rindeal:dsf:prefix_flags \
+	+ssl +openssl-auto-load-config
+	$(rindeal:prefix_flags \
 		"ssl_" \
-			axtls gnutls mbedtls nss +openssl)
+			gnutls mbedtls nss +openssl)
 	# improve compatibility with external packages referencing these official use flags
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"curl_ssl_" \
-			axtls gnutls mbedtls nss openssl)
+			gnutls mbedtls nss openssl)
 )
 
 # tests lead to lots of false negatives, bug gentoo#285669
@@ -65,11 +68,10 @@ RESTRICT+=" test"
 CDEPEND_A=(
 	"protocol_ldap? ( net-nds/openldap )"
 	"ssl? ("
-		"$(rindeal:dsf:eval \
+		"$(dsf:eval \
 			"ssl_openssl|ssl_gnutls" \
 				"app-misc/ca-certificates")"
 
-		"ssl_axtls?		( net-libs/axtls )"
 		"ssl_gnutls?	("
 			"net-libs/gnutls:0=[static-libs?]"
 			"dev-libs/nettle:0="
@@ -108,9 +110,9 @@ REQUIRED_USE_A=(
 	"dns_threaded? ( threads )"
 	"ssl? ("
 		"|| ("
-			$(rindeal:dsf:prefix_flags \
+			$(rindeal:prefix_flags \
 				"ssl_" \
-				axtls gnutls mbedtls nss openssl)
+				gnutls mbedtls nss openssl)
 		")"
 	")"
 	"?? ( libssh2 libssh )"
@@ -126,14 +128,13 @@ REQUIRED_USE_A=(
 	"protocol_ldaps?  ( protocol_ldap ssl )"
 	"protocol_pop3s?  ( protocol_pop3 ssl )"
 	"protocol_imaps?  ( protocol_imap ssl )"
-	"protocol_smb?    ( auth_digest ^^ ( $(rindeal:dsf:prefix_flags "ssl_" openssl gnutls nss) ) )"
+	"protocol_smb?    ( auth_digest ^^ ( $(rindeal:prefix_flags "ssl_" openssl gnutls nss) ) )"
 	"protocol_smbs?   ( protocol_smb ssl )"
 	"protocol_smtps?  ( protocol_smtp ssl )"
 	"protocol_scp?    ( || ( libssh2 libssh ) )"
 	"protocol_sftp?   ( || ( libssh2 libssh ) )"
 
 	# ensure these use flags have the intended effect
-	"curl_ssl_axtls?  ( ssl_axtls )"
 	"curl_ssl_gnutls? ( ssl_gnutls )"
 	"curl_ssl_mbedtls?  ( ssl_mbedtls )"
 	"curl_ssl_nss?    ( ssl_nss )"
@@ -200,11 +201,11 @@ src_configure() {
 		--enable-warnings
 		--disable-werror
 		--disable-soname-bump
-		$(use_enable curldebug)
-		$(use_enable symbol-hiding)
+		$(use_enable   curldebug)
+		$(use_enable   symbol-hiding)
 		$(myusepref  e dns c-ares ares) # =PATH
-		$(use_enable rt)
-		--disable-code-coverage
+		$(use_enable   rt)
+# 		--disable-code-coverage  # TODO: enable this after https://github.com/curl/curl/pull/4099 is merged
 		$(use_enable   largefile)
 		$(use_enable   shared-libs shared)
 		$(use_enable   static-libs static)
@@ -242,27 +243,30 @@ src_configure() {
 		$(use_with     brotli)
 		"$(myusepref w auth gssapi{,} "${EPREFIX}"/usr)"
 		$(usex ssl $(usex ssl_openssl "--with-default-ssl-backend=openssl" '') '')
-		--without-winssl	# disable Windows native SSL/TLS
-		--without-darwinssl	# disable Apple OS native SSL/TLS
-		$(myssluse w openssl ssl)
-		$(myssluse w gnutls)
-# 		$(myssluse w polarssl)  # polarssl removed from Gentoo repos
-		$(myssluse w mbedtls)
-# 		$(myssluse w cyassl)  # TODO: --with-wolfssl as an alias for --with-cyassl
-		$(myssluse w nss)
-		$(myssluse w axtls)
+		--without-schannel	# disable Windows native SSL/TLS
+		--without-secure-transport # disable Apple OS native SSL/TLS
+		--without-amissl # Amiga only
+		$(myssluse w   openssl ssl)
+		$(use_enable   openssl-auto-load-config)
+		$(myssluse w   gnutls)
+		$(myssluse w   mbedtls)
+# 		$(myssluse w   wolfssl)  # TODO
+		$(myssluse w   nss)
+		--without-mesalink # SSL lib from Baidu written in Rust -> big nope
 		--with-ca-bundle="${EPREFIX}"/etc/ssl/certs/ca-certificates.crt
 		# "Don't use the built-in CA store of the SSL library"
 		--without-ca-fallback
-		$(use_with psl libpsl)
-		$(use_with		metalink libmetalink)
-		$(use_with		libssh2)
-		$(use_with		libssh)
-		$(myprotouse with	rtmp librtmp)
-		--without-winidn	# disable Windows native IDN
-		$(use_with idn libidn2)
-		$(myprotouse with	http2 nghttp2)
+		$(use_with     psl libpsl)
+		$(use_enable   alt-svc) ## TODO
+		$(use_with     metalink libmetalink)
+		$(use_with     libssh2)
+		$(use_with     libssh)
+		$(myprotouse w rtmp librtmp)
+		--without-winidn  # disable Windows native IDN
+		$(use_with     idn libidn2)
+		$(myprotouse w http2 nghttp2)
 		--with-zsh-functions-dir="${EPREFIX}"/usr/share/zsh/site-functions
+		--with-fish-functions-dir=yes
 	)
 
 	if use ssl_openssl || use ssl_gnutls ; then

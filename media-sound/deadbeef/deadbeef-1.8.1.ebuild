@@ -1,22 +1,29 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:Alexey-Yakovenko"
 
+## functions: dsf:eval
+inherit dsf-utils
+
+## functions: rindeal:prefix_flags
+inherit rindeal-utils
+
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
-## functions: rindeal:dsf:eval, rindeal:dsf:prefix_flags
-inherit rindeal-utils
 
 DESCRIPTION="Music player for *nix-like systems"
 HOMEPAGE="http://deadbeef.sf.net/ ${GH_HOMEPAGE}"
@@ -32,35 +39,38 @@ IUSE_A=(
 	abstract-socket
 	+gtk2 gtk3
 
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"plugin_decoder_" \
 		aac adplug alac cdda cdda-paranoia dca dumb ffap +ffmpeg flac gme mp3 +mp3-libmad mp3-libmpg123 musepack \
-		psf sc68 shn sid sndfile tta vorbis vtx wavpack wildmidi wma)
-	$(rindeal:dsf:prefix_flags \
+		opus psf sc68 shn sid sndfile tta vorbis vtx wavpack wildmidi wma)
+	$(rindeal:prefix_flags \
 		"plugin_output_" \
 		+alsa nullout oss +pulse)
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"plugin_dsp_" \
 		supereq mono2stereo src) # soundtouch
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"plugin_misc_" \
-		shellexec shellexecui converter hotkeys lfm pltbrowser notify artwork artwork-network artwork-imlib2)
-	$(rindeal:dsf:prefix_flags \
+		shellexec shellexecui converter hotkeys lfm pltbrowser notify artwork artwork-network artwork-imlib2 oggedit rgscanner)
+	$(rindeal:prefix_flags \
 		"plugin_vfs_" \
 		zip curl mms)
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		"plugin_playlist_" \
 		+m3u)
 )
 
 CDEPEND_A=(
+	# `AC_CHECK_LIB([intl],`
+	"virtual/libintl"
+
 	"gtk3? ("
 		# `PKG_CHECK_MODULES(GTK3_DEPS, gtk+-3.0 >= 3.0 gthread-2.0 glib-2.0`
 		"x11-libs/gtk+:3"
 		"dev-libs/glib:2"
 	")"
 	# `PKG_CHECK_MODULES(JANSSON, jansson)`
-	"$(rindeal:dsf:eval 'gtk2|gtk3' "dev-libs/jansson")"
+	"$(dsf:eval 'gtk2|gtk3|plugin_misc_shellexec' "dev-libs/jansson")"
 	"gtk2? ("
 		# `PKG_CHECK_MODULES(GTK2_DEPS, gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0`
 		"x11-libs/gtk+:2"
@@ -76,8 +86,6 @@ CDEPEND_A=(
 	"plugin_output_pulse? ( media-sound/pulseaudio )"
 	# `AC_CHECK_LIB([iconv]`
 	"virtual/libiconv"
-	# `AC_CHECK_LIB([curl]`
-	"net-misc/curl"
 	"plugin_decoder_mp3? ("
 		# `AC_CHECK_LIB([mad]`
 		"plugin_decoder_mp3-libmad? ( media-libs/libmad )"
@@ -89,9 +97,10 @@ CDEPEND_A=(
 		# `AC_CHECK_LIB([vorbisfile]`
 		"media-libs/libvorbis"
 	")"
+	# `PKG_CHECK_MODULES(OPUS, opusfile, HAVE_OPUS=yes`
+	"plugin_decoder_opus? ( media-libs/opus )"
 	# `AC_CHECK_LIB([ogg]`
-	# TODO: `libogg for oggedit`
-
+	"plugin_misc_oggedit? ( media-libs/libogg )"
 	# `AC_CHECK_LIB([FLAC]`
 	"plugin_decoder_flac? ( media-libs/flac )"
 	# `AC_CHECK_LIB([wavpack]`
@@ -114,7 +123,7 @@ CDEPEND_A=(
 	# `AC_CHECK_HEADER([X11/Xlib.h]`
 	"plugin_misc_hotkeys? ( x11-libs/libX11 )"
 	# `AC_CHECK_HEADERS(sys/soundcard.h)`
-	# "plugin_output_oss? ( FIXME )"
+	"plugin_output_oss? ( sys-libs/glibc )"
 	# `AS_IF([test "${HAVE_CURL}" = "yes"`
 	"plugin_misc_lfm? ( net-misc/curl )"
 	"plugin_misc_artwork? ("
@@ -175,7 +184,8 @@ my_filter() {
 REQUIRED_USE_A=(
 	# doesn't work without a GUI
 	"|| ( gtk2 gtk3 )"
-	# relations specified in Makefile.am
+	# `AS_IF([test "${enable_shellexecui}" != "no" -a "${enable_shellexec}" != "no"], [`
+	# `AS_IF([test "${HAVE_GTK2}" = "yes" -o "${HAVE_GTK3}" = "yes"], [`
 	"plugin_misc_shellexecui? ( plugin_misc_shellexec || ( gtk2 gtk3 ) )"
 	# at least one of plugin_output_
 	"|| ( $(my_filter '== *plugin_output_*' "${IUSE_A[@]}" ) )"
@@ -186,7 +196,7 @@ REQUIRED_USE_A=(
 			"plugin_decoder_mp3-libmad"
 		")"
 	")"
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		"plugin_decoder_mp3-libmpg123|plugin_decoder_mp3-libmad" \
 			"plugin_decoder_mp3"
 	)"
@@ -227,11 +237,8 @@ src_prepare() {
 	rsed -e '/^EXTRA_DIST/i docs_DATA =' -i -- Makefile.am
 
 	# `groups extending the format should start with "X-"`
+	# TODO: removein nex version; fixed in https://github.com/DeaDBeeF-Player/deadbeef/commit/7dc7ef37bcbe4a2d5926d1b0ae9f59f3ee8b56da
 	rsed -r -e '\@^\[[^]]* Shortcut Group\]@ s@^\[@[X-@' -i -- ${PN}.desktop.in
-	# TODO: remove in in 0.7.3+, fixed by https://github.com/Alexey-Yakovenko/deadbeef/pull/1697
-	rsed -e '/^Keywords=/i Actions=Play;Pause;Stop;Next;Prev' -i -- ${PN}.desktop.in
-	# TODO: remove in in 0.7.3+, fixed by https://github.com/Alexey-Yakovenko/deadbeef/pull/1697
-	rsed -r -e 's,(Desktop Action Prev)ious,\1,' -i -- ${PN}.desktop.in
 
 	# automake: `error: required file `./config.rpath' not found`
 	touch config.rpath || die
@@ -246,8 +253,10 @@ my_gen_econf_args() {
 
 	local f
 	local list=( $(my_filter "== *${cat}_*" ${IUSE}) )
-	for f in "${list[@]}" ; do
-		if [[ "${f}" == "${cat}_"* ]] ; then
+	for f in "${list[@]}"
+	do
+		if [[ "${f}" == "${cat}_"* ]]
+		then
 			local opt="${f##"${cat}_"}"
 			var_out["${f}"]="$(use_${type} "${f}" "${opt}")"
 		fi
@@ -271,17 +280,20 @@ src_configure() {
 		plugin_playlist
 		plugin_vfs
 	)
-	for g in "${groups[@]}" ; do
+	for g in "${groups[@]}"
+	do
 		my_gen_econf_args gen_econf_args enable "${g}"
 	done
 
-	## here is a place for any modifications of the generated options
+	## here is the place for any modifications of the generated options
+	unset gen_econf_args['plugin_misc_oggedit'] # it's an internal plugin
 	gen_econf_args['plugin_vfs_curl']="$(use_enable plugin_vfs_curl vfs-curl)"
 	gen_econf_args['plugin_vfs_zip']="$(use_enable plugin_vfs_zip vfs-zip)"
 	gen_econf_args['plugin_decoder_mp3-libmad']="$(use_enable plugin_decoder_mp3-libmad libmad)"
 	gen_econf_args['plugin_decoder_mp3-libmpg123']="$(use_enable plugin_decoder_mp3-libmpg123 libmpg123)"
 
 	local -a my_econf_args=(
+		--disable-coreaudio  # MacOS
 		--disable-portable
 		--without-included-gettext
 
@@ -306,12 +318,11 @@ src_install() {
 	prune_libtool_files --modules
 
 	## make items in the `Help` menu available
-	local d
-	for d in help.txt ChangeLog about.txt translators.txt ; do
-		dodoc "${d}"
+	local f
+	for f in help.txt ChangeLog about.txt translators.txt COPYING.GPLv2 COPYING.LGPLv2.1
+	do
+		dodoc "${f}"
 		# exclude from the compression list
-		docompress -x "/usr/share/doc/${PF}/${d}"
+		docompress -x "/usr/share/doc/${PF}/${f}"
 	done
-	dosym "${PORTDIR}/licenses/GPL-2" "/usr/share/doc/${PF}/COPYING.GPLv2"
-	dosym "${PORTDIR}/licenses/LGPL-2.1" "/usr/share/doc/${PF}/COPYING.LGPLv2.1"
 }

@@ -27,6 +27,7 @@
     <flag name="plugin_decoder_mp3-libmpg123">libmpg123 support in mp3 plugin</flag>
     <flag name="plugin_decoder_mp3-libmad">libmad support in mp3 plugin</flag>
     <flag name="plugin_decoder_musepack">musepack plugin</flag>
+    <flag name="plugin_decoder_opus">opus plugin</flag>
     <flag name="plugin_decoder_sc68">sc68 Atari ST and Amiga music player</flag>
     <flag name="plugin_decoder_shn">SHN plugin</flag>
     <flag name="plugin_decoder_sid">commodore64 SID music player plugin</flag>
@@ -49,7 +50,9 @@
     <flag name="plugin_misc_hotkeys">global hotkeys plugin</flag>
     <flag name="plugin_misc_lfm">last.fm/libre.fm scrobbler plugin</flag>
     <flag name="plugin_misc_notify">notification-daemon support plugin</flag>
+    <flag name="plugin_misc_oggedit">Allow editing OGG files</flag>
     <flag name="plugin_misc_pltbrowser">playlist browser gui plugin</flag>
+    <flag name="plugin_misc_rgscanner">ReplayGain Scanner pluginr</flag>
     <flag name="plugin_misc_shellexec">shell commands plugin</flag>
     <flag name="plugin_misc_shellexecui">shellexec GTK UI plugin</flag>
     <!-- ### DB_PLUGIN_OUTPUT = 2 -->

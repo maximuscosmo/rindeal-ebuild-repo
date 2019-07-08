@@ -1,8 +1,8 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -19,21 +19,22 @@ DISTUTILS_OPTIONAL="1"
 # java-pkg-simple.eclass:
 JAVA_SRC_DIR="java"
 
-## functions: ver_cut
-inherit eapi7-ver
 # EXPORT_FUNCTIONS: pkg_setup src_prepare src_compile pkg_preinst
 inherit java-pkg-2
+
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
+
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1
+
 # EXPORT_FUNCTIONS: src_compile src_install
 inherit java-pkg-simple
 
 DESCRIPTION="Generic-purpose lossless compression algorithm"
-HOMEPAGE="https://github.com/google/brotli"
 LICENSE="MIT python? ( Apache-2.0 )"
 
 SLOT="0/$(ver_cut 1)"
@@ -72,7 +73,8 @@ src_prepare() {
 	cmake-utils_src_prepare
 
 	use python && distutils-r1_src_prepare
-	if use java ; then
+	if use java
+	then
 		find "${JAVA_SRC_DIR}" -name "*Test.java" -print -delete || die
 
 		java-pkg-2_src_prepare

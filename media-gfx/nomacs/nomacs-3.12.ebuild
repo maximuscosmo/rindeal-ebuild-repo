@@ -14,7 +14,7 @@ GH_RN="github"
 # which complains because of `$(CONFIGURATION)` not being expanded beforehand
 CMAKE_MAKEFILE_GENERATOR="emake"
 
-## functions: rindeal:dsf:prefix_flags
+## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
 ## EXPORT_FUNCTIONS: src_unpack
@@ -37,7 +37,7 @@ SRC_URI+="
 
 KEYWORDS="~amd64"
 IUSE_A=( debug opencv +plugins raw tiff zip nls
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		plugins_ \
 			+fake_miniatures \
 			nikon \

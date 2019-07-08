@@ -6,8 +6,8 @@ _Packages done right™_
 [![Master Build Status][ci-master-badge]][ci-master]
 [![Docker Build Status][docker-label-badge]][docker-hub-project][![Docker Build Status][docker-badge]][docker-hub-project]
 <br/>
-![First commit date][first-commit-badge][![Last commit date][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)
-![Commit cadence][commit-cadence-badge]![Commit cadence per week][commit-cadence-week-badge]![Commit cadence per month][commit-cadence-month-badge]![Commit cadence per year][commit-cadence-year-badge]
+![Commit Stats][commit-stats-label-badge]
+![First commit date][first-commit-badge][![Last commit date][last-commit-badge]](https://github.com/rindeal/rindeal-ebuild-repo/commits/master)[![Commit cadence][commit-cadence-label-badge]][pulse][![Commit cadence per week][commit-cadence-week-badge]][pulse][![Commit cadence per month][commit-cadence-month-badge]][pulse][![Commit cadence per year][commit-cadence-year-badge]][pulse][![Commits queued][commits-queued-badge]](https://github.com/rindeal/rindeal-ebuild-repo/compare/master...dev/rindeal)
 
 
 Many ebuilds here are my own creatures, others are heavily modified forks, but all share the following features:
@@ -120,13 +120,16 @@ which means it **cannot** be legally contributed to the [Gentoo™] ebuild repos
 [ci-master]: https://travis-ci.org/rindeal/rindeal-ebuild-repo
 [docker-hub-project]: https://hub.docker.com/r/rindeal/portage-amd64-base/
 [Gentoo™]: https://www.gentoo.org/ "main Gentoo project website"
+[pulse]: https://github.com/rindeal/rindeal-ebuild-repo/pulse "GitHub Pulse for rindeal-ebuild-repo"
 
-[ci-master-badge]:             https://img.shields.io/travis/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square&label=CI@master
-[docker-label-badge]:          https://img.shields.io/badge/docker-image-gray.svg?style=flat-square&longCache=true
+[ci-master-badge]:             https://img.shields.io/travis/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square&label=CI@master&cacheSeconds=300
+[docker-label-badge]:          https://img.shields.io/badge/-image-gray.svg?style=flat-square&logo=docker&cacheSeconds=86400
 [docker-badge]:                https://semaphoreci.com/api/v1/rindeal/portage-docker-images/branches/master/shields_badge.svg
-[first-commit-badge]:          https://img.shields.io/date/1439332378.svg?label=first%20commit&style=flat-square
-[last-commit-badge]:           https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square
-[commit-cadence-badge]:        https://img.shields.io/badge/-commit%20cadence-gray.svg?style=flat-square
-[commit-cadence-week-badge]:   https://img.shields.io/github/commit-activity/w/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square
-[commit-cadence-month-badge]:  https://img.shields.io/github/commit-activity/m/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square
-[commit-cadence-year-badge]:   https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square
+[commit-stats-label-badge]:    https://img.shields.io/badge/-commit%20stats:-gray.svg?style=flat-square&cacheSeconds=86400
+[first-commit-badge]:          https://img.shields.io/date/1439332378.svg?label=first&style=flat-square&cacheSeconds=86400
+[last-commit-badge]:           https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?label=last&style=flat-square&cacheSeconds=300
+[commit-cadence-label-badge]:  https://img.shields.io/badge/-cadence-gray.svg?style=flat-square&cacheSeconds=86400
+[commit-cadence-week-badge]:   https://img.shields.io/github/commit-activity/w/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
+[commit-cadence-month-badge]:  https://img.shields.io/github/commit-activity/m/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
+[commit-cadence-year-badge]:   https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
+[commits-queued-badge]:        https://img.shields.io/github/commits-since/rindeal/rindeal-ebuild-repo/master/dev/rindeal.svg?label=queued&style=flat-square&cacheSeconds=600

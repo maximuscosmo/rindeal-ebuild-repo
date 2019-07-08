@@ -7,11 +7,12 @@
 # @BLURB: RPM eclass
 # @DESCRIPTION:
 
-if [ -z "${_RPM_ECLASS}" ] ; then
+if [[ -z "${_RPM_ECLASS}" ]]
+then
 
 case "${EAPI:-0}" in
-    6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 | 7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 

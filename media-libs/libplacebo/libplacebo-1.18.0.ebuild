@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -10,6 +10,7 @@ GH_REF="v${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
 ## functions: meson_use
 inherit meson
@@ -23,7 +24,7 @@ KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( vulkan test bench )
 
 CDEPEND_A=(
-	"vulkan? ( media-libs/vulkan-sdk )"
+# 	"vulkan? ( media-libs/vulkan-sdk )" ## TODO
 )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
@@ -35,7 +36,7 @@ inherit arrays
 
 src_configure() {
 	local emesonargs=(
-		$(meson_use vulkan)
+# 		$(meson_use vulkan) ## TODO
 		-D shaderc=no # https://github.com/google/shaderc/releases is still beta
 		$(meson_use test tests)
 		$(meson_use bench)

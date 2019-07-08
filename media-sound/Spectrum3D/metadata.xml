@@ -7,6 +7,5 @@
   </maintainer>
   <use>
     <flag name="gtk3">Build with gtk3, gtk2 otherwise</flag>
-    <flag name="gstreamer010">Build with gstreamer-0.10, gstreamer-1.0 otherwise</flag>
   </use>
 </pkgmetadata>

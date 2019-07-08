@@ -1,11 +1,12 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: doicon
 inherit desktop
 
@@ -19,7 +20,7 @@ MY_P="${MY_PN}-${PV}"
 SRC_URI="mirror://sourceforge/${MY_PN}/${MY_P}.tar.gz"
 
 KEYWORDS="~amd64"
-IUSE_A=( gtk3 sdl jack gstreamer010 )
+IUSE_A=( gtk3 sdl jack )
 
 CDEPEND_A=(
 	"gtk3? ( x11-libs/gtk+:3 )"
@@ -31,21 +32,17 @@ CDEPEND_A=(
 	# libGL, libGLU
 	"virtual/opengl"
 
-	# gstreamer-0.10
-	"gstreamer010? ( media-libs/gstreamer:0.10 )"
 	# gstreamer-1.0
-	"!gstreamer010? ( media-libs/gstreamer:1.0 )"
+	"media-libs/gstreamer:1.0"
 
 	"jack? ( virtual/jack )"
 )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	# equalizer-nbands, audiochebband, jackaudiosrc, spectrum, wavenc, jackaudiosink, autoaudiosink
-	"gstreamer010? ( media-libs/gst-plugins-good:0.10 )"
-	"!gstreamer010? ( media-libs/gst-plugins-good:1.0 )"
+	"media-libs/gst-plugins-good:1.0"
 	# alsasrcm, playbin, audioconvert, audiotestsrc
-	"gstreamer010? ( media-libs/gst-plugins-base:0.10 )"
-	"!gstreamer010? ( media-libs/gst-plugins-base:1.0 )"
+	"media-libs/gst-plugins-base:1.0"
 )
 
 inherit arrays

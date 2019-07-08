@@ -1,7 +1,7 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## python-*.eclass:
@@ -20,8 +20,8 @@ inherit autotools
 ## EXPORT_FUNCTIONS: pkg_setup
 inherit python-any-r1
 
-## functions: rindeal:dsf:eval
-inherit rindeal-utils
+## functions: dsf:eval
+inherit dsf-utils
 
 ## functions: prune_libtool_files
 inherit ltprune
@@ -43,13 +43,13 @@ IUSE_A=( doc man static-libs nls +rpath
 )
 
 CDEPEND_A=(
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'(builtin & builtin_libicu) | (runtime & runtime_libicu)' \
 			"dev-libs/icu[static-libs?]" )"
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'(builtin & builtin_libidn) | (runtime & runtime_libidn)' \
 			"net-dns/libidn[static-libs?]" )"
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'(builtin & builtin_libidn2) | (runtime & runtime_libidn2)' \
 			"net-dns/libidn2[static-libs?]" )"
 
@@ -95,7 +95,8 @@ src_unpack() {
 src_prepare() {
 	default
 
-	if ! use doc ; then
+	if ! use doc
+	then
 		## this copies ./autogen.sh
 		rrm -f gtk-doc.make
 		echo "EXTRA_DIST =" >gtk-doc.make || die

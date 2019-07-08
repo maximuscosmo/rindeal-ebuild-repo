@@ -1,23 +1,34 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
+
+GITLAB_SERVER_URL="https://gitlab.gnome.org"  # optional
+GITLAB_REPO="GNOME/msitools"  # optional
+GITLAB_REF="v${PV}"  # optional
+
+inherit gitlab
 
 ## EXPORPT_FUNCTIONS: src_prepare
 ## functions: vala_depend
 inherit vala
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="Set of programs to inspect and build Windows Installer (.MSI) files"
-HOMEPAGE="https://wiki.gnome.org/${PN} https://git.gnome.org//browse/msitools"
+HOMEPAGE="https://wiki.gnome.org/${PN} $(gitlab:homepage:gen_uri  ) https://git.gnome.org//browse/msitools"
 LICENSE="LGPL-2+"
 
 SLOT="0"
-SRC_URI="https://git.gnome.org/browse/${PN}/snapshot/${P}.tar.xz -> ${P}--snapshot.tar.xz"
+gitlab:snapshot:gen_uri --server-url "${GITLAB_SERVER_URL}" --repo "${GITLAB_REPO}" --ref "${GITLAB_REF}" --uri-var foo --distfile-var bar
+SRC_URI=(
+	"${GITLAB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( nls rpath gnu-ld )

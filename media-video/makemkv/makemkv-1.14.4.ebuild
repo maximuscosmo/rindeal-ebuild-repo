@@ -1,14 +1,24 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
+
+## git-hosting.eclass:
+GH_RN="gitlab:${PN}:${PN}-oss"
+GH_REF="v${PV}"
+GH_FETCH_TYPE="manual"
+
+## EXPORT_FUNCTIONS: src_unpack
+inherit git-hosting
 
 ## functions: make_desktop_entry, newicon
 inherit desktop
+
 ## functions: tc-getCC
 inherit toolchain-funcs
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
 
@@ -16,14 +26,19 @@ DESCRIPTION="Tool for ripping and streaming Blu-ray, HD-DVD and DVD discs"
 HOMEPAGE="https://www.makemkv.com/"
 LICENSE="LGPL-2.1 MPL-1.1 MakeMKV-EULA openssl"
 
-MY_P_OSS="${PN}-oss-${PV}"
-MY_P_BIN="${PN}-bin-${PV}"
+MY_S_OSS="${WORKDIR}/${PN}-oss-${PV}"
+MY_S_BIN="${WORKDIR}/${PN}-bin-${PV}"
 
 SLOT="0"
+git-hosting_gen_snapshot_url "${GH_RN}"              "${GH_REF}" MY_makemkv_oss_uri MY_makemkv_oss_distfile
+git-hosting_gen_snapshot_url "${GH_RN//"-oss"/-bin}" "${GH_REF}" MY_makemkv_bin_uri MY_makemkv_bin_distfile
 SRC_URI_A=(
-	https://www.makemkv.com/download{,/old}/${MY_P_OSS}.tar.gz
-	https://www.makemkv.com/download{,/old}/${MY_P_BIN}.tar.gz
+# 	https://www.makemkv.com/download{,/old}/${PN}-oss-${PV}.tar.gz
+# 	https://www.makemkv.com/download{,/old}/${PN}-bin-${PV}.tar.gz
+	"${MY_makemkv_oss_uri} -> ${MY_makemkv_oss_distfile}"
+	"${MY_makemkv_bin_uri} -> ${MY_makemkv_bin_distfile}"
 )
+unset MY_makemkv_oss_uri MY_makemkv_bin_uri
 
 KEYWORDS="-* ~amd64"
 IUSE_A=( +gui )
@@ -45,7 +60,7 @@ CDEPEND_A=(
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"virtual/pkgconfig" )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	# used for http downloads, see 'HTTP_Download()' in '${MY_P_OSS}/libabi/src/httplinux.cpp'
+	# used for http downloads, see 'HTTP_Download()' in '${MY_S_OSS}/libabi/src/httplinux.cpp'
 	"net-misc/wget"
 )
 
@@ -69,25 +84,29 @@ declare -A L10N_LOCALES_MAP=(
 	['sv']='swe'
 )
 L10N_LOCALES=( "${!L10N_LOCALES_MAP[@]}" )
+MY_LOC_DIR="${MY_S_BIN}"/src/share
+MY_LOC_PRE='makemkv_'
+MY_LOC_POST='.mo.gz'
 inherit l10n-r1
 
-S="${WORKDIR}/${MY_P_OSS}"
+S="${MY_S_OSS}"
 
 pkg_setup() {
 	[[ -n "${EPREFIX}" ]] && die "This package doesn't support EPREFIX, because of hardcoded paths in bundled binaries"
 }
 
+src_unpack() {
+	git-hosting_unpack "${DISTDIR}/${MY_makemkv_oss_distfile}" "${MY_S_OSS}"
+	git-hosting_unpack "${DISTDIR}/${MY_makemkv_bin_distfile}" "${MY_S_BIN}"
+}
+
 src_prepare() {
 	eapply "${FILESDIR}"/path.patch
+	eapply_user
 
 	xdg_src_prepare
 
-	# make these vars global as they're used in src_install() as well
-	declare -g -r -- \
-        LOC_DIR="${WORKDIR}/${MY_P_BIN}"/src/share \
-        LOC_PRE='makemkv_' \
-        LOC_POST='.mo.gz'
-	l10n_find_changes_in_dir "${LOC_DIR}" "${LOC_PRE}" "${LOC_POST}"
+	l10n_find_changes_in_dir "${MY_LOC_DIR}" "${MY_LOC_PRE}" "${MY_LOC_POST}"
 }
 
 src_configure() {
@@ -135,11 +154,12 @@ my_install_key_updater() {
 		config_dir="\$(realpath ~/.MakeMKV)"
 		config_file="settings.conf"
 
-		mkdir -p "\${config_dir}" 2>/dev/null
+		mkdir -v -p "\${config_dir}" 2>/dev/null
 		f="\${config_dir}/\${config_file}"
 
 		# delete old value
-		if [ -f "\${f}" ] ; then
+		if [ -f "\${f}" ]
+		then
 			sed -e '/app_Key/d' -i -- "\${f}"
 		fi
 
@@ -151,10 +171,11 @@ my_install_key_updater() {
 
 src_install-oss() {
 	### Install OSS components
-	cd "${WORKDIR}/${MY_P_OSS}" || die
+	cd "${MY_S_OSS}" || die
 
 	local lib
-	for lib in libdriveio libmakemkv libmmbd ; do
+	for lib in libdriveio libmakemkv libmmbd
+	do
 		local path="$(echo "out/${lib}.so."?)"
 		local name="${path##"out/"}"
 		dolib.so "${path}"
@@ -165,7 +186,8 @@ src_install-oss() {
 	done
 
 	find -type d -name "inc" | \
-	while read -r dir ; do
+	while read -r dir
+	do
 		local insdir="/usr/include/makemkv"
 		local libdirname="$( basename "$( dirname "${dir}" )" )"
 
@@ -178,15 +200,17 @@ src_install-oss() {
 	done
 	assert
 
-	if use gui ; then
+	if use gui
+	then
 		dobin "out/${PN}"
 
 		local s
-		for s in 16 22 32 64 128 ; do
+		for s in 16 22 32 64 128
+		do
 			newicon -s "${s}" "makemkvgui/share/icons/${s}x${s}/makemkv.png" "${PN}.png"
 		done
 
-		# Although upstream supplies .desktop file in '${MY_P_OSS}/makemkvgui/share/makemkv.desktop',
+		# Although upstream supplies .desktop file in '${MY_S_OSS}/makemkvgui/share/makemkv.desktop',
 		# the generated one is better.
 		make_desktop_entry "${PN}" "MakeMKV" "${PN}" 'Qt;AudioVideo;Video'
 	fi
@@ -201,13 +225,13 @@ src_install-oss() {
 
 src_install-bin() {
 	### Install binary/pre-compiled/pre-generated components
-	cd "${WORKDIR}/${MY_P_BIN}" || die
+	cd "${MY_S_BIN}" || die
 
 	## install prebuilt bins
-	use amd64 || die && \
-		dobin bin/amd64/makemkvcon
+	dobin bin/amd64/makemkvcon
 
 	## BEGIN: install misc files
+
 	# this directory is hardcoded in the binaries
 	insinto /usr/share/MakeMKV
 
@@ -217,8 +241,9 @@ src_install-bin() {
 	# install locales
 	local l locales
 	l10n_get_locales locales app on
-	for l in ${locales} ; do
-		doins "${LOC_DIR}/${LOC_PRE}${l}${LOC_POST}"
+	for l in ${locales}
+	do
+		doins "${MY_LOC_DIR}/${MY_LOC_PRE}${l}${MY_LOC_POST}"
 	done
 
 	## END

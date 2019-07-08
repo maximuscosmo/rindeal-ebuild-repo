@@ -1,11 +1,8 @@
-# Copyright 2016,2018 Jan Chren (rindeal)
+# Copyright 2016,2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
-
-## functions: ver_cut
-inherit eapi7-ver
 
 ## functions: rpm_unpack
 inherit rpm
@@ -74,7 +71,7 @@ RDEPEND_A=(
 
 	# libcrypto.so.0.9.8
 	# libssl.so.0.9.8
-	'dev-libs/openssl:0.9.8'
+	'dev-libs/openssl-compat:0.9.8'
 
 	# device discovery
 	'virtual/udev'

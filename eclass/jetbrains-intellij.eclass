@@ -1,4 +1,4 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: jetbrains-intellij.eclass
@@ -6,18 +6,18 @@
 # @BLURB: Boilerplate for IntelliJ based IDEs
 # @DESCRIPTION:
 
-if [ -z "${_JETBRAINS_INTELLIJ_ECLASS}" ] ; then
+if [[ -z "${_JETBRAINS_INTELLIJ_ECLASS}" ]]
+then
 
 case "${EAPI:-0}" in
-	6) ;;
-	*) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 | 7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 inherit rindeal
 
-
-## functions: get_version_component_range, get_major_version
-inherit versionator
+## functions: ver_cut
+(( EAPI < 7 )) && inherit eapi7-ver
 
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
@@ -35,7 +35,7 @@ declare -g -r \
 HOMEPAGE="https://www.jetbrains.com/${_JBIJ_PN_BASE}"
 LICENSE="IDEA || ( IDEA_Academic IDEA_Classroom IDEA_OpenSource IDEA_Personal )"
 
-SLOT="$(get_version_component_range 1-2)"
+SLOT="$(ver_cut 1-2)"
 declare -g -r \
 	_JBIJ_PN_SLOTTED="${PN}${SLOT}"
 

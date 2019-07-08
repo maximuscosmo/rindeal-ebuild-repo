@@ -1,8 +1,8 @@
 # Copyright 1999-2017 Gentoo Foundation
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -12,17 +12,22 @@ GH_REF="v${PV}"
 ## python-*.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )
 
-# functions: rindeal:dsf:prefix_flags
+# functions: rindeal:prefix_flags
 inherit rindeal-utils
+
 # functions: python_setup, python_get_sitedir
 # EXPORT_FUNCTIONS: pkg_setup
 inherit python-any-r1
+
 # EXPORT_FUNCTIONS src_unpack
 inherit git-hosting
+
 # EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
 # functions: eautoreconf
 inherit autotools
+
 # functions: systemd_get_userunitdir
 inherit systemd
 
@@ -36,11 +41,11 @@ KEYWORDS="~amd64"
 IUSE_A=(
 	gui nls
 
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		'methods_' \
 		drm +randr vidmode
 	)
-	$(rindeal:dsf:prefix_flags \
+	$(rindeal:prefix_flags \
 		'location_providers_' \
 		geoclue2
 	)
@@ -79,7 +84,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 REQUIRED_USE_A=(
 	"gui? ( ${PYTHON_REQUIRED_USE} )"
 	"|| ("
-		"$(rindeal:dsf:prefix_flags \
+		"$(rindeal:prefix_flags \
 			'methods_' \
 			drm randr vidmode
 		)"
@@ -124,13 +129,15 @@ src_configure() {
 src_install() {
 	emake DESTDIR="${D}" UPDATE_ICON_CACHE=/bin/true $(usex nls '' INTLTOOL_MERGE=/bin/true) install
 
-	if use gui ; then
+	if use gui
+	then
 		emake DESTDIR="${D}" pythondir="$(python_get_sitedir)" \
 			-C src/redshift-gtk install
 		dosym redshift-gtk /usr/bin/gtk-redshift
 	fi
 
-	for s in "${PN}.service" $(usex gui "${PN}-gtk.service" '') ; do
+	for s in "${PN}.service" $(usex gui "${PN}-gtk.service" '')
+	do
 		rindeal:expand_vars "${FILESDIR}/${s}.in" "${T}/${s}"
 		systemd_douserunit "${T}/${s}"
 	done

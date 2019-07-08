@@ -9,7 +9,10 @@ inherit rindeal
 GH_RN="github"
 GH_REF="v${PV}"
 
-## functions: rindeal:dsf:prefix_flags, rindeal:dsf:eval
+## functions: dsf:eval
+inherit dsf-utils
+
+## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
 ## EXPORT_FUNCTIONS: src_unpack
@@ -27,14 +30,14 @@ SLOT="0/$(ver_cut 2)"
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( debug +curl examples gssapi +ssh test +threads trace +https
-	"$(rindeal:dsf:prefix_flags \
+	"$(rindeal:prefix_flags \
 		sha1_ \
 			generic +openssl collision_detection)"
 )
 
 CDEPEND_A=(
 	# used for https as well as for SHA1 crypto if chosen
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'sha1_openssl|https' \
 			"dev-libs/openssl:0=")"
 	"sys-libs/zlib"
@@ -49,7 +52,7 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(
-	"^^ ( $(rindeal:dsf:prefix_flags \
+	"^^ ( $(rindeal:prefix_flags \
 		sha1_ \
 			generic openssl collision_detection) )"
 )

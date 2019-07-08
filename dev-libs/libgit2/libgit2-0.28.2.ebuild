@@ -9,7 +9,10 @@ inherit rindeal
 GH_RN="github"
 GH_REF="v${PV}"
 
-## functions: rindeal:dsf:prefix_flags, rindeal:dsf:eval
+## functions: dsf:eval
+inherit dsf-utils
+
+## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
 ## EXPORT_FUNCTIONS: src_unpack
@@ -27,19 +30,19 @@ SLOT="0/$(ver_cut 2)"
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( debug examples gssapi +ssh test +threads trace +https
-	"$(rindeal:dsf:prefix_flags \
+	"$(rindeal:prefix_flags \
 		sha1_ \
 			generic +openssl mbedtls collision_detection)"
-	"$(rindeal:dsf:prefix_flags \
+	"$(rindeal:prefix_flags \
 		https_ \
 			+openssl mbedtls)"
 )
 
 CDEPEND_A=(
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'sha1_openssl|https_openssl' \
 			"dev-libs/openssl:0=")"
-	"$(rindeal:dsf:eval \
+	"$(dsf:eval \
 		'sha1_mbedtls|https_mbedtls' \
 			"net-libs/mbedtls:0=")"
 	"sys-libs/zlib"
@@ -53,10 +56,10 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(
-	"^^ ( $(rindeal:dsf:prefix_flags \
+	"^^ ( $(rindeal:prefix_flags \
 		sha1_ \
 			generic openssl mbedtls collision_detection) )"
-	"https? ( ^^ ( $(rindeal:dsf:prefix_flags \
+	"https? ( ^^ ( $(rindeal:prefix_flags \
 		https_ \
 			openssl mbedtls) ) )"
 )

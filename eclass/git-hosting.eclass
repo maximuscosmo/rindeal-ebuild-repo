@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: git-hosting.eclass
@@ -237,9 +237,8 @@ git-hosting_unpack() {
 	# do not use '${S}' for 'unpack_to' as user might overwrite 'S' leading to a wrong behaviour
 	local -r -- unpack_to="${2}"
 
-	## extract snapshot to 'S'
 	printf ">>> Unpacking '%s' to '%s'\n" "${unpack_from##*/}" "${unpack_to}"
-	mkdir -p "${unpack_to}" || die "Failed to create S='${unpack_to}' directory"
+	mkdir -p "${unpack_to}" || die "Failed to create '${unpack_to}' directory"
 	local tar=( tar --extract
 		--strip-components=1
 		--file="${unpack_from}" --directory="${unpack_to}" )

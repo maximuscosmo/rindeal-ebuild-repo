@@ -1,7 +1,7 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -10,19 +10,26 @@ GH_REF="release-${PV}"
 
 ## functions: append-cppflags
 inherit flag-o-matic
+
 ## functions: eqmake5
 inherit qmake-utils
+
 ## EXPORT_FUNCTIONS: src_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: rindeal:expand_vars
 inherit rindeal-utils
+
 ## functions: systemd_dounit systemd_douserunit
 inherit systemd
+
 ## functions: multibuild_foreach_variant multibuild_copy_sources run_in_build_dir
 inherit multibuild
 
@@ -33,7 +40,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE="+dbus debug nls +gui webui"
+IUSE_A=( +dbus debug nls +gui webui )
 
 CDEPEND_A=(
 	"dev-libs/boost:="
@@ -77,9 +84,10 @@ src_prepare-locales() {
 	l10n_find_changes_in_dir "${loc_dir}" "${loc_pre}" "${loc_post}"
 
 	l10n_get_locales locales app $(usex nls off all)
-	for l in ${locales} ; do
+	for l in ${locales}
+	do
 		rrm "${loc_dir}/${loc_pre}${l}${loc_post}"
-		rsed -e "/qbittorrent_${l}.qm/d" -i -- src/lang.qrc
+		rsed -e "/qbittorrent_${l}.qm/d" -i -- "${loc_dir}"/lang.qrc
 	done
 }
 
@@ -108,7 +116,8 @@ src_prepare() {
 my_multi_src_configure() {
 	# workaround build issue with older boost
 	# https://github.com/qbittorrent/qBittorrent/issues/4112
-	if has_version '<dev-libs/boost-1.58' ; then
+	if has_version '<dev-libs/boost-1.58'
+	then
 		append-cppflags -DBOOST_NO_CXX11_REF_QUALIFIERS
 	fi
 
@@ -120,9 +129,11 @@ my_multi_src_configure() {
 		$(use_enable debug)
 	)
 
-	if [[ "${MULTIBUILD_VARIANT}" == 'gui' ]] ; then
+	if [[ "${MULTIBUILD_VARIANT}" == 'gui' ]]
+	then
 		econf_args+=( --enable-gui --disable-webui )
-	elif [[ "${MULTIBUILD_VARIANT}" == 'webui' ]] ; then
+	elif [[ "${MULTIBUILD_VARIANT}" == 'webui' ]]
+	then
 		econf_args+=( --disable-gui --enable-webui )
 	else
 		die
@@ -153,14 +164,16 @@ src_install() {
 	einstalldocs
 
 	EXPAND_BINDIR="${EPREFIX}/usr/bin"
-	if use webui ; then
+	if use webui
+	then
 		rindeal:expand_vars "${FILESDIR}/qbittorrent-nox@.service.in" "${T}/qbittorrent-nox@.service"
 		rindeal:expand_vars "${FILESDIR}/qbittorrent-nox.user-service.in" "${T}/qbittorrent-nox.service"
 
 		systemd_dounit "${T}/qbittorrent-nox@.service"
 		systemd_douserunit "${T}/qbittorrent-nox.service"
 	fi
-	if use gui ; then
+	if use gui
+	then
 		rindeal:expand_vars "${FILESDIR}/qbittorrent.user-service.in" "${T}/qbittorrent.service"
 		systemd_douserunit "${T}/qbittorrent.service"
 	fi

@@ -4,6 +4,13 @@
 EAPI=7
 inherit rindeal
 
+## git-hosting.eclass:
+GH_RN="gitlab:rindeals-mirrors"
+GH_REF="v${PV}"
+
+## EXPORT_FUNCTIONS: src_unpack
+inherit git-hosting
+
 ## functions: eautoreconf
 inherit autotools
 
@@ -15,9 +22,6 @@ HOMEPAGE="http://spectrum3d.sourceforge.net https://sourceforge.net/projects/spe
 LICENSE="GPL-3"
 
 SLOT="0"
-MY_PN="${PN,,}"
-MY_P="${MY_PN}-${PV}"
-SRC_URI="mirror://sourceforge/${MY_PN}/${MY_P}.tar.gz"
 
 KEYWORDS="~amd64"
 IUSE_A=( gtk3 sdl jack )
@@ -47,13 +51,11 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
-S="${WORKDIR}/${MY_P}"
-
 src_prepare() {
 	default
 
 	# .desktop contains duplicated Type= (https://sourceforge.net/p/spectrum3d/discussion/bug-wishlist/thread/d429f757/)
-	gawk -i inplace '!seen[$0]++' "data/${MY_PN}.desktop.in" || die
+	gawk -i inplace '!seen[$0]++' "data/${PN,,}.desktop.in" || die
 
 	## fix icons path (https://sourceforge.net/p/spectrum3d/discussion/bug-wishlist/thread/8c685767/)
 	# the svg icon is used only in the desktop menu entry
@@ -86,5 +88,5 @@ src_install() {
 	default
 
 	# 44x44
-	doicon data/${MY_PN}.png
+	doicon data/${PN,,}.png
 }

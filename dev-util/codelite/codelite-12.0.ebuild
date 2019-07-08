@@ -37,10 +37,7 @@ CDEPEND_A=(
 	"|| ( x11-libs/gtk+:3 x11-libs/gtk+:2 )"
 
 	"clang? ( sys-devel/clang:* )"
-	"lldb? ( || ("
-		"<sys-devel/llvm-3.9[lldb]"
-		"dev-util/lldb"
-	") )"
+	"lldb? ( dev-util/lldb )"
 	"mysql? ( virtual/mysql )"
 	"sftp? ( net-libs/libssh )"
 )

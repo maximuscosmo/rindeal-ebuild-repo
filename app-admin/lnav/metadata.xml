@@ -5,7 +5,4 @@
     <email>dev.rindeal+ebuild-repo@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
-  <upstream>
-    <remote-id type="github">tstack/lnav</remote-id>
-  </upstream>
 </pkgmetadata>

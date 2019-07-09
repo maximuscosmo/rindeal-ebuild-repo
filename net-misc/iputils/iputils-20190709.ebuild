@@ -167,5 +167,5 @@ pkg_postinst() {
 		$(usex traceroute6 'usr/bin/traceroute6' '')
 	)
 
-	(( ${#cap_bins[*]} )) && fcaps cap_net_raw "${cap_bins[@]}"
+	(( ${#cap_bins[*]} )) && fcaps cap_net_raw+p "${cap_bins[@]}"
 }

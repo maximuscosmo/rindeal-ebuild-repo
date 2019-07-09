@@ -3,7 +3,7 @@
 
 # @ECLASS: rindeal-utils.eclass
 # @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
+# Jan Chren (rindeal) <dev.rindeal@gmail.com>
 # @BLURB: Collection of handy functions
 # @DESCRIPTION:
 
@@ -54,6 +54,31 @@ rindeal:prefix_flags() {
 		[[ "${f}" =~ ${regex} ]] || die
 		printf "%s%s%s\n" "${BASH_REMATCH[1]}" "${prefix}" "${BASH_REMATCH[2]}"
 	done
+}
+
+rindeal:filter_A() {
+	(( $# < 1 )) && die
+
+	local -a A_files=( ${A} )
+	local -a f2del=( "${@}" )
+	f2del=( "${f2del[@]##*/}" )
+	readonly f2del
+
+	local -a new_A=()
+	local -i -- i=0 j=0 i_len=${#A_files[*]} j_len=${#f2del[*]}
+
+	while (( i < i_len ))
+	do
+		if (( j < j_len )) && [[ "${A_files[i]}" == "${f2del[j]}" ]]
+		then
+			(( j++ ))
+		else
+			new_A+=( "${A_files[i]}" )
+		fi
+		(( i++ ))
+	done
+
+	A="${new_A[*]}"
 }
 
 

@@ -3,7 +3,7 @@
 
 # @ECLASS: portage-patches.eclass
 # @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
+# Jan Chren (rindeal) <dev.rindeal@gmail.com>
 # @BLURB: Set of portage functions overrides intended to be used anywhere
 # @DESCRIPTION:
 
@@ -15,7 +15,7 @@ esac
 
 ## Origin: portage - bin/isolated-functions.sh
 ## PR: https://github.com/gentoo/portage/pull/26
-rindeal::has() {
+rindeal:has() {
 	local needle="${1}" ; shift
 	local haystack=( "$@" )
 
@@ -28,9 +28,9 @@ rindeal::has() {
 
 	[[ "${haystack[*]}" == *"${needle}"* ]]
 }
-has() { rindeal::has "${@}" ; }
+has() { rindeal:has "${@}" ; }
 
-rindeal::has_version() {
+rindeal:has_version() {
 	local atom root root_arg
 	local -a cmd=()
 	case $1 in
@@ -119,4 +119,4 @@ rindeal::has_version() {
 			;;
 	esac
 }
-has_version() { rindeal::has_version "${@}" ; }
+has_version() { rindeal:has_version "${@}" ; }

@@ -1,8 +1,8 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -12,25 +12,34 @@ GH_REF="v${PV}"
 ## python-*.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
-## functions: rindeal:dsf:eval
-inherit rindeal-utils
+## functions: dsf:eval
+inherit dsf-utils
+
 ## functions: git-hosting_unpack
 ## variables: GH_HOMEPAGE
 inherit git-hosting
+
 ## TODO: make it python-r1
 inherit python-single-r1
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: elibtoolize
 inherit libtool
+
 ## functions: get_bashcompdir
 inherit bash-completion-r1
+
 ## functions: systemd_get_systemunitdir
 inherit systemd
+
 ## functions: prune_libtool_files
 inherit ltprune
+
 ## functions: gen_usr_ldscript
 inherit toolchain-funcs
+
 ## functions: newpamd
 inherit pam
 
@@ -132,6 +141,9 @@ IUSE_A=(
 	+flock ipcmk
 	lsipc +lsns +renice rfkill +setsid readprofile +dmesg ctrlaltdel +fsfreeze +blkdiscard ldattach rtcwake setarch +script +scriptreplay +col colcrt colrm +column +hexdump +rev fincore
 	+ionice +taskset +chrt
+
+	hardlink
+	choom
 )
 
 CDEPEND_A=(
@@ -283,7 +295,7 @@ REQUIRED_USE_A=(
 	# `UL_REQUIRES_BUILD([column], [libsmartcols])`
 	"column? ( libsmartcols )"
 	# `UL_REQUIRES_HAVE([chfn_chsh], [security_pam_appl_h], [PAM header file])`
-	"$(rindeal:dsf:eval 'chfn-chsh-password|user' 'pam')"
+	"$(dsf:eval 'chfn-chsh-password|user' 'pam')"
 	# `UL_REQUIRES_HAVE([login], [security_pam_appl_h], [PAM header file])`
 	"login? ( pam )"
 	# `UL_REQUIRES_HAVE([su], [security_pam_appl_h], [PAM header file])`
@@ -331,7 +343,8 @@ src_prepare-locales() {
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
 	l10n_get_locales locales app off
-	for l in ${locales} ; do
+	for l in ${locales}
+	do
 		rrm "${dir}/${pre}${l}${post}"
 	done
 }
@@ -408,6 +421,9 @@ src_prepare() {
 	my_use_build_init taskset
 	my_use_build_init chrt
 
+	my_use_build_init hardlink  # TODO: new additions -> categorize
+	my_use_build_init choom  # TODO: new additions -> categorize
+
 	cat <<-_EOF_ >> configure.ac || die
 	AC_MSG_RESULT([
 	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -426,13 +442,12 @@ src_prepare() {
 	])
 _EOF_
 
-	if use nls ; then
+	if use nls
+	then
 		src_prepare-locales
 	else
 		rrm po/*.po
 	fi
-	# this allows ./configure to generate Makefile
-	./po/update-potfiles || die
 
 	eautoreconf
 	elibtoolize
@@ -488,6 +503,7 @@ src_configure() {
 		$(use_enable unshare)
 		$(use_enable nsenter)
 		$(use_enable setpriv)
+		$(use_enable hardlink)
 		$(use_enable eject)
 		$(use_enable agetty)
 		$(use_enable plymouth-support plymouth_support)

@@ -45,7 +45,7 @@ IUSE_A=( +gui )
 
 CDEPEND_A=(
 	"dev-libs/expat"
-	"sys-libs/glibc"
+	"virtual/libc"
 	"dev-libs/openssl:0[-bindist(-)]"
 	"sys-libs/zlib"
 	"media-video/ffmpeg:0="

@@ -123,7 +123,7 @@ CDEPEND_A=(
 	# `AC_CHECK_HEADER([X11/Xlib.h]`
 	"plugin_misc_hotkeys? ( x11-libs/libX11 )"
 	# `AC_CHECK_HEADERS(sys/soundcard.h)`
-	"plugin_output_oss? ( sys-libs/glibc )"
+	"plugin_output_oss? ( virtual/libc )"
 	# `AS_IF([test "${HAVE_CURL}" = "yes"`
 	"plugin_misc_lfm? ( net-misc/curl )"
 	"plugin_misc_artwork? ("

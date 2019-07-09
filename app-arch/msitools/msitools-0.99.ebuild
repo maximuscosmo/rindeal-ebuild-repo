@@ -5,10 +5,14 @@ EAPI=7
 inherit rindeal
 
 GITLAB_SERVER_URL="https://gitlab.gnome.org"  # optional
-GITLAB_REPO="GNOME/msitools"  # optional
+GITLAB_REPO="GNOME/${PN}"  # optional
 GITLAB_REF="v${PV}"  # optional
 
 inherit gitlab
+
+## vala.eclass:
+# versions 0.42+ aren't in Gentoo repos yet
+VALA_MAX_API_VERSION="0.42"
 
 ## EXPORPT_FUNCTIONS: src_prepare
 ## functions: vala_depend
@@ -21,14 +25,11 @@ inherit autotools
 inherit ltprune
 
 DESCRIPTION="Set of programs to inspect and build Windows Installer (.MSI) files"
-HOMEPAGE="https://wiki.gnome.org/${PN} $(gitlab:homepage:gen_uri  ) https://git.gnome.org//browse/msitools"
+HOMEPAGE="https://wiki.gnome.org/${PN} ${GITLAB_HOMEPAGE}"
 LICENSE="LGPL-2+"
 
 SLOT="0"
-gitlab:snapshot:gen_uri --server-url "${GITLAB_SERVER_URL}" --repo "${GITLAB_REPO}" --ref "${GITLAB_REF}" --uri-var foo --distfile-var bar
-SRC_URI=(
-	"${GITLAB_SRC_URI}"
-)
+SRC_URI_A=( "${GITLAB_SRC_URI}" )
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( nls rpath gnu-ld )
@@ -41,7 +42,9 @@ CDEPEND_A=(
 	"$(vala_depend)"
 	"app-arch/gcab[vala]"
 )
-DEPEND_A=( "${CDEPEND_A[@]}" )
+DEPEND_A=( "${CDEPEND_A[@]}"
+	"virtual/yacc"
+)
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(  )

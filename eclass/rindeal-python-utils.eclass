@@ -1,19 +1,14 @@
-# Copyright 2017 Jan Chren (rindeal)
+# Copyright 2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rindeal-python-utils.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
-# @AUTHOR:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
-# @BLURB: <SHORT_DESCRIPTION>
-# @DESCRIPTION:
 
-if [ -z "${_RINDEAL_PYTHON_UTILS_ECLASS}" ] ; then
+if ! (( _RINDEAL_PYTHON_UTILS_ECLASS ))
+then
 
 case "${EAPI:-0}" in
-    6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+6 | 7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 

@@ -10,10 +10,6 @@ GITLAB_REF="v${PV}"  # optional
 
 inherit gitlab
 
-## vala.eclass:
-# versions 0.42+ aren't in Gentoo repos yet
-VALA_MAX_API_VERSION="0.42"
-
 ## EXPORPT_FUNCTIONS: src_prepare
 ## functions: vala_depend
 inherit vala

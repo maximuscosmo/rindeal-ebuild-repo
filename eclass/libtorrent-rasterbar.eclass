@@ -1,12 +1,13 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-if [ -z "${LT_RASTERBAR_ECLASS}" ] ; then
+if ! (( _LIBTORRENT_RASTERBAR_ECLASS ))
+then
 
 case "${EAPI:-0}" in
-	6) ;;
-	*) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+7 ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
 inherit rindeal
@@ -14,9 +15,9 @@ inherit rindeal
 
 ## python-*.eclass:
 [[ -z "${PYTHON_COMPAT}" ]] && \
-	PYTHON_COMPAT=( python2_7 python3_{5,6} )
+	PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 [[ -z "${PYTHON_REQ_USE}" ]] && \
-	PYTHON_REQ_USE="threads"
+	PYTHON_REQ_USE="threads(+)"
 
 ## distutils-r1.eclass:
 [[ -z "${DISTUTILS_OPTIONAL}" ]] && \
@@ -26,13 +27,13 @@ inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN='github:arvidn:libtorrent'
-GH_REF="libtorrent-${PV//./_}"
+GH_FETCH_TYPE='manual'
 
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
 
-## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_install
+## (optional) EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_install
 inherit distutils-r1
 
 ## functions: make_setup.py_extension_compilation_parallel
@@ -41,15 +42,17 @@ inherit rindeal-python-utils
 ## functions: eautoreconf
 inherit autotools
 
-## functions: version_compare
-inherit versionator
-
 ## functions: append-cxxflags
 inherit flag-o-matic
 
 ## functions: prune_libtool_files
 inherit ltprune
 
+if ver_test "${PV}" -ge "1.2.0"
+then
+	## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
+	inherit cmake-utils
+fi
 
 DESCRIPTION='C++ BitTorrent implementation focusing on efficiency and scalability'
 HOMEPAGE="https://libtorrent.org/ ${GH_HOMEPAGE}"
@@ -58,9 +61,17 @@ LICENSE='BSD'
 
 [[ -z "${LT_SONAME}" ]] && die "LT_SONAME not defined or empty"
 SLOT="0/${LT_SONAME}"
+# upstream devs randomly change back and forth between using score and undescore to delimit name and version
+git-hosting_gen_snapshot_url "${GH_RN}" "libtorrent-${PV//./_}" _my_snapshot_url_v1 _LTR_DISTFILE_v1
+git-hosting_gen_snapshot_url "${GH_RN}" "libtorrent_${PV//./_}" _my_snapshot_url_v2 _my_snapshot_distfile_v2
+SRC_URI_A=(
+	"${_my_snapshot_url_v1} -> ${_LTR_DISTFILE_v1}"
+	"${_my_snapshot_url_v2} -> ${_LTR_DISTFILE_v1}"
+)
+unset _my_snapshot_url_v1 _my_snapshot_url_v2 _my_snapshot_distfile_v2
 
 
-IUSE_A=( +crypt debug +dht doc examples python static-libs test )
+IUSE_A=( +crypt debug +dht doc examples python static-libs )
 
 
 CDEPEND_A=(
@@ -88,7 +99,7 @@ EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install
 
 
 libtorrent-rasterbar_src_unpack() {
-	git-hosting_src_unpack
+	git-hosting_unpack "${DISTDIR}/${_LTR_DISTFILE_v1}" "${WORKDIR}/${P}"
 }
 
 libtorrent-rasterbar_src_prepare() {
@@ -111,14 +122,20 @@ libtorrent-rasterbar_src_prepare() {
 
 	eautoreconf
 
-	if use python ; then
+	if use python
+	then
+		# this will copy current source directory into a separate directory for each python version
 		distutils-r1_src_prepare
 	fi
 }
 
 libtorrent-rasterbar_src_configure() {
-	append-cxxflags -std=c++11 # Gentoo-Bug: 634506
-	if version_compare "${PV}" '<' 1.1.0 ; then
+	if ver_test "${PV}" -lt '1.2.0'
+	then
+		append-cxxflags -std=c++11 # Gentoo-Bug: 634506
+	fi
+	if ver_test "${PV}" -lt '1.1.0'
+	then
 		# v1.0.x is old and uses code which is deprecated in C++11
 		append-cxxflags -Wno-deprecated-declarations
 	fi
@@ -136,16 +153,17 @@ libtorrent-rasterbar_src_configure() {
 		$(use_enable dht dht $(usex debug logging yes))
 		$(use_enable examples)
 		$(use_enable static-libs static)
-		$(use_enable test tests)
 	)
 
-	if version_compare "${PV}" '<' 1.1.0 ; then
+	if ver_test "${PV}" -lt '1.1.0'
+	then
 		my_econf_args+=( $(use_enable debug statistics) )
 	fi
 
 	econf "${my_econf_args[@]}"
 
-	if use python ; then
+	if use python
+	then
 		python_configure() {
 			local my_econf_args=( "${my_econf_args[@]}"
 				--enable-python-binding
@@ -160,7 +178,8 @@ libtorrent-rasterbar_src_configure() {
 libtorrent-rasterbar_src_compile() {
 	default
 
-	if use python ; then
+	if use python
+	then
 		python_compile() {
 			cd "${BUILD_DIR}"/../bindings/python || die
 			distutils-r1_python_compile
@@ -174,7 +193,8 @@ libtorrent-rasterbar_src_install() {
 
 	default
 
-	if use python ; then
+	if use python
+	then
 		python_install() {
 			cd "${BUILD_DIR}"/../bindings/python || die
 			distutils-r1_python_install
@@ -186,5 +206,5 @@ libtorrent-rasterbar_src_install() {
 }
 
 
-LT_RASTERBAR_ECLASS=1
+_LIBTORRENT_RASTERBAR_ECLASS=1
 fi

@@ -12,7 +12,7 @@
 inherit portage-patches
 
 
-if [[ -z "${_RINDEAL_ECLASS}" ]]
+if ! (( _RINDEAL_ECLASS ))
 then
 
 case "${EAPI:-0}" in
@@ -27,10 +27,12 @@ rindeal:func_exists() {
 
 
 ### BEGIN: "Command not found" handler
-if rindeal:func_exists command_not_found_handle ; then
+if rindeal:func_exists command_not_found_handle
+then
 	# portage registers a cnf handler for the `depend` phase
 	# https://github.com/gentoo/portage/commit/40da7ee19c4c195da35083bf2d2fcbd852ad3846
-	if [[ "${EBUILD_PHASE}" != depend ]] ; then
+	if [[ "${EBUILD_PHASE}" != 'depend' ]]
+	then
 		eqawarn "${ECLASS}.eclass: command_not_found_handle() already registered"
 	fi
 else
@@ -64,7 +66,8 @@ _rindeal:hooks:call_orig() {
 
 	local -r -- ________f="$(_rindeal:hooks:get_orig_prefix)${1}"
 
-	if ! rindeal:func_exists "${________f}" ; then
+	if ! rindeal:func_exists "${________f}"
+	then
 		die "${ECLASS}.eclass: ${FUNCNAME}: function '${________f}' doesn't exist"
 	fi
 
@@ -80,7 +83,8 @@ _rindeal:hooks:save() {
 	local -r -- orig_prefix="$(_rindeal:hooks:get_orig_prefix)"
 
 	# make sure we don't create an infinite loop
-	if ! rindeal:func_exists "${orig_prefix}${name}" ; then
+	if ! rindeal:func_exists "${orig_prefix}${name}"
+	then
 
 		# save original implementation under a different name
 		eval "${orig_prefix}$(declare -f "${name}")"
@@ -95,18 +99,22 @@ _rindeal:hooks:save() {
 _rindeal:hooks:save inherit
 
 ## "static assoc array"
-if [[ -z "$(declare -p _RINDEAL_ECLASS_SWAPS 2>/dev/null)" ]] ; then
+if [[ -z "$(declare -p _RINDEAL_ECLASS_SWAPS 2>/dev/null)" ]]
+then
 declare -g -A _RINDEAL_ECLASS_SWAPS=(
 	['flag-o-matic']='flag-o-matic-patched'
 	['ninja-utils']='ninja-utils-patched'
 	['versionator']='versionator-patched'
+	['vala']='vala-patched'
 )
 fi
 
 inherit() {
 	local a args=()
-	for a in "${@}" ; do
-		if [[ ${_RINDEAL_ECLASS_SWAPS["${a}"]+exists} ]] ; then
+	for a in "${@}"
+	do
+		if [[ ${_RINDEAL_ECLASS_SWAPS["${a}"]+exists} ]]
+		then
 			# unquoted variable allows us to ignore certain eclasses
 			args+=( ${_RINDEAL_ECLASS_SWAPS["${a}"]} )
 			# prevent infinite loops
@@ -170,23 +178,26 @@ rrmdir() {
 }
 
 rsed() {
-	local diff_prog=()
-
-	if (( RINDEAL_DEBUG )) ; then
-		diff_prog=( diff -u )
-		if command -v colordiff >/dev/null ; then
+	if (( RINDEAL_DEBUG ))
+	then
+		local -a diff_prog=( diff -u )
+		if command -v colordiff >/dev/null
+		then
 			diff_prog=( colordiff -u )
 		fi
 
 		local -A file_list
 		local pretty_sed=()
 		local i record_files=0
-		for (( i=1 ; i <= $# ; i++ )) ; do
+		for (( i=1 ; i <= $# ; i++ ))
+		do
 			local arg="${!i}"
-			if (( record_files )) ; then
+			if (( record_files ))
+			then
 				file_list+=( ["${arg}"]="${RANDOM}${RANDOM}${RANDOM}" )
 			else
-				if [[ "${arg}" == "--" ]] ; then
+				if [[ "${arg}" == "--" ]]
+				then
 					record_files=1
 				else
 					pretty_sed+=( "'${arg}'" )
@@ -200,16 +211,19 @@ rsed() {
 
 		## backup original versions
 		local f
-		for f in "${!file_list[@]}" ; do
+		for f in "${!file_list[@]}"
+		do
 			cp -- "${f}" "${temp_dir}/${file_list["${f}"]}" || die -n
 		done
 	fi
 
 	sed "${@}" || die -n
 
-	if (( ${#diff_prog[*]} )) ; then
+	if (( RINDEAL_DEBUG ))
+	then
 		local f
-		for f in "${!file_list[@]}" ; do
+		for f in "${!file_list[@]}"
+		do
 			echo "*** diff of '${f}'"
 			echo "*** for sed ${pretty_sed[*]}:"
 			"${diff_prog[@]}" "${temp_dir}/${file_list["${f}"]}" "${f}"

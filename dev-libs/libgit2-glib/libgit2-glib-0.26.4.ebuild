@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -16,16 +16,17 @@ VALA_USE_DEPEND="vapigen"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
 inherit meson
+
 ## EXPORT_FUNCTIONS: src_prepare
 ## functions: vala_depend
 inherit vala
+
 ## functions: python_foreach_impl, python_moduleinto, python_domodule, python_get_sitedir
 ## variables: PYTHON_DEPS, PYTHON_USEDEP
 inherit python-r1
-## functions: get_version_component_range
-inherit versionator
 
 DESCRIPTION="Glib wrapper library around the libgit2 git access library"
 LICENSE="LGPL-2+"
@@ -37,7 +38,7 @@ IUSE_A=( debug doc introspection python ssh vala )
 
 CDEPEND_A=(
 	"dev-libs/glib:2"
-	"dev-libs/libgit2:0/$(get_version_component_range 2)[ssh?]"
+	"dev-libs/libgit2:0/$(ver_cut 2)[ssh?]"
 	"introspection? ( dev-libs/gobject-introspection:= )"
 	"python? ("
 		"${PYTHON_DEPS}"

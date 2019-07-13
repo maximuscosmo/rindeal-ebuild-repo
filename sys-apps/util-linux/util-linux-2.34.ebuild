@@ -338,19 +338,24 @@ my_use_build_init() {
 }
 
 src_prepare-locales() {
-	local l locales dir="po" pre="lang_" post=".po"
+	local l locales dir="po" pre="" post=".po"
 
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
-	l10n_get_locales locales app off
-	for l in ${locales}
-	do
-		rrm "${dir}/${pre}${l}${post}"
-	done
+	if use nls
+	then
+		l10n_get_locales locales app off
+		for l in ${locales}
+		do
+			rrm "${dir}/${pre}${l}${post}"
+		done
+	fi
 }
 
 src_prepare() {
 	eapply_user
+
+	src_prepare-locales
 
 	# AC_PACKAGE_VERSION, PACKAGE_VERSION get initialized from this file via `./tools/git-version-gen` script
 	# fixes https://github.com/rindeal/gentoo-overlay/issues/157
@@ -442,13 +447,7 @@ src_prepare() {
 	])
 _EOF_
 
-	if use nls
-	then
-		src_prepare-locales
-	else
-		rrm po/*.po
-	fi
-
+	po/update-potfiles  # required step taken from autogen.sh
 	eautoreconf
 	elibtoolize
 }

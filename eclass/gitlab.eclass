@@ -144,10 +144,24 @@ gitlab:snapshot:gen_uri() {
 declare -g -r -- _GITLAB_SERVER_URL="${GITLAB_SERVER_URL:-"https://gitlab.com"}"
 
 ##
-# @ECLASS-VARIABLE: GITLAB_REPO
+# @ECLASS-VARIABLE: GITLAB_NAMESPACE
 # @DESCRIPTION:
 # Set this to override default repo
+# @SEE
+# https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
 ##
+
+declare -g -r -- _GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"${PN}"}"
+
+##
+# @ECLASS-VARIABLE: GITLAB_PROJECT_NAME
+# @DESCRIPTION:
+# Set this to override default repo
+# @SEE
+# https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
+##
+
+declare -g -r -- _GITLAB_PROJECT_NAME="${GITLAB_PROJECT_NAME:-"${PN}"}"
 
 ##
 # @ECLASS-VARIABLE: _GITLAB_REPO
@@ -155,7 +169,7 @@ declare -g -r -- _GITLAB_SERVER_URL="${GITLAB_SERVER_URL:-"https://gitlab.com"}"
 # @READONLY
 # @DESCRIPTION:
 ##
-declare -g -r -- _GITLAB_REPO="${GITLAB_REPO:-"${PN}/${PN}"}"
+declare -g -r -- _GITLAB_REPO="${_GITLAB_NAMESPACE}/${_GITLAB_PROJECT_NAME}"
 
 ##
 # @ECLASS-VARIABLE: GITLAB_REF

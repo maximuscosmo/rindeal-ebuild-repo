@@ -4,9 +4,9 @@
 EAPI=7
 inherit rindeal
 
-GITLAB_SERVER_URL="https://gitlab.gnome.org"  # optional
-GITLAB_REPO="GNOME/${PN}"  # optional
-GITLAB_REF="v${PV}"  # optional
+GITLAB_SERVER_URL="https://gitlab.gnome.org"
+GITLAB_NAMESPACE="GNOME"
+GITLAB_REF="v${PV}"
 
 inherit gitlab
 

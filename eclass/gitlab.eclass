@@ -2,8 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: gitlab.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal@gmail.com>
+# @BLURB: Eclass for software hosted on public GitLab instances
 
 if ! (( _GITLAB_ECLASS ))
 then
@@ -12,115 +11,106 @@ case "${EAPI:-0}" in
 7 ) ;;
 * ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
-
 inherit rindeal
 
-## functions: rindeal:filter_A
-inherit rindeal-utils
 
-## functions: git:snapshot:unpack
-inherit git-utils
+### BEGIN: Inherits
 
+# functions: git:hosting:gen_url, git:hosting:unpack, git:hosting:sanitize_filename
+inherit git-hosting-base
 
-### BEGIN: Base classes
-### END: Base classes
+## functions: str:tmpl:exp
+inherit str-utils
+
+### END: Inherits
 
 
 ### BEGIN: Functions
 
-gitlab:homepage:gen_uri() {
-	local -- _server_url="${_GITLAB_SERVER_URL}" _repo="${_GITLAB_REPO}"
-	local -i _homepage_var_set=0
-
-	while (( $# > 0 ))
-	do
-		_key="${1}"
-		case "${_key}" in
-		--server-url )
-			(( $# < 2 )) && die
-			_server_url="${2}"
-			shift
-			;;
-		--repo )
-			(( $# < 2 )) && die
-			_repo="${2}"
-			shift
-			;;
-		--homepage-var )
-			(( $# < 2 )) && die
-			local -n _homepage_var="${2}"
-			local _homepage_var_set=1
-			shift
-			;;
-		esac
-		shift
-	done
-
-	if ! (( _homepage_var_set ))
-	then
-		die
-	fi
-
-	_homepage_var="${_server_url}/${_repo}"
-
-	return 0
+gitlab:homepage:gen_url() {
+	git:hosting:gen_url \
+		--tmpl "@SVR@/@NS@/@PROJ@" \
+		--svr  "${GITLAB_SVR}" \
+		--ns   "${GITLAB_NS}" \
+		--proj "${GITLAB_PROJ}" \
+		"${@}"
 }
 
-gitlab:snapshot:gen_uri() {
-	local -- _server_url="${_GITLAB_SERVER_URL}" _repo="${_GITLAB_REPO}" _ref="${_GITLAB_REF}"
-	local -i _uri_var_set=0 _distfile_var_set=0
+gitlab:snap:gen_url() {
+	git:hosting:gen_url \
+		--tmpl "@SVR@/@NS@/@PROJ@/-/archive/@REF@/@PROJ@-@REF@@EXT@" \
+		--svr  "${GITLAB_SVR}" \
+		--ns   "${GITLAB_NS}" \
+		--proj "${GITLAB_PROJ}" \
+		--ref  "${GITLAB_REF}" \
+		--ext  "${GITLAB_SNAP_EXT}" \
+		"${@}"
+}
+
+gitlab:snap:gen_src_uri() {
+	local -- distfile_var=
+	local -a args=( )
 
 	while (( $# > 0 ))
 	do
-		_key="${1}"
-		case "${_key}" in
-		--server-url )
-			(( $# < 2 )) && die
-			_server_url="${2}"
-			shift
-			;;
-		--repo )
-			(( $# < 2 )) && die
-			_repo="${2}"
-			shift
-			;;
-		--ref )
-			(( $# < 2 )) && die
-			_ref="${2}"
-			shift
-			;;
+		(( $# < 2 )) && die
 
-		--uri-var )
-			(( $# < 2 )) && die
-			local -n _uri_var="${2}"
-			local _uri_var_set=1
-			shift
+		case "${1}" in
+		'--distfile-var' )
+			if [[ -z "${2}" || "${2}" == "--"* ]]
+			then
+				die "--distfile-var value not provided"
+			fi
+
+			distfile_var="${2}"
 			;;
-		--distfile-var )
-			(( $# < 2 )) && die
-			local -n _distfile_var="${2}"
-			local _distfile_var_set=1
-			shift
+		* )
+			args+=( "${1}" "${2}" )
 			;;
 		esac
-		shift
+
+		shift 2
 	done
-	! (( _uri_var_set )) && die
+	[[ -z "${distfile_var}" ]] && die
 
-	local -r -- _ext=".tar.bz2"
+	gitlab:snap:gen_url "${args[@]}"
 
-	_uri_var="${_server_url}/${_repo}/-/archive/${_ref}/${_repo##*/}-${_ref}${_ext}"
+	local -- distfile=
 
-	if (( _distfile_var_set ))
-	then
-		local _sanitized_server_url="${_server_url}"
-		_sanitized_server_url="${_sanitized_server_url##*"://"}"
-		_sanitized_server_url="${_sanitized_server_url//"."/_}"
-		_sanitized_server_url="${_sanitized_server_url//"/"/__}"
-		_distfile_var="${_sanitized_server_url}--${_repo//"/"/--}--${_ref//"/"/_}${_ext}"
-	fi
+	str:tmpl:exp \
+		--tmpl "@SVR@--@NS@/@PROJ@--@REF@@EXT@" \
+		--svr  "${GITLAB_SVR}" \
+		--ns   "${GITLAB_NS}" \
+		--proj "${GITLAB_PROJ}" \
+		--ref  "${GITLAB_REF}" \
+		--ext  "${GITLAB_SNAP_EXT}" \
+		"${args[@]}" \
+		--exp-tmpl-var distfile
 
-	return 0
+	# strip URL before host part
+	distfile="${distfile##*'://'}"
+	# sanitize
+	distfile="$(git:hosting:sanitize_filename "${distfile}")"
+
+	local -n distfile_var_ref="${distfile_var}"
+	distfile_var_ref="${distfile}"
+}
+
+gitlab:git:gen_url() {
+	git:hosting:gen_url \
+		--tmpl "@SVR@/@NS@/@PROJ@.git" \
+		--svr  "${GITLAB_SVR}" \
+		--ns   "${GITLAB_NS}" \
+		--proj "${GITLAB_PROJ}" \
+		"${@}"
+}
+
+gitlab:snap:unpack() {
+	git:hosting:unpack "${@}"
+}
+
+gitlab:src_unpack() {
+	gitlab:snap:unpack "${DISTDIR}/${GITLAB_SNAP_DISTFILE}" "${WORKDIR}/${P}"
 }
 
 ### END: Functions
@@ -129,103 +119,73 @@ gitlab:snapshot:gen_uri() {
 ### BEGIN: Variables
 
 ##
-# @ECLASS-VARIABLE: GITLAB_SERVER_URL
+# @ECLASS-VARIABLE: GITLAB_SVR
 # @DESCRIPTION:
-# Set this to override default server url.
-# No trailing slash!
+#   Set this to override default server URL.
+#   No trailing slash!
+# @DEFAULT:
+#   "https://gitlab.com"
 ##
+declare -g -r -- GITLAB_SVR="${GITLAB_SVR:-"https://gitlab.com"}"
+[[ "${GITLAB_SVR:(-1)}" == '/' ]] && die "GITLAB_SVR ends with a slash"
 
 ##
-# @ECLASS-VARIABLE: _GITLAB_SERVER_URL
-# @PRIVATE
-# @READONLY
+# @ECLASS-VARIABLE: GITLAB_NS
 # @DESCRIPTION:
-##
-declare -g -r -- _GITLAB_SERVER_URL="${GITLAB_SERVER_URL:-"https://gitlab.com"}"
-
-##
-# @ECLASS-VARIABLE: GITLAB_NAMESPACE
-# @DESCRIPTION:
-# Set this to override default repo
+#   Set this to override default namespace.
 # @SEE
-# https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
+#   https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
 ##
-
-declare -g -r -- _GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"${PN}"}"
+declare -g -r -- GITLAB_NS="${GITLAB_NS:-"${PN}"}"
 
 ##
-# @ECLASS-VARIABLE: GITLAB_PROJECT_NAME
+# @ECLASS-VARIABLE: GITLAB_PROJ
 # @DESCRIPTION:
-# Set this to override default repo
+#   Set this to override default project name.
 # @SEE
-# https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
+#   https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
 ##
-
-declare -g -r -- _GITLAB_PROJECT_NAME="${GITLAB_PROJECT_NAME:-"${PN}"}"
-
-##
-# @ECLASS-VARIABLE: _GITLAB_REPO
-# @PRIVATE
-# @READONLY
-# @DESCRIPTION:
-##
-declare -g -r -- _GITLAB_REPO="${_GITLAB_NAMESPACE}/${_GITLAB_PROJECT_NAME}"
+declare -g -r -- GITLAB_PROJ="${GITLAB_PROJ:-"${PN}"}"
 
 ##
 # @ECLASS-VARIABLE: GITLAB_REF
 # @DESCRIPTION:
-# Set this to override default ref
+#   Set this to override default ref.
 ##
+declare -g -r -- GITLAB_REF="${GITLAB_REF:-"${PV}"}"
 
 ##
-# @ECLASS-VARIABLE: _GITLAB_REF
-# @PRIVATE
-# @READONLY
-# @DESCRIPTION:
+# @ECLASS-VARIABLE: GITLAB_SNAP_EXT
 ##
-declare -g -r -- _GITLAB_REF="${GITLAB_REF:-"${PV}"}"
+declare -g -r -- GITLAB_SNAP_EXT="${GITLAB_SNAP_EXT:-".tar.bz2"}"
+
+##
+# @ECLASS-VARIABLE: GITLAB_SNAP_URL
+# @READONLY
+##
+##
+# @ECLASS-VARIABLE: GITLAB_SNAP_DISTFILE
+# @READONLY
+##
+declare -g -- GITLAB_SNAP_URL= GITLAB_SNAP_DISTFILE=
+gitlab:snap:gen_src_uri --url-var GITLAB_SNAP_URL --distfile-var GITLAB_SNAP_DISTFILE
+readonly GITLAB_SNAP_URL GITLAB_SNAP_DISTFILE
+
+##
+# @ECLASS-VARIABLE: GITLAB_SRC_URI
+# @READONLY
+##
+declare -g -r -- GITLAB_SRC_URI="${GITLAB_SNAP_URL} -> ${GITLAB_SNAP_DISTFILE}"
 
 ##
 # @ECLASS-VARIABLE: GITLAB_HOMEPAGE
 # @READONLY
 ##
 declare -g -- GITLAB_HOMEPAGE=
-gitlab:homepage:gen_uri --homepage-var GITLAB_HOMEPAGE
+gitlab:homepage:gen_url --url-var GITLAB_HOMEPAGE
 readonly GITLAB_HOMEPAGE
 
-##
-# @ECLASS-VARIABLE: GITLAB_SRC_URI
-# @READONLY
-##
-##
-# @ECLASS-VARIABLE: GITLAB_DISTFILE
-# @READONLY
-##
-_gitlab_uri= GITLAB_DISTFILE=
-gitlab:snapshot:gen_uri --uri-var _gitlab_uri --distfile-var GITLAB_DISTFILE
-readonly GITLAB_DISTFILE
-declare -g -r -- GITLAB_SRC_URI="${_gitlab_uri} -> ${GITLAB_DISTFILE}"
-unset _gitlab_uri
-
-
 ### END: Variables
-
-
-### BEGIN Exported functions
-
-EXPORT_FUNCTIONS src_unpack
-
-##
-# @FUNCTION: git-hosting_src_unpack
-# @DESCRIPTION:
-##
-gitlab_src_unpack() {
-	debug-print-function "${FUNCNAME}"
-
-	git:snapshot:unpack "${DISTDIR}/${GITLAB_DISTFILE}" "${WORKDIR}/${P}"
-}
-
-### END Exported functions
 
 
 _GITLAB_ECLASS=1

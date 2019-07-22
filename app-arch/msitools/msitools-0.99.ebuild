@@ -4,10 +4,13 @@
 EAPI=7
 inherit rindeal
 
-GITLAB_SERVER_URL="https://gitlab.gnome.org"
-GITLAB_NAMESPACE="GNOME"
+## gitlab.eclass:
+GITLAB_SVR="https://gitlab.gnome.org"
+GITLAB_NS="GNOME"
 GITLAB_REF="v${PV}"
 
+## functions: gitlab:src_unpack
+## variables: GITLAB_HOMEPAGE, GITLAB_SRC_URI
 inherit gitlab
 
 ## EXPORPT_FUNCTIONS: src_prepare
@@ -47,6 +50,10 @@ REQUIRED_USE_A=(  )
 RESTRICT+=""
 
 inherit arrays
+
+src_unpack() {
+	gitlab:src_unpack
+}
 
 src_prepare() {
 	eapply_user

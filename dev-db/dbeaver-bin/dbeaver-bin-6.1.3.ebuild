@@ -18,7 +18,7 @@ PN_NB="${PN%-bin}"
 
 DBEAVER_SLOT="$(ver_cut 1)"
 SLOT="${DBEAVER_SLOT}"
-src_uri_base="https://github.com/serge-rider/${PN_NB}/releases/download/${PV}/${PN_NB}-ce-${PV}-linux.gtk"
+src_uri_base="https://github.com/${PN_NB}/${PN_NB}/releases/download/${PV}/${PN_NB}-ce-${PV}-linux.gtk"
 SRC_URI_A=(
 	"amd64? ( ${src_uri_base}.x86_64.tar.gz )"
 )

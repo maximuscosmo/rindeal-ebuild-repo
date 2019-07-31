@@ -2,30 +2,29 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rindeal-utils.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal@gmail.com>
-# @BLURB: Collection of handy functions
+# @BLURB: Collection of handy general purpose functions
 # @DESCRIPTION:
 
 
-if [[ -z "${_RINDEAL_UTILS_ECLASS}" ]]
+if ! (( _RINDEAL_UTILS_ECLASS ))
 then
 
 case "${EAPI:-0}" in
-6 | 7 ) ;;
-* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+'6' | '7' ) ;;
+* ) die "EAPI='${EAPI}' is not supported by '${ECLASS}' eclass" ;;
 esac
 
 inherit rindeal
 
 
+# TODO: remove this function
 rindeal:expand_vars() {
 	local f_in="${1}"
 	local f_out="${2}"
 	(( $# > 2 || $# < 1 )) && die
 
 	local sed_args=()
-	local v vars=( $( grep -Eo '@[A-Z0-9_]+@' -- "${f_in}" | tr -d '@') )
+	local v vars=( $( grep -o '@[A-Z_][A-Z0-9_]*@' -- "${f_in}" | tr -d '@') )
 	for v in "${vars[@]}"
 	do
 		if [[ -v "${v}" ]]
@@ -46,39 +45,109 @@ rindeal:prefix_flags() {
 	(( $# < 2 )) && die
 
 	local prefix="$1" ; shift
-	local f flags=( "$@" )
-	local regex="^([+-])?(.*)"
+	local flags=( "$@" )
+	local regex="^([+-])?([a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9])"
 
-	for f in "${flags[@]}"
+	local x
+	for x in "${flags[@]}"
 	do
-		[[ "${f}" =~ ${regex} ]] || die
-		printf "%s%s%s\n" "${BASH_REMATCH[1]}" "${prefix}" "${BASH_REMATCH[2]}"
+		[[ "${x}" =~ ${regex} ]] || die
+		local sign="${BASH_REMATCH[1]}" flag="${BASH_REMATCH[2]}"
+		printf "%s%s%s\n" "${sign}" "${prefix}" "${flag}"
 	done
 }
 
 rindeal:filter_A() {
 	(( $# < 1 )) && die
 
-	local -a A_files=( ${A} )
-	local -a f2del=( "${@}" )
-	f2del=( "${f2del[@]##*/}" )
-	readonly f2del
+	local -A blacklist=()
+	local -a A_new=()
 
-	local -a new_A=()
-	local -i -- i=0 j=0 i_len=${#A_files[*]} j_len=${#f2del[*]}
-
-	while (( i < i_len ))
+	## create deduplicated hashtable for quick lookups
+	local path
+	for path in "${@}"
 	do
-		if (( j < j_len )) && [[ "${A_files[i]}" == "${f2del[j]}" ]]
-		then
-			(( j++ ))
-		else
-			new_A+=( "${A_files[i]}" )
-		fi
-		(( i++ ))
+		local filename="${path##*/}"
+		blacklist["${filename}"]=
 	done
 
-	A="${new_A[*]}"
+	local filename
+	for filename in ${A}
+	do
+		if [[ -v blacklist["${filename}"] ]]
+		then
+			unset blacklist["${filename}"]
+		else
+			A_new+=( "${filename}" )
+		fi
+	done
+
+	A="${A_new[*]}"
+}
+
+rindeal:has_version() {
+	local atom root="${ROOT%/}/${EPREFIX#/}" root_arg
+	local -a cmd=()
+
+	case "${1}" in
+	--host-root | -r | -d | -b )
+		root_arg="${1}"
+		shift
+		;;
+	esac
+	atom="${1}"
+	shift
+	(( $# > 0 )) && die "${FUNCNAME[1]}: unused argument(s): $*"
+
+	case ${root_arg} in
+		--host-root)
+			# Since portageq requires the root argument be consistent
+			# with EPREFIX, ensure consistency here (bug 655414).
+			root="/${PORTAGE_OVERRIDE_EPREFIX#/}"
+			cmd+=( env EPREFIX="${PORTAGE_OVERRIDE_EPREFIX}" )
+			;;
+		-r|-d|-b)
+			case ${root_arg} in
+				-r) root="${ROOT%/}/${EPREFIX#/}" ;;
+				-d) root="${ESYSROOT}" ;;
+				-b)
+					# Use /${PORTAGE_OVERRIDE_EPREFIX#/} which is equivalent
+					# to BROOT, except BROOT is only defined in src_* phases.
+					root="/${PORTAGE_OVERRIDE_EPREFIX#/}"
+					cmd+=( env EPREFIX="${PORTAGE_OVERRIDE_EPREFIX}" )
+					;;
+			esac
+	esac
+
+	### BEGIN: patched section
+	# these variables cause the helpers mark `*::repo` expressions as invalid package atom
+	cmd+=( env -u EBUILD_PHASE -u EAPI )
+	### END: patched section
+
+	if [[ -n $PORTAGE_IPC_DAEMON ]]
+	then
+		cmd+=( "${PORTAGE_BIN_PATH}"/ebuild-ipc "${FUNCNAME[1]}" "${root}" "${atom}" )
+	else
+		cmd+=( "${PORTAGE_BIN_PATH}"/ebuild-helpers/portageq "${FUNCNAME[1]}" "${root}" "${atom}" )
+	fi
+	"${cmd[@]}"
+	local retval=$?
+	case "${retval}" in
+		0 | 1 )
+			return ${retval}
+			;;
+		2 )
+			die "${FUNCNAME[1]}: invalid atom: ${atom}"
+			;;
+		* )
+			if [[ -n ${PORTAGE_IPC_DAEMON} ]]
+			then
+				die "${FUNCNAME[1]}: unexpected ebuild-ipc exit code: ${retval}"
+			else
+				die "${FUNCNAME[1]}: unexpected portageq exit code: ${retval}"
+			fi
+			;;
+	esac
 }
 
 

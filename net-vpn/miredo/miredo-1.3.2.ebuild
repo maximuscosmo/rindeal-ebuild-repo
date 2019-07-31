@@ -1,15 +1,16 @@
 # Copyright 1999-2014 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="gitlab:rindeal-forks"
+## gitlab.eclass:
+GITLAB_NS="rindeal-ns/abandonware"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## functions: gitlab:src_unpack
+## variables: GITLAB_HOMEPAGE, GITLAB_SRC_URI
+inherit gitlab
 
 ## functions: eautoreconf
 inherit autotools
@@ -27,13 +28,15 @@ inherit user
 inherit systemd
 
 DESCRIPTION="Miredo is an open-source Teredo IPv6 tunneling software"
-HOMEPAGE="http://www.remlab.net/miredo/ ${GH_HOMEPAGE}"
-LICENSE="GPL-2"
+HOMEPAGE_A=( "${GITLAB_HOMEPAGE}" "http://www.remlab.net/miredo/" )
+LICENSE_A=( 'GPL-2' )
 
 SLOT="0/6"
+[[ "${PV}" != *9999* ]] && \
+	SRC_URI_A=( "${GITLAB_SRC_URI}" )
 
-[[ ${PV} != *9999* ]] && \
-	KEYWORDS="amd64 arm arm64"
+[[ "${PV}" != *9999* ]] && \
+	KEYWORDS_A=( 'amd64' 'arm' 'arm64' )
 IUSE_A=( +caps +client nls +assert judy )
 
 CDEPEND_A=(
@@ -53,6 +56,10 @@ inherit arrays
 RESTRICT+=" test"
 
 CONFIG_CHECK="~IPV6 ~TUN"
+
+src_unpack() {
+	gitlab:src_unpack
+}
 
 src_prepare() {
 	default
@@ -81,10 +88,12 @@ src_configure() {
 src_install() {
 	default
 
+	prune_libtool_files
+
+	rmdir "${ED}/run" || die
+
 	insinto /etc/miredo
 	doins misc/miredo-server.conf
-
-	prune_libtool_files
 }
 
 pkg_preinst() {

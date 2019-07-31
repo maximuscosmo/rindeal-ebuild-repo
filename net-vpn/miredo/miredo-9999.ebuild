@@ -1,1 +1,1 @@
-miredo-1.3.1.ebuild
+miredo-1.3.2.ebuild

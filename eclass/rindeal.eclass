@@ -2,22 +2,21 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rindeal.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
-# @BLURB: Base eclass that should be inheritted by all ebuilds right after the EAPI specification.
+# @BLURB: Base eclass for all ebuilds
 # @DESCRIPTION:
+#   This eclass should be inheritted by all ebuilds right after the EAPI specification.
 
 
 # fight with portage and override it again and again
-inherit portage-patches
+inherit portage-functions-patched
 
 
 if ! (( _RINDEAL_ECLASS ))
 then
 
 case "${EAPI:-0}" in
-6 | 7 ) ;;
-* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+'6' | '7' ) ;;
+* ) die "EAPI='${EAPI}' is not supported by '${ECLASS}' eclass" ;;
 esac
 
 
@@ -37,19 +36,19 @@ then
 	fi
 else
 
-	command_not_found_handle() {
-		debug-print-function "${FUNCNAME}" "$@"
-		local -r cmd="${1}"
+command_not_found_handle() {
+	debug-print-function "${FUNCNAME}" "$@"
+	local -r cmd="${1}"
 
-		## do not die in a pipe
-		[[ -t 1 ]] || return 127
+	## do not die in a pipe
+	[[ -t 1 ]] || return 127
 
-		## do not die in a subshell
-		read _pid _cmd _state _ppid _pgrp _session _tty_nr _tpgid _rest < /proc/self/stat
-		(( $$ == _tpgid )) && return 127
+	## do not die in a subshell
+	read _pid _cmd _state _ppid _pgrp _session _tty_nr _tpgid _rest < /proc/self/stat
+	(( $$ == _tpgid )) && return 127
 
-		die "'${cmd}': command not found"
-	}
+	die "'${cmd}': command not found"
+}
 
 fi
 ### END: "Command not found" handler
@@ -62,20 +61,20 @@ _rindeal:hooks:get_orig_prefix() {
 }
 
 _rindeal:hooks:call_orig() {
-	debug-print-function "${FUNCNAME}" "${@}"
+	debug-print-function "${FUNCNAME[1]}" "${@}"
 
-	local -r -- ________f="$(_rindeal:hooks:get_orig_prefix)${1}"
+	local -r -- func="$(_rindeal:hooks:get_orig_prefix)${1}"
 
-	if ! rindeal:func_exists "${________f}"
+	if ! rindeal:func_exists "${func}"
 	then
-		die "${ECLASS}.eclass: ${FUNCNAME}: function '${________f}' doesn't exist"
+		die "${ECLASS}.eclass: ${FUNCNAME}: function '${func}' doesn't exist"
 	fi
 
-	"${________f}" "${@:2}"
+	"${func}" "${@:2}"
 }
 
 _rindeal:hooks:save() {
-	debug-print-function "${FUNCNAME}" "${@}"
+	debug-print-function "${FUNCNAME[1]}" "${@}"
 
 	(( $# != 1 )) && die
 
@@ -98,7 +97,7 @@ _rindeal:hooks:save() {
 
 _rindeal:hooks:save inherit
 
-## "static assoc array"
+## "static" assoc array
 if [[ -z "$(declare -p _RINDEAL_ECLASS_SWAPS 2>/dev/null)" ]]
 then
 declare -g -A _RINDEAL_ECLASS_SWAPS=(
@@ -110,21 +109,23 @@ declare -g -A _RINDEAL_ECLASS_SWAPS=(
 fi
 
 inherit() {
-	local a args=()
-	for a in "${@}"
+	local old_eclass new_args=()
+	for old_eclass in "${@}"
 	do
-		if [[ ${_RINDEAL_ECLASS_SWAPS["${a}"]+exists} ]]
+		if [[ ${_RINDEAL_ECLASS_SWAPS["${old_eclass}"]+exists} ]]
 		then
-			# unquoted variable allows us to ignore certain eclasses
-			args+=( ${_RINDEAL_ECLASS_SWAPS["${a}"]} )
+			local new_eclass="${_RINDEAL_ECLASS_SWAPS["${old_eclass}"]}"
+			debug-print "${ECLASS}.eclass: ${FUNCNAME[1]}: swapping '${old_eclass}' for '${new_eclass}"
+			# unquoted variable allows us to ignore certain eclasses by supplying empty value
+			new_args+=( ${new_eclass} )
 			# prevent infinite loops
-			unset "_RINDEAL_ECLASS_SWAPS[${a}]"
+			unset "_RINDEAL_ECLASS_SWAPS[${old_eclass}]"
 		else
-			args+=( "${a}" )
+			new_args+=( "${old_eclass}" )
 		fi
 	done
 
-	_rindeal:hooks:call_orig inherit "${args[@]}"
+	_rindeal:hooks:call_orig inherit "${new_args[@]}"
 }
 
 ### END: inherit hook
@@ -229,7 +230,7 @@ rsed() {
 			"${diff_prog[@]}" "${temp_dir}/${file_list["${f}"]}" "${f}"
 			local code=$?
 			(( code == 2 )) && die -n
-			(( code == 0 )) && eqawarn "sed didn't change anything"
+			(( code == 0 )) && echo "*** sed didn't change anything"
 		done
 		rm -r -- "${temp_dir}" || die -n
 	fi

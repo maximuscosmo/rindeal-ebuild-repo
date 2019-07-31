@@ -18,14 +18,14 @@ esac
 
 
 _v_a=(
-	LICENSE
+	HOMEPAGE LICENSE
 
 	SRC_URI
 
 	KEYWORDS
 	IUSE
 
-	{C,,R,P}DEPEND
+	{C,,R,P,B}DEPEND
 
 	REQUIRED_USE
 
@@ -33,15 +33,21 @@ _v_a=(
 	CP_DEPEND
 	JAVA_SRC_DIR
 )
-for _v in "${_v_a[@]}" ; do
-	if [[ "$(declare -p ${_v}_A 2>/dev/null)" == "declare -a"* ]] ; then
+for _v in "${_v_a[@]}"
+do
+	if [[ "$(declare -p ${_v}_A 2>/dev/null)" == "declare -a"* ]]
+	then
 		debug-print "${ECLASS}: Converting '${_v}_A' to '${_v}'"
-		eval "${_v}+=\" \${${_v}_A[*]}\""
+
+		debug-print "${ECLASS}: Current value='${!_v}'"
+		eval "${_v}=\" \${${_v}_A[*]}\""
+		debug-print "${ECLASS}: New value='${!_v}'"
 
 		debug-print "${ECLASS}: Unsetting '${_v}_A'"
 		unset ${_v}_A
-	elif [[ -v ${_v} ]] ; then
-		debug-print "${ECLASS}: variable '${_v}' is not an array, but string or number!"
+	elif [[ -v ${_v} ]]
+	then
+		debug-print "${ECLASS}: Variable '${_v}' is not an array, but string or number!"
 	fi
 done
 unset _v _v_a

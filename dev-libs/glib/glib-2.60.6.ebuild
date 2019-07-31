@@ -1,45 +1,52 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
-GH_RN="github:GNOME"
+## gitlab.eclass:
+GITLAB_SVR="https://gitlab.gnome.org"
+GITLAB_NS="GNOME"
 
+## python-r1.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
+
+## functions: gitlab:snap:gen_src_uri
+## variables: GITLAB_HOMEPAGE, GITLAB_SRC_URI
+inherit gitlab
 
 ## functions: linux-info_pkg_setup
 inherit linux-info
+
 ## variables: PYTHON_REQUIRED_USE, PYTHON_DEPS
 ## functions: python_setup
 inherit python-r1
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
 ## functions: gnome2_environment_reset, gnome2_giomodule_cache_update, gnome2_schemas_update
 inherit gnome2-utils
+
 ## EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
 inherit meson
+
 ## functions: append-cxxflags
 inherit flag-o-matic
 
 DESCRIPTION="The GLib library of C routines"
-HOMEPAGE="${GH_HOMEPAGE} https://developer.gnome.org/glib"
-LICENSE="LGPL-2.1+"
+HOMEPAGE_A=( "${GITLAB_HOMEPAGE}" "https://developer.gnome.org/glib" )
+LICENSE_A=( 'LGPL-2.1+' )
 
 SLOT="2"
-# - pkg.m4 for eautoreconf to avoid circular dependency on pkg-config
-# - use 0.28 as newer version need to run their autoconf in order to create the necessary files
-git-hosting_gen_snapshot_url "freedesktop::pkg-config" "pkg-config-0.28" pkg_config_snap_url pkg_config_distfile
-SRC_URI+=" ${pkg_config_snap_url} -> ${pkg_config_distfile}"
+SRC_URI_A=( "${GITLAB_SRC_URI}" )
 
-KEYWORDS="amd64 arm arm64"
+KEYWORDS_A=('amd64' 'arm' 'arm64' )
 IUSE_A=(
 	dbus debug +mime selinux static-libs systemtap utils xattr
 	+iconv_libc iconv_gnu iconv_native
-	internal-pcre man +libmount doc nls
+	internal-pcre man +libmount doc nls fam
 )
 
 # FIXME: verify all deps
@@ -96,8 +103,7 @@ pkg_setup() {
 }
 
 src_unpack() {
-	git-hosting_src_unpack
-	default
+	gitlab:src_unpack
 }
 
 src_prepare-locales() {
@@ -107,7 +113,7 @@ src_prepare-locales() {
 
 	l10n_get_locales locales app off
 	for l in ${locales} ; do
-		rrm "${dir}/${pre}${l}${post}"
+		NO_V=1 rrm "${dir}/${pre}${l}${post}"
 	done
 }
 
@@ -116,19 +122,8 @@ src_prepare() {
 
 	src_prepare-locales
 
-	# Prevent build failure in stage3 where pkgconfig is not available, bug #481056
-	rmv -f "${WORKDIR}"/pkg-config-*/pkg.m4 "${S}"/m4macros/
-
 	# Don't build tests, also prevents extra deps, bug gentoo#512022
 	rsed -e "s/subdir('tests')//" -i -- meson.build
-	if ! use nls ; then
-		rsed -e "/i18n.gettext/d" -i -- po/meson.build
-	fi
-
-	# Leave python shebang alone - handled by python_replicate_script
-	# We could call python_setup and give configure a valid --with-python
-	# arg, but that would mean a build dep on python when USE=utils.
-	rsed -e '/${PYTHON}/d' -i -- glib/Makefile.am
 
 	xdg_src_prepare
 	gnome2_environment_reset
@@ -143,20 +138,29 @@ src_configure() {
 
 	local emesonargs=(
 		# -D runtime_libdir
-		$(use iconv_gnu    && echo "-D iconv=gnu")
-		$(use iconv_libc   && echo "-D iconv=libc")
-		$(use iconv_native && echo "-D iconv=native")
+		-D iconv="$(
+			usex iconv_libc 'libc' "$(
+				usex iconv_gnu 'gnu' "$(
+					usex iconv_native 'native' 'error'
+				)"
+			)"
+		)"
 		# -D charsetalias_dir
 		# -D gio_module_dir
-		$(meson_use selinux)
+		-D selinux=$(usex selinux 'enabled' 'disabled')
 		$(meson_use xattr)
 		$(meson_use libmount)
 		$(meson_use internal-pcre internal_pcre)
-		-D man=$(usex man true false)
+		$(meson_use man)
 		$(meson_use systemtap dtrace)
 		$(meson_use systemtap)
 		# -D tapset_install_dir
-		-D gtk_doc=$(usex doc true false)
+		$(meson_use doc gtk_doc)
+		-D bsymbolic_functions=true
+		-D force_posix_threads=false
+		$(meson_use fam)
+		-D installed_tests=false
+		-D nls=$(usex nls 'enabled' 'disabled')
 	)
 
 	meson_src_configure
@@ -164,11 +168,12 @@ src_configure() {
 
 src_install() {
 	meson_src_install
-	keepdir /usr/$(get_libdir)/gio/modules
-
 	einstalldocs
 
-	if use utils ; then
+	keepdir /usr/$(get_libdir)/gio/modules
+
+	if use utils
+	then
 		python_replicate_script "${ED}"/usr/bin/gtester-report
 	else
 		rrm "${ED}/usr/bin/gtester-report"
@@ -182,15 +187,19 @@ src_install() {
 }
 
 pkg_preinst() {
+	xdg_pkg_preinst
+
 	## Make gschemas.compiled belong to glib alone
-	if [[ -e ${EROOT}${GSCHEMAS_CACHE} ]]; then
+	if [[ -e ${EROOT}${GSCHEMAS_CACHE} ]]
+	then
 		rcp "${EROOT}"${GSCHEMAS_CACHE} "${ED}"/${GSCHEMAS_CACHE}
 	else
 		touch "${ED}"/${GSCHEMAS_CACHE} || die
 	fi
 
 	## Make giomodule.cache belong to glib alone
-	if [[ -e ${EROOT}${GIOMODULE_CACHE} ]]; then
+	if [[ -e ${EROOT}${GIOMODULE_CACHE} ]]
+	then
 		rcp "${EROOT}${GIOMODULE_CACHE}" "${ED}/${GIOMODULE_CACHE}"
 	else
 		touch "${ED}/${GIOMODULE_CACHE}" || die
@@ -198,6 +207,8 @@ pkg_preinst() {
 }
 
 pkg_postinst() {
+	xdg_pkg_postinst
+
 	# force (re)generation of gschemas.compiled
 	GNOME2_ECLASS_GLIB_SCHEMAS="force"
 
@@ -206,7 +217,10 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	if [[ -z ${REPLACED_BY_VERSION} ]]; then
+	xdg_pkg_postrm
+
+	if [[ -z ${REPLACED_BY_VERSION} ]]
+	then
 		rrm -f "${EROOT}${GIOMODULE_CACHE}"
 		rrm -f "${EROOT}${GSCHEMAS_CACHE}"
 	fi

@@ -12,23 +12,22 @@ GH_REF="v${PV}"
 ## python-*.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )
 
-# functions: rindeal:prefix_flags
+## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
-# functions: python_setup, python_get_sitedir
-# EXPORT_FUNCTIONS: pkg_setup
-inherit python-any-r1
+## functions: python_setup, python_get_sitedir
+inherit python-r1
 
-# EXPORT_FUNCTIONS src_unpack
+## EXPORT_FUNCTIONS src_unpack
 inherit git-hosting
 
-# EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
+## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
 
-# functions: eautoreconf
+## functions: eautoreconf
 inherit autotools
 
-# functions: systemd_get_userunitdir
+## functions: systemd_get_userunitdir
 inherit systemd
 
 DESCRIPTION="Screen color temperature adjusting software"
@@ -94,7 +93,7 @@ REQUIRED_USE_A=(
 inherit arrays
 
 pkg_setup() {
-	use gui && python-any-r1_pkg_setup
+	use gui && python_setup
 }
 
 src_prepare() {

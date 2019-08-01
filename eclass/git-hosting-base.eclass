@@ -71,15 +71,14 @@ git:hosting:sanitize_filename() {
 
 	local -- filename="${1}"
 
-	# replace all slashes with permitted characters
-	filename="${filename//\//_-}" # TODO: come up with a better replacement
-
 	## replace all not-permitted characters
-	local regex='[^a-zA-Z0-9\.,+_-]'
+	local regex='[^a-zA-Z0-9\._-]'
 	while [[ "${filename}" =~ ${regex} ]]
 	do
-		filename="${filename//${BASH_REMATCH[0]}/,}"
+		filename="${filename//${BASH_REMATCH[0]}/_}"
 	done
+
+	(( ${#filename} >= 255 )) && die
 
 	printf "%s" "${filename}"
 }

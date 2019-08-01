@@ -4,12 +4,13 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="gitlab:rindeals-mirrors"
-GH_REF="v${PV}"
+## gitlab.eclass:
+GITLAB_NS="rindeal-ns/mirrors"
+GITLAB_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## functions: gitlab:src_unpack
+## variables: GITLAB_SRC_URI
+inherit gitlab
 
 ## functions: eautoreconf
 inherit autotools
@@ -18,10 +19,18 @@ inherit autotools
 inherit desktop
 
 DESCRIPTION="Audio spectrum analyser in 3D"
-HOMEPAGE="http://spectrum3d.sourceforge.net https://sourceforge.net/projects/spectrum3d/"
-LICENSE="GPL-3"
+HOMEPAGE_A=(
+	"http://spectrum3d.sourceforge.net"
+	"https://sourceforge.net/projects/spectrum3d/"
+)
+LICENSE_A=(
+	"GPL-3"
+)
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITLAB_SRC_URI}"
+)
 
 KEYWORDS="~amd64"
 IUSE_A=( gtk3 sdl jack )
@@ -50,6 +59,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 )
 
 inherit arrays
+
+src_unpack() {
+	gitlab:src_unpack
+}
 
 src_prepare() {
 	default

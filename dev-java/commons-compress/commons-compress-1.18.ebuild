@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -40,10 +40,10 @@ CDEPEND_A=(
 	"${CP_DEPEND_A[@]}"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
-	">=virtual/jdk-1.7"
+	">=virtual/jdk-1.8"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	">=virtual/jre-1.7"
+	">=virtual/jre-1.8"
 )
 
 ## java-pkg-simple.eclass:

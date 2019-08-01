@@ -1,29 +1,40 @@
 # Copyright 1999-2017 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="gitlab:procps-ng"
-GH_REF="v${PV}"
+## gitlab.eclass:
+GITLAB_NS="procps-ng"
+GITLAB_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## functions: gitlab:src_unpack
+## variables: GITLAB_SRC_URI, GITLAB_HOMEPAGE
+inherit gitlab
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: append-lfs-flags
 inherit flag-o-matic
+
 ## functions: gen_usr_ldscript
 inherit toolchain-funcs
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="standard informational utilities and process-handling tools"
+HOMEPAGE_A=(
+	"${GITLAB_HOMEPAGE}"
+)
 LICENSE="GPL-2"
 
 SLOT="0/8"  # libprocps.so
+SRC_URI_A=(
+	"${GITLAB_SRC_URI}"
+)
 
 KEYWORDS="amd64 arm arm64"
 IUSE_A=(
@@ -54,6 +65,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 )
 
 inherit arrays
+
+src_unpack() {
+	gitlab:src_unpack
+}
 
 src_prepare() {
 	eapply "${FILESDIR}"/${PN}-3.3.11-sysctl-manpage.patch # 565304

@@ -4,13 +4,9 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="gitlab:gnuwget"
-[[ "${PV}" == *9999* ]] || \
-	GH_REF="${P}"
-
-## git-r3.eclass (part of git-hosting.eclass):
-EGIT_SUBMODULES=()
+## gitlab.eclass:
+GITLAB_NS="gnuwget"
+GITLAB_REF="${P}"
 
 ## functions: dsf:eval
 inherit dsf-utils
@@ -18,8 +14,9 @@ inherit dsf-utils
 ## functions:  rindeal:prefix_flags
 inherit rindeal-utils
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## functions: gitlab:src_unpack
+## variables: GITLAB_HOMEPAGE, GITLAB_SRC_URI
+inherit gitlab
 
 ## functions: eautoreconf
 inherit autotools
@@ -28,15 +25,16 @@ inherit autotools
 inherit ltprune
 
 DESCRIPTION="Successor of GNU Wget, a file and recursive website downloader."
+HOMEPAGE_A=( "${GITLAB_HOMEPAGE}" )
 LICENSE_A=(
 	"GPL-3+"  # wget2
 	"LGPL-3+" # libwget
 )
 
 SLOT="0"
+SRC_URI_A=( "${GITLAB_SRC_URI}" )
 
-[[ "${PV}" == *9999* ]] || \
-	KEYWORDS="~amd64 ~arm ~arm64"
+KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
 	nls static-libs assert xattr doc test
 	+openssl +gnutls
@@ -51,8 +49,6 @@ IUSE_A=(
 	plugin-support
 	gpgme
 )
-
-RESTRICT+=""
 
 CDEPEND_A=(
 	"nls? ( sys-devel/gettext )"
@@ -102,6 +98,10 @@ REQUIRED_USE_A=(
 
 inherit arrays
 
+src_unpack() {
+	gitlab:src_unpack
+}
+
 src_prepare() {
 	eapply_user
 
@@ -112,7 +112,7 @@ src_prepare() {
 
 	rsed -e "/^bin_PROGRAMS/ s|wget2_noinstall||" -e "/^wget2_noinstall/d" -i -- src/Makefile.am
 
-	./bootstrap --no-git --gnulib-srcdir="${EROOT}"/usr/share/gnulib $(usex nls '' '--skip-po') || die
+	./bootstrap --no-git --gnulib-srcdir="${EPREFIX}"/usr/share/gnulib $(usex nls '' '--skip-po') || die
 
 	eautoreconf
 }

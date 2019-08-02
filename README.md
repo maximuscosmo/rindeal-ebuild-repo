@@ -117,7 +117,7 @@ which means it **cannot** be legally contributed to the [Gentoo™] ebuild repos
 [protected branches]: https://help.github.com/articles/about-protected-branches/
 [LISTING]: ./LISTING.md
 [New issue]: https://github.com/rindeal/rindeal-ebuild-repo/issues/new
-[ci-master]: https://travis-ci.org/rindeal/rindeal-ebuild-repo
+[ci-master]: https://travis-ci.com/rindeal/rindeal-ebuild-repo
 [docker-hub-project]: https://hub.docker.com/r/rindeal/portage-amd64-base/
 [Gentoo™]: https://www.gentoo.org/ "main Gentoo project website"
 [pulse]: https://github.com/rindeal/rindeal-ebuild-repo/pulse "GitHub Pulse for rindeal-ebuild-repo"

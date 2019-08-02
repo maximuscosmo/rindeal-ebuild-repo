@@ -25,7 +25,6 @@ dev-java/commons-codec::gentoo
 dev-java/commons-compress::gentoo
 dev-java/java-config::gentoo
 dev-java/javassist::gentoo
-dev-java/svgsalamander::gentoo
 dev-java/xz-java::gentoo
 dev-libs/capnproto::gentoo
 dev-libs/glib::gentoo
@@ -40,8 +39,10 @@ dev-python/PyGithub::gentoo
 dev-python/backcall::gentoo
 dev-python/bitstring::gentoo
 dev-python/cffi::gentoo
+dev-python/docker-py::gentoo
 dev-python/fusepy::gentoo
 dev-python/ipython::gentoo
+dev-python/kconfiglib::gentoo
 dev-python/mypy::gentoo
 dev-python/posix_ipc::gentoo
 dev-python/progressbar2::gentoo
@@ -52,6 +53,7 @@ dev-python/python-utils::gentoo
 dev-python/terminaltables::gentoo
 dev-python/typed-ast::gentoo
 dev-python/typing::gentoo
+dev-python/websocket-client::gentoo
 dev-util/clinfo::gentoo
 dev-util/gdbus-codegen::gentoo
 dev-util/glib-utils::gentoo

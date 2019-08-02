@@ -1,8 +1,8 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install
@@ -10,6 +10,9 @@ inherit e2fsprogs
 
 ## functions: eshopts_push, eshopts_pop
 inherit estack
+
+## functions: gen_usr_ldscript
+inherit usr-ldscript
 
 DESCRIPTION="Standard EXT2/EXT3/EXT4 filesystem utilities"
 
@@ -48,8 +51,10 @@ src_prepare() {
 
 	eshopts_push -s globstar
 	local f
-	for f in **/Makefile.in ; do
-		if egrep -q "/lib/(ss|et)" "${f}" ; then
+	for f in **/Makefile.in
+	do
+		if egrep -q "/lib/(ss|et)" "${f}"
+		then
 			rsed -r -e "s,[^ \t]+lib/(ss|et)[^ \t]*,,g" -i -- "${f}"
 		fi
 	done

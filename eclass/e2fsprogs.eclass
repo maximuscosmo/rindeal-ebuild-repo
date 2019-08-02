@@ -1,11 +1,12 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-if [ -z "${E2FSPROGS_ECLASS}" ] ; then
+if ! (( _E2FSPROGS_ECLASS ))
+then
 
 case "${EAPI:-0}" in
-	6) ;;
-	*) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+'7' ) ;;
+* ) die "EAPI='${EAPI}' is not supported by '${ECLASS}' eclass" ;;
 esac
 
 inherit rindeal
@@ -16,6 +17,7 @@ GH_RN="kernel:fs/ext2:e2fsprogs"
 GH_REF="v${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack
+## variables: GH_HOMEPAGE, SRC_URI
 inherit git-hosting
 
 ## functions: eautoreconf
@@ -30,9 +32,22 @@ inherit toolchain-funcs
 ## functions: prune_libtool_files
 inherit ltprune
 
+## functions: get_udevdir
+inherit udev
 
-HOMEPAGE="http://e2fsprogs.sourceforge.net/ ${GH_HOMEPAGE}"
-LICENSE="GPL-2 BSD"
+## functions: systemd_get_systemunitdir
+inherit systemd
+
+
+HOMEPAGE_A=(
+	"http://e2fsprogs.sourceforge.net/"
+	"${GH_HOMEPAGE}"
+	"https://github.com/tytso/e2fsprogs"
+)
+LICENSE_A=(
+	"GPL-2"
+	"BSD"
+)
 
 SLOT="0"
 
@@ -107,6 +122,13 @@ e2fsprogs_src_configure() {
 		$(usex threads "--enable-threads=posix" "--disable-threads")
 		--disable-rpath
 		--disable-fuse2fs  # enable if needed
+		--disable-lto  # we can enable it ourselves
+		$(use_enable debug ubsan)
+		$(use_enable debug addrsan)
+		$(use_enable debug threadsan)
+		--with-udev-rules-dir="$(get_udevdir)"
+		--without-crond-dir
+		--with-systemd-unit-dir="$(systemd_get_systemunitdir)"
 
 		--with-root-prefix="${EPREFIX}/"  # ??
 
@@ -139,11 +161,12 @@ e2fsprogs_src_install() {
 	prune_libtool_files
 
 	# configure doesn't have an option to disable static libs :/
-	if ! use static-libs ; then
+	if ! use static-libs
+	then
 		find "${D}" -name '*.a' -delete || die
 	fi
 }
 
 
-E2FSPROGS_ECLASS=1
+_E2FSPROGS_ECLASS=1
 fi

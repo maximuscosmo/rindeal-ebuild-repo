@@ -1,15 +1,15 @@
 # Copyright 1999-2018 Gentoo Foundation
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install
 inherit e2fsprogs
 
 ## functions: gen_usr_ldscript
-inherit toolchain-funcs
+inherit usr-ldscript
 
 DESCRIPTION="e2fsprogs libraries (libcomm_err and libss)"
 
@@ -29,16 +29,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 inherit arrays
 
 src_prepare() {
-	# TODO: remove this series of patches in ver > 1.44.4
-	eapply "${FILESDIR}"/d16afd2cb65f6cc1e0522a11e7d5a50e5cfe9e36.patch
-	eapply "${FILESDIR}"/ed07fd93056a2d2c03affe3255d3d5747deaab21.patch
-	eapply "${FILESDIR}"/feb235e0812d6c5f1fda9e8c790b5bcb78aba285.patch
-
 	eapply_user
 
-	# TODO: this will be needed in ver > 1.44.4
-# 	rrm config/ltmain.sh
-# 	rcp /usr/share/libtool/build-aux/ltmain.sh config/ltmain.sh
+	rrm config/ltmain.sh
+	rcp /usr/share/libtool/build-aux/ltmain.sh config/ltmain.sh
 
 	e2fsprogs_src_prepare
 }

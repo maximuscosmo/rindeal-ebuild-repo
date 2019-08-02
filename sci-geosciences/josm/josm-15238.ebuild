@@ -1,7 +1,7 @@
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## java-utils-2.eclass:
@@ -14,19 +14,20 @@ EANT_GENTOO_CLASSPATH="
 	jmapviewer
 	gettext-commons
 	gettext-ant-tasks
-	svgsalamander
 	signpost
-	ant-contrib
 "
 ## java-ant-2.eclass:
 JAVA_ANT_ENCODING=UTF-8
 
 ## EXPORT_FUNCTIONS: pkg_setup src_prepare src_compile pkg_preinst
 inherit java-pkg-2
+
 ## EXPORT_FUNCTIONS: src_configure
 inherit java-ant-2
+
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
 ## functions: make_desktop_entry, doicon, newicon
 inherit desktop
 
@@ -36,11 +37,16 @@ LICENSE="GPL-2"
 
 SLOT="0"
 MY_P="${PN}_0.0.svn${PV}"
-# Upstream doesn't provide versioned tarballs
+
 SRC_URI_A=(
-	## josm 0.0.svn13878+dfsg-1
-	"http://snapshot.debian.org/archive/debian/20180531T100916Z/pool/main/j/josm/josm_0.0.svn13878%2Bdfsg-1.debian.tar.xz"
-	"http://snapshot.debian.org/archive/debian/20180531T100916Z/pool/main/j/josm/josm_0.0.svn13878%2Bdfsg.orig.tar.gz"
+	# Upstream doesn't provide versioned tarballs so check for debian tarballs at:
+	#
+	#     https://snapshot.debian.org/binary/josm/
+	#
+
+	## josm 0.0.svn15238+dfsg-1
+	"https://snapshot.debian.org/archive/debian/20190711T090247Z/pool/main/j/josm/josm_0.0.svn15238%2Bdfsg-1.debian.tar.xz"
+	"https://snapshot.debian.org/archive/debian/20190711T090247Z/pool/main/j/josm/josm_0.0.svn15238%2Bdfsg.orig.tar.gz"
 )
 
 KEYWORDS="~amd64"
@@ -50,13 +56,14 @@ CDEPEND_A=(
 	"dev-java/commons-logging:0"
 	"dev-java/error-prone-annotations:0"
 	"dev-java/jmapviewer:0"
-	"dev-java/gettext-commons:0"
+	">=dev-java/gettext-commons-0.9.6:0"
 	"dev-java/gettext-ant-tasks:0"
-	"dev-java/svgsalamander:0"
-	"dev-java/signpost:0"
+	">=dev-java/signpost-1.2:0"
+
+	"dev-java/commons-codec:0"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
-	">=virtual/jdk-1.8"
+	">=virtual/jdk-1.8"  # TODO: lift this to 1.9 when available in Gentoo repo
 	"dev-java/javacc:0"
 	"dev-java/ant-contrib:0"
 	"app-text/xmlstarlet" # required for build files patching
@@ -64,7 +71,7 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-perl/TermReadKey"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	">=virtual/jre-1.8"
+	">=virtual/jre-1.8"  # TODO: lift this to 1.9 when available in Gentoo repo
 	"media-fonts/noto"
 )
 
@@ -73,12 +80,17 @@ RESTRICT+=" mirror"
 inherit arrays
 
 S="${WORKDIR}/${MY_P//_/-}"
-DEBIAN_DIR="${WORKDIR}/debian"
 
 L10N_LOCALES=(
-	af am ar ast az be bg bn br bs ca ca@valencia cs cy da de de_DE el en_AU en_CA en_GB eo es et
-	eu fa fi fil fo fr ga gl he hi hr ht hu hy ia id is it ja ka km ko ku ky lb lo lt lv mk mr ms
-	nb nds nl nn oc pa pl pt pt_BR rm ro ru sk sl sq sr sv ta te th tr ug uk ur vi wae zh_CN zh_TW
+	# format cmd:
+	#
+	#     tr '[[:space:]]' '\n' | sort | sed -r '/^$/d' | tr '\n' ' ' | fold -s -w 100
+	#
+	af ak am ar as ast awa az be bg bn br bs ca ca@valencia ceb co cs cy da de de_DE dv el en_AU en_CA
+	en_GB en_US eo es et eu fa ff fi fil fo fr ga gl gu ha he hi hil hne hr ht hu hy ia id is it ja jv
+	ka kk km kn ko ku ky la lb lo lt lv mg mk ml mr ms my nb nds ne nl nn ny oc om or pa pl ps pt pt_BR
+	rm ro ru rw sd si sk skr sl so sq sr st sv ta te th tk tl tr ug uk ur uz vi wae xh yo zh_CN zh_HK
+	zh_TW zu
 )
 inherit l10n-r1
 
@@ -88,20 +100,31 @@ src_prepare-locales() {
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
 	l10n_get_locales locales app off
-	for l in ${locales} ; do
-		rrm "${dir}/${pre}${l}${post}"
+	for l in ${locales}
+	do
+		NO_V=1 rrm "${dir}/${pre}${l}${post}"
 		rsed -e "/languages\.put.*\"${l}\"/d" \
 			-i -- src/org/openstreetmap/josm/tools/{I18n,LanguageInfo}.java || die
 	done
 }
 
 src_prepare() {
-	eapply "${DEBIAN_DIR}/patches"/00-build.patch
-	eapply "${DEBIAN_DIR}/patches"/04-use_system_jmapviewer.patch
-	eapply "${DEBIAN_DIR}/patches"/05-fix_version.patch
-	eapply "${DEBIAN_DIR}/patches"/06-move_data_out_of_jar.patch
-	eapply "${DEBIAN_DIR}/patches"/07-use_system_fonts.patch
-	eapply "${DEBIAN_DIR}/patches"/08-use_noto_font.patch
+	local -a -r debian_patches=(
+		"00-build.patch"
+# 		"01-bts.patch"  # don't use - using custom patching for that
+# 		"03-default_look_and_feel.patch"  # don't use - using custom patching for that
+		"04-use_system_jmapviewer.patch"
+		"05-fix_version.patch"
+		"06-move_data_out_of_jar.patch"
+		"07-use_system_fonts.patch"
+		"08-use_noto_font.patch"
+# 		"09-no-java-8.patch"  # java 9+ not available in Gentoo repos and not really needed yet
+	)
+	local p
+	for p in "${debian_patches[@]}"
+	do
+		eapply "${WORKDIR}/debian/patches/${p}"
+	done
 
 	xdg_src_prepare
 
@@ -116,8 +139,10 @@ src_prepare() {
 	echo "${xmlstarlet[@]}"
 	"${xmlstarlet[@]}" || die
 	local p f
-	for p in ${EANT_GENTOO_CLASSPATH} ; do
-		for f in $(java-pkg_getjars "${p}" | tr ':' ' ') ; do
+	for p in ${EANT_GENTOO_CLASSPATH}
+	do
+		for f in $(java-pkg_getjars "${p}" | tr ':' ' ')
+		do
 			local base_xpath="project/target[@name='init-properties']/path[@id='classpath']"
 			local xmlstarlet=(
 				xmlstarlet ed --inplace
@@ -146,10 +171,10 @@ src_prepare() {
 	rsed -e 's|"javax.swing.plaf.metal.MetalLookAndFeel"|"com.sun.java.swing.plaf.gtk.GTKLookAndFeel"|' \
 		-i -- src/org/openstreetmap/josm/tools/PlatformHookUnixoid.java || die
 
-	## normalize user-agent
+	## don't leak through user-agent
 	rsed -r -e 's|(String *result *= *"JOSM/1.5 \(").*|\1 + v + ")";|' \
 		-i -- src/org/openstreetmap/josm/data/Version.java || die
-	rsed -e '/Main.platform.getOSDescription/d' -i -- src/org/openstreetmap/josm/data/Version.java || die
+	rsed -e '/if *( *includeOsDetails/ s|includeOsDetails|false|' -i -- src/org/openstreetmap/josm/data/Version.java || die
 	rsed -r -e 's|(getAgentString\(\)) *\+.*|\1;|' -i -- src/org/openstreetmap/josm/data/Version.java || die
 
 	## do not display MOTD by default, as it requires calling home
@@ -176,6 +201,7 @@ src_prepare() {
 
 src_compile() {
 	EANT_GENTOO_CLASSPATH_EXTRA="${S}/src"
+	EANT_GENTOO_CLASSPATH_EXTRA+=":$(java-pkg_getjars --build-only "ant-contrib")"
 	# `dist-optimized` requires non-free obfuscator
 	EANT_BUILD_TARGET="dist"
 	# removes dependency on OpenJFX/Oracle JFX, but audio player will cease to work
@@ -194,21 +220,24 @@ src_install() {
 	insinto /usr/share/${PN}
 	doins -r images styles data
 
+	local -- share_src_dir="linux/tested/usr/share"
+
 	### Icons
-	doicon -s scalable "linux/tested/usr/share/icons/hicolor/scalable/apps/${PN}.svg"
-	local s
+	newicon -s scalable "${share_src_dir}/icons/hicolor/scalable/apps/org.openstreetmap.josm.svg" "${PN}.svg"
+	local -i s
 	# unsupported sizes: 8 40 42 80
-	for s in 16 22 24 32 36 48 64 72 96 128 192 256 512 ; do
-		doicon -s ${s} "linux/tested/usr/share/icons/hicolor/${s}x${s}/apps/${PN}.png"
+	for s in 16 22 24 32 36 48 64 72 96 128 192 256 512
+	do
+		newicon -s ${s} "${share_src_dir}/icons/hicolor/${s}x${s}/apps/org.openstreetmap.josm.png" "${PN}.png"
 	done
 
 	### Docs
-	doman "linux/tested/usr/share/man/man1/${PN}.1"
+	doman "${share_src_dir}/man/man1/${PN}.1"
 	einstalldocs
 
 	### Misc
 	insinto /usr/share/appdata
-	doins "linux/tested/usr/share/metainfo/${PN}.appdata.xml"
+	doins "${share_src_dir}/metainfo/org.openstreetmap.josm.appdata.xml"
 
 	local make_desktop_entry_args=(
 		"${EPREFIX}/usr/bin/${PN} %F"	# exec

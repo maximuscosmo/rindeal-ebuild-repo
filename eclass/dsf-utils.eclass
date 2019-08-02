@@ -1,9 +1,7 @@
-# Copyright 2019 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: dsf-utils.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal@gmail.com>
 # @DESCRIPTION:
 # Dependency Specification Format utilities
 
@@ -258,7 +256,7 @@ _dsf:get_expr_type() {
 
 	# algorithm: find the first &/| character outside of a group
 	local t in_group=0
-	for t in "${tokens[@]}"
+	for t in "${_tokens[@]}"
 	do
 		case "${t}" in
 		'(' ) in_group=1 ;;

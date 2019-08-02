@@ -230,7 +230,7 @@ rsed() {
 			"${diff_prog[@]}" "${temp_dir}/${file_list["${f}"]}" "${f}"
 			local code=$?
 			(( code == 2 )) && die -n
-			(( code == 0 )) && echo "*** sed didn't change anything"
+			(( code == 0 )) && eqawarn "sed didn't change anything"
 		done
 		rm -r -- "${temp_dir}" || die -n
 	fi

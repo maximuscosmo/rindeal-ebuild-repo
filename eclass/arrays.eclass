@@ -44,7 +44,7 @@ do
 		debug-print "${ECLASS}: New value='${!_v}'"
 
 		debug-print "${ECLASS}: Unsetting '${_v}_A'"
-		unset ${_v}_A
+		unset "${_v}_A"
 	elif [[ -v ${_v} ]]
 	then
 		debug-print "${ECLASS}: Variable '${_v}' is not an array, but string or number!"

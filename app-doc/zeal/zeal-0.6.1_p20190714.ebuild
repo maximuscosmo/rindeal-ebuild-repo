@@ -1,13 +1,13 @@
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass
 GH_RN="github:zealdocs"
 # GH_REF="v${PV}"
-GH_REF="9bf296a"
+GH_REF="419ef8d"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
@@ -82,17 +82,11 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 src_prepare() {
 	eapply_user
 
-	## remove ads
-	rrm src/app/resources/browser/welcome.html
-	rsed -e '/welcome.html/d' -i -- src/app/resources/zeal.qrc
-	rsed -e '/WelcomePageUrl\[] =/ s|welcome.html|welcome-noad.html|' -i -- src/libs/ui/mainwindow.cpp
-
 	## disable update checks
 	rsed -e '/ReleasesApiUrl/ s|".*"|""|' -i -- src/libs/core/application.cpp
 	rsed -e '/QUrl(ReleasesApiUrl)/i return;' -i -- src/libs/core/application.cpp
 
 	## change default settings
-	rsed -e '/"disable_ad"/ s|false|true|' -i -- src/libs/core/settings.cpp
 	rsed -e '/"check_for_update"/ s|true|false|' -i -- src/libs/core/settings.cpp
 	rsed -e '/"smooth_scrolling"/ s|false|true|' -i -- src/libs/core/settings.cpp
 	rsed -e '/"fuzzy_search_enabled"/ s|false|true|' -i -- src/libs/core/settings.cpp

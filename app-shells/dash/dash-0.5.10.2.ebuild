@@ -1,8 +1,8 @@
 # Copyright 1999-2015 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -10,15 +10,21 @@ GH_RN="kernel:utils/${PN}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functinos: eautoreconf
 inherit autotools
+
 ## functions: append-cppflags
 inherit flag-o-matic
+
 ## functions: tc-getPKG_CONFIG
 inherit toolchain-funcs
 
 DESCRIPTION="POSIX compliant shell, a direct descendant of the NetBSD version of ash"
-HOMEPAGE="http://gondor.apana.org.au/~herbert/${PN}/ ${GH_HOMEPAGE}"
+HOMEPAGE_A=(
+	"http://gondor.apana.org.au/~herbert/${PN}/"
+	"${GH_HOMEPAGE}"
+)
 LICENSE="BSD"
 
 SLOT="0"
@@ -46,7 +52,7 @@ src_prepare() {
 	eapply "${FILESDIR}"/0.5.8-SHELL-print-n-upon-EOF-CTRL-D-when-run-interactively.patch
 # 	eapply "${FILESDIR}"/0.5.8-PARSER-Remove-backslash-before-in-double-quotes-in-va.patch
 	eapply "${FILESDIR}"/0.5.8-SHELL-Disable-sh-c-command-sh-c-exec-command-optimization.patch
-	eapply "${FILESDIR}"/0.5.8-JOBS-address-format-security-build-error.patch
+	eapply "${FILESDIR}"/0.5.8-JOBS-address-format-security-build-error.patch  # TODO: remove after 0.5.10.2
 	eapply "${FILESDIR}"/0.5.8-EVAL-Report-I-O-error-on-stdout.patch
 	eapply_user
 

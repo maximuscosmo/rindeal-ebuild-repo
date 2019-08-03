@@ -54,6 +54,21 @@ fi
 ### END: "Command not found" handler
 
 
+### BEGIN: Death hooks
+if ! rindeal:has rindeal:death_hook ${EBUILD_DEATH_HOOKS}
+then
+	EBUILD_DEATH_HOOKS+=" rindeal:death_hook"
+fi
+
+rindeal:death_hook() {
+	eerror ""
+	eerror "Ask for help at https://github.com/rindeal/rindeal-ebuild-repo/issues"
+	eerror "instead of posting to https://forums.gentoo.org/ or worse https://bugs.gentoo.org/."
+	eerror ""
+}
+### END: Death hooks
+
+
 ### BEGIN: hooking infrastructure
 
 _rindeal:hooks:get_orig_prefix() {

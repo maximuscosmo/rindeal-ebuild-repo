@@ -1,7 +1,7 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -13,6 +13,7 @@ GH_REF="v${PV}"
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
+
 ## functions: append-cflags
 inherit flag-o-matic
 
@@ -26,7 +27,6 @@ IUSE_A=( )
 
 CDEPEND_A=()
 DEPEND_A=( "${CDEPEND_A[@]}"
-	"sys-libs/mlbuf:0"
 	"sys-libs/termbox:0"
 	"dev-libs/uthash:0"
 )
@@ -37,31 +37,23 @@ RESTRICT+=""
 
 inherit arrays
 
-REQUIRED_USE=""
-RESTRICT+=""
-
 src_prepare() {
-	default
+	eapply_user
 
-	local sedargs=(
-		# flags
-		-e '/mle_cflags/ s| -g||g'
+	# flags
+	rsed -e '/mle_cflags/ s| -g||g' -i -- Makefile
+	rsed -e '/mle_cflags/ s| -O3||g' -i -- Makefile
 
-		# libpcre
-		-e "/mle_ldlibs/ s| -lpcre| $(pkg-config --libs libpcre)|"
+	# libpcre
+	rsed -e "/mle_libs/ s| -lpcre| $(pkg-config --libs libpcre)|" -i -- Makefile
 
-		# static lib{mlbuf,termbox}
-		-e '/mle_cflags/ s@-I[^ ]*(mlbuf|termbox)[^ ]*@@g'
-		-e '/^mle:/ s@[^ \t]*lib(mlbuf|termbox)\.a@@g'
-		-e '/\$\(CC\)/ s@[^ ]*(lib(mlbuf|termbox)\.a)@-l\2@g'
-	)
-	sed -r "${sedargs[@]}" -i Makefile || die
-
-	# use global uthash.h/utlist.h instead of bundled copy
-	sed -r \
-		-e 's|(#include *)"uthash.h"|\1<uthash.h>|g' \
-		-e 's|(#include *)"utlist.h"|\1<utlist.h>|g' \
-		-i -- *.{c,h} || die
+	## remove dependency on LUA, because it isn't packaged yet
+	rsed -e '/lua/d' -i -- mle.h
+	rsed -r -e '/mle_libs/ s|[^ ]*lua[^ ]*||' -i -- Makefile
+	rrm *uscript*
+	rsed -e '/uscript_run/d' -i -- mle.h
+	rsed -e '/uscript_destroy/d' -i -- mle.h
+	rsed -e '/uscript/d' -e "/case *'x':/ s|^|/*|" -e "/case *'y':/ s|^|*/|" -i -- editor.c
 }
 
 src_configure() {

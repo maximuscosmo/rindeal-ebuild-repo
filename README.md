@@ -129,7 +129,7 @@ which means it **cannot** be legally contributed to the [Gentoo™] ebuild repos
 [first-commit-badge]:          https://img.shields.io/date/1439332378.svg?label=first&style=flat-square&cacheSeconds=86400
 [last-commit-badge]:           https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?label=last&style=flat-square&cacheSeconds=300
 [commit-cadence-label-badge]:  https://img.shields.io/badge/-cadence-gray.svg?style=flat-square&cacheSeconds=86400
-[commit-cadence-week-badge]:   https://img.shields.io/github/commit-activity/w/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
-[commit-cadence-month-badge]:  https://img.shields.io/github/commit-activity/m/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
-[commit-cadence-year-badge]:   https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=600
+[commit-cadence-week-badge]:   https://img.shields.io/github/commit-activity/w/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=60
+[commit-cadence-month-badge]:  https://img.shields.io/github/commit-activity/m/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=60
+[commit-cadence-year-badge]:   https://img.shields.io/github/commit-activity/y/rindeal/rindeal-ebuild-repo.svg?label=&style=flat-square&cacheSeconds=60
 [commits-queued-badge]:        https://img.shields.io/github/commits-since/rindeal/rindeal-ebuild-repo/master/dev/rindeal.svg?label=queued&style=flat-square&cacheSeconds=600

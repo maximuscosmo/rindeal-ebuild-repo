@@ -1,21 +1,24 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 # to unpack .deb archive
 ## EXPORT_FUNCTIONS: src_unpack
 inherit unpacker
 
+PN_NB="${PN//-bin/}"
+
 DESCRIPTION="Universal markup converter"
-HOMEPAGE="https://pandoc.org https://github.com/jgm/pandoc"
+HOMEPAGE_A=(
+	"https://pandoc.org"
+	"https://github.com/jgm/pandoc"
+)
 LICENSE="GPL-2"
 
-PN_NOBIN="${PN//-bin/}"
-
 SLOT="0"
-SRC_URI="amd64? ( https://github.com/jgm/${PN_NOBIN}/releases/download/${PV}/${PN_NOBIN}-${PV}-1-amd64.deb )"
+SRC_URI="amd64? ( https://github.com/jgm/${PN_NB}/releases/download/${PV}/${PN_NB}-${PV}-1-amd64.deb )"
 
 KEYWORDS="-* amd64"
 IUSE_A=( citeproc )
@@ -26,8 +29,8 @@ CDEPEND_A=(
 )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	"!app-text/${PN_NOBIN}"
-	"citeproc? ( !dev-haskell/${PN_NOBIN}-citeproc )"
+	"!app-text/${PN_NB}"
+	"citeproc? ( !dev-haskell/${PN_NB}-citeproc )"
 )
 
 RESTRICT+=" mirror"
@@ -37,21 +40,24 @@ inherit arrays
 S="${WORKDIR}"
 
 src_prepare() {
-	default
+	eapply_user
 
 	# docs are gzipped
 	find -name "*.gz" | xargs gunzip
 	assert
 }
 
+src_configure() { : ; }
+src_compile() { : ; }
+
 src_install() {
 	cd "${S}"/usr/bin || die
-	dobin "${PN_NOBIN}"
-	use citeproc && dobin "${PN_NOBIN}-citeproc"
+	dobin "${PN_NB}"
+	use citeproc && dobin "${PN_NB}-citeproc"
 
 	cd "${S}"/usr/share/man/man1 || die
-	doman "${PN_NOBIN}.1"
-	use citeproc && doman "${PN_NOBIN}-citeproc.1"
+	doman "${PN_NB}.1"
+	use citeproc && doman "${PN_NB}-citeproc.1"
 }
 
 QA_EXECSTACK="usr/bin/.*"

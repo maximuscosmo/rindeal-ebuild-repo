@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 PN_NO_BIN="${PN%-bin}"
@@ -31,7 +31,6 @@ inherit arrays
 
 S="${WORKDIR}"
 
-src_prepare() { eapply_user ; }
 src_configure() { : ; }
 src_compile() { : ; }
 src_test() { : ; }

@@ -1,15 +1,16 @@
-# Copyright 2016, 2018 Jan Chren (rindeal)
+# Copyright 2016, 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:aitjcize"
+GH_REF="684a590"  # May 28, 2019
 
 ## python-*.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )
-PYTHON_REQ_USE="sqlite"
+PYTHON_REQ_USE="sqlite(+)"
 
 ## distutils-r1.eclass:
 DISTUTILS_SINGLE_IMPL=true
@@ -44,7 +45,15 @@ inherit arrays
 python_prepare_all() {
 	eapply_user
 
-	rsed -e 's|echo -e |printf |g' -i -- cppman/lib/pager.sh
+	rsed -e "s|share/doc/cppman|share/doc/${PF}|" -i -- setup.py
+	rsed -e "s|share/zsh-completion/completions|share/zsh/site-functions|" -i -- setup.py
 
 	distutils-r1_python_prepare_all
+}
+
+python_install_all() {
+	distutils-r1_python_install_all
+
+	rename -v ".bash" "" "${ED}"/usr/share/bash-completion/completions/* || die
+	rename -v ".zsh" "" "${ED}"/usr/share/zsh/site-functions/* || die
 }

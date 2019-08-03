@@ -1,7 +1,7 @@
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=6  # waf-utils doesn't support EAPI7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -9,9 +9,9 @@ GH_RN="github:nsf"
 GH_REF="v${PV}"
 
 ## python-*.eclass:
-PYTHON_COMPAT=( python2_7 python3_{5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 # threads are for waf
-PYTHON_REQ_USE="threads"
+PYTHON_REQ_USE="threads(+)"
 
 ## distutils-r1.eclass:
 DISTUTILS_OPTIONAL="TRUE"
@@ -59,11 +59,10 @@ src_prepare() {
 	# respect flags
 	rsed -e '/append.*CFLAGS/ s|-O[0-9]||' \
 		-i -- wscript
-	# fix compiler error
-	# https://github.com/nsf/termbox/issues/89
-	eapply "${FILESDIR}"/1.1-d4fa2c2fd3db741da6690cc68a461dab54abfb11.patch
+
 	# do not build examples
-	if ! use examples ; then
+	if ! use examples
+	then
 		rsed -e '/bld.recurse("demo")/d' \
 			-i -- src/wscript
 	fi
@@ -85,13 +84,14 @@ src_compile() {
 }
 
 src_install() {
-	local waf=( "${WAF_BINARY}"
+	local -a waf_cmd=(
+		"${WAF_BINARY}"
 		--destdir="${D}"
 		--targets=$(usex static-libs 'termbox_static,' '')termbox_shared
 		install
 	)
-	echo "${waf[@]}"
-	"${waf[@]}" || die
+	echo "${waf_cmd[@]}"
+	"${waf_cmd[@]}" || die
 
 	use python && \
 		distutils-r1_src_install
@@ -102,7 +102,8 @@ src_install() {
 	docinto tools
 	dodoc tools/*.py
 
-	if use examples ; then
+	if use examples
+	then
 		docinto demo
 		dodoc src/demo/*.c
 	fi

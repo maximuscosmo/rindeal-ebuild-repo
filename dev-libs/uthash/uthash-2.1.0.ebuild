@@ -1,7 +1,7 @@
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -22,20 +22,13 @@ KEYWORDS="amd64 arm arm64"
 IUSE_A=( test )
 
 CDEPEND_A=()
-DEPEND_A=( "${CDEPEND_A[@]}"
-	"test? ( dev-lang/perl )"
-)
+DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 REQUIRED_USE_A=(  )
 RESTRICT+=""
 
 inherit arrays
-
-src_test() {
-	cd tests || die
-	emake
-}
 
 src_install() {
 	doheader src/*.h

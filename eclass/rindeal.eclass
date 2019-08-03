@@ -26,6 +26,7 @@ rindeal:func_exists() {
 
 
 ### BEGIN: "Command not found" handler
+
 if rindeal:func_exists command_not_found_handle
 then
 	# portage registers a cnf handler for the `depend` phase
@@ -51,10 +52,12 @@ command_not_found_handle() {
 }
 
 fi
+
 ### END: "Command not found" handler
 
 
 ### BEGIN: Death hooks
+
 if ! rindeal:has rindeal:death_hook ${EBUILD_DEATH_HOOKS}
 then
 	EBUILD_DEATH_HOOKS+=" rindeal:death_hook"
@@ -66,6 +69,7 @@ rindeal:death_hook() {
 	eerror "instead of posting to https://forums.gentoo.org/ or worse https://bugs.gentoo.org/."
 	eerror ""
 }
+
 ### END: Death hooks
 
 

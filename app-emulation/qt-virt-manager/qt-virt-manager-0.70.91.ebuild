@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -64,8 +64,9 @@ src_prepare-locales() {
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
 	l10n_get_locales locales app off
-	for l in ${locales} ; do
-		rrm "${dir}/${pre}${l}${post}"
+	for l in ${locales}
+	do
+		NO_V=1 rrm "${dir}/${pre}${l}${post}"
 		rsed -e "\,${dir}/${pre}${l}${post},d" -i -- CMakeLists.txt
 	done
 }
@@ -86,7 +87,8 @@ src_configure() {
 		-D WITH_VNC_SUPPORT=$(usex vnc)
 		-D WITH_LXC_SUPPORT=$(usex lxc)
 	)
-	if use spice ; then
+	if use spice
+	then
 		mycmakeargs+=(
 			-D WITH_LIBCACARD=$(usex libcacard)
 			-D USE_SPICE_AUDIO=$(usex spice-audio)

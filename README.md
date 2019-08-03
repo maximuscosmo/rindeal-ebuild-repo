@@ -112,7 +112,7 @@ is not dedicated to the&nbsp;_Gentoo&nbsp;Foundation,&nbsp;Inc._ or any similar 
 which means it **cannot** be legally contributed to the [Gentoo™] ebuild repository as their own guidelines forbid so.
 <br />TL;DR: if you're trying to get code from here to the [Gentoo™] ebuild repository (legally), you are out of luck!
 - _Gentoo_ is a trademark of the _Gentoo Foundation, Inc._
-- [Animal vector designed by Freepik](http://www.freepik.com/free-photos-vectors/animal)
+- [Animal vector designed by Freepik](https://www.freepik.com/free-vector/polygonal-bull-head_747949.htm)
 
 [protected branches]: https://help.github.com/articles/about-protected-branches/
 [LISTING]: ./LISTING.md

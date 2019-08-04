@@ -1,25 +1,33 @@
 # Copyright 1999-2017 Gentoo Foundation
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
+## git-hosting,eclass:
 GH_RN="github"
 GH_REF="v${PV}"
 
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
-inherit distutils-r1
 inherit git-hosting
 
+inherit distutils-r1
+
 DESCRIPTION="Python library to access the Github API v3"
+HOMEPAGE_A=(
+	"${GH_HOMEPAGE}"
+)
 LICENSE="LGPL-3"
 
 SLOT="0"
+SRC_URI_A=(
+	"${SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE="test"
+IUSE_A=()
 
 CDEPEND_A=()
 DEPEND_A=( "${CDEPEND_A[@]}"
@@ -27,19 +35,12 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-python/pyjwt[${PYTHON_USEDEP}]"
+	"dev-python/deprecated[${PYTHON_USEDEP}]"
+	"dev-python/requests[${PYTHON_USEDEP}]"
 )
 
 inherit arrays
 
 python_prepare_all() {
-	if ! use test ; then
-		rsed -e '/"github.tests"/d' -i -- setup.py
-		rsed -e '/"github": \["tests/d' -i -- setup.py
-	fi
-
 	distutils-r1_python_prepare_all
-}
-
-python_test() {
-	esetup.py test
 }

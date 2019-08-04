@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( +unicode +readline )
 
 CDEPEND_A=(
-	"sys-libs/ncurses:0=[unicode=]"
+	"sys-libs/ncurses:0=[unicode?]"
 	"sys-libs/readline:0"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
@@ -37,11 +37,12 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 inherit arrays
 
 src_prepare() {
-	eapply "${FILESDIR}"/312.patch  # upstream PR
+	eapply "${FILESDIR}"/312.patch  # TODO: PR merged, remove in 2.6+
 	eapply_user
 }
 
 src_compile() {
+	tc-export CC
 	emake CFLAGS_OPTIMIZATION= $(usex readline '' norl)
 }
 
@@ -55,13 +56,13 @@ src_install() {
 	einstalldocs
 
 	## bash completion
-	newbashcomp scripts/auto-completion/bash/nnn-completion.bash nnn
+	newbashcomp scripts/auto-completion/bash/nnn-completion.bash "${PN}"
 
 	## fish completion
 	insinto /usr/share/fish/vendor_completions.d
-	doins scripts/auto-completion/fish/nnn.fish
+	doins scripts/auto-completion/fish/"${PN}".fish
 
 	## zsh completion
 	insinto /usr/share/zsh/site-functions
-	doins scripts/auto-completion/zsh/_nnn
+	doins scripts/auto-completion/zsh/_"${PN}"
 }

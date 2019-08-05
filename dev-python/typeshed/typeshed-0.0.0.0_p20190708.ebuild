@@ -1,12 +1,12 @@
-# Copyright 2017-2018 Jan Chren (rindeal)
+# Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
 GH_RN="github:python"
-GH_REF="94485f9" # mypy-0.641
+GH_REF="f5c107c" # mypy-0.720
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting

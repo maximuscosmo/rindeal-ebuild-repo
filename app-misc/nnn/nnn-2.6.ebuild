@@ -36,11 +36,6 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 inherit arrays
 
-src_prepare() {
-	eapply "${FILESDIR}"/312.patch  # TODO: PR merged, remove in 2.6+
-	eapply_user
-}
-
 src_compile() {
 	tc-export CC
 	emake CFLAGS_OPTIMIZATION= $(usex readline '' norl)
@@ -56,13 +51,13 @@ src_install() {
 	einstalldocs
 
 	## bash completion
-	newbashcomp scripts/auto-completion/bash/nnn-completion.bash "${PN}"
+	newbashcomp misc/auto-completion/bash/nnn-completion.bash "${PN}"
 
 	## fish completion
 	insinto /usr/share/fish/vendor_completions.d
-	doins scripts/auto-completion/fish/"${PN}".fish
+	doins misc/auto-completion/fish/"${PN}".fish
 
 	## zsh completion
 	insinto /usr/share/zsh/site-functions
-	doins scripts/auto-completion/zsh/_"${PN}"
+	doins misc/auto-completion/zsh/_"${PN}"
 }

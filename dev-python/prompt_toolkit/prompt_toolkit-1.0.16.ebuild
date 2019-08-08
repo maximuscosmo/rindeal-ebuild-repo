@@ -1,7 +1,7 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
@@ -16,18 +16,17 @@ inherit git-hosting
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1
 
-DESCRIPTION="Building powerful interactive command lines in Python"=
+DESCRIPTION="Library for building powerful interactive command lines in Python"
 LICENSE="BSD"
 
 SLOT="0"
 
-KEYWORDS="amd64 ~arm ~arm64"
-IUSE_A=( test )
+KEYWORDS="amd64 arm arm64"
+IUSE_A=( )
 
 CDEPEND_A=()
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"dev-python/setuptools[${PYTHON_USEDEP}]"
-	"test? ( dev-python/pytest[${PYTHON_USEDEP}] )"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	">=dev-python/six-1.9.0[${PYTHON_USEDEP}]"
@@ -35,7 +34,3 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 )
 
 inherit arrays
-
-python_test() {
-	py.test || die
-}

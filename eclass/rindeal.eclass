@@ -4,7 +4,7 @@
 # @ECLASS: rindeal.eclass
 # @BLURB: Base eclass for all ebuilds
 # @DESCRIPTION:
-#   This eclass should be inheritted by all ebuilds right after the EAPI specification.
+#   This eclass should be inheritted by all ebuilds right after the EAPI specification before any inherits.
 
 
 # fight with portage and override it again and again
@@ -45,6 +45,7 @@ command_not_found_handle() {
 	[[ -t 1 ]] || return 127
 
 	## do not die in a subshell
+	local _pid _cmd _state _ppid _pgrp _session _tty_nr _tpgid _rest
 	read _pid _cmd _state _ppid _pgrp _session _tty_nr _tpgid _rest < /proc/self/stat
 	(( $$ == _tpgid )) && return 127
 
@@ -58,17 +59,17 @@ fi
 
 ### BEGIN: Death hooks
 
-if ! rindeal:has rindeal:death_hook ${EBUILD_DEATH_HOOKS}
-then
-	EBUILD_DEATH_HOOKS+=" rindeal:death_hook"
-fi
-
 rindeal:death_hook() {
 	eerror ""
 	eerror "Ask for help at https://github.com/rindeal/rindeal-ebuild-repo/issues"
 	eerror "instead of posting to https://forums.gentoo.org/ or worse https://bugs.gentoo.org/."
 	eerror ""
 }
+
+if ! rindeal:has rindeal:death_hook ${EBUILD_DEATH_HOOKS}
+then
+	EBUILD_DEATH_HOOKS+=" rindeal:death_hook"
+fi
 
 ### END: Death hooks
 
@@ -128,7 +129,8 @@ declare -g -A _RINDEAL_ECLASS_SWAPS=(
 fi
 
 inherit() {
-	local old_eclass new_args=()
+	local -- old_eclass
+	local -a new_args
 	for old_eclass in "${@}"
 	do
 		if [[ ${_RINDEAL_ECLASS_SWAPS["${old_eclass}"]+exists} ]]
@@ -207,9 +209,9 @@ rsed() {
 		fi
 
 		local -A file_list
-		local pretty_sed=()
-		local i record_files=0
-		for (( i=1 ; i <= $# ; i++ ))
+		local -a pretty_sed
+		local -i i record_files=0
+		for (( i = 1 ; i <= $# ; i ++ ))
 		do
 			local arg="${!i}"
 			if (( record_files ))
@@ -227,10 +229,10 @@ rsed() {
 
 		(( ${#file_list[*]} )) || die -n
 
-		local temp_dir="$(mktemp -d)" || die -n
+		local temp_dir="$(mktemp -d || die -n)"
 
 		## backup original versions
-		local f
+		local -- f
 		for f in "${!file_list[@]}"
 		do
 			cp -- "${f}" "${temp_dir}/${file_list["${f}"]}" || die -n
@@ -253,6 +255,32 @@ rsed() {
 		done
 		rm -r -- "${temp_dir}" || die -n
 	fi
+}
+
+rdosym() {
+	local -i _rel=0
+
+	while (( $# ))
+	do
+		case "${1}" in
+			--rel ) _rel=1 ;;
+			-- )
+				(( $# != 3 )) && die
+				local -r -- _src_arg="${2}" _dst_arg="${3}"
+				shift 2
+		esac
+		shift
+	done
+
+	local -- _src="${_src_arg}" _dst="${_dst_arg}"
+
+	if (( _rel ))
+	then
+		local -r -- _src_dir="$(dirname "${_src}" || die)"
+		_dst="$(realpath --canonicalize-missing --no-symlinks --relative-to="${_src_dir}" "${_dst}" || die)"
+	fi
+
+	dosym "${_dst}" "${_src}"
 }
 
 ### END: standard tool wrappers

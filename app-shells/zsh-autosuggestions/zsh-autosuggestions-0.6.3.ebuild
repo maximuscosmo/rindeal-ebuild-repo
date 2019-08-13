@@ -4,20 +4,24 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:zsh-users"
-GH_REF="v${PV}"
+## github.eclass:
+GITHUB_NS="zsh-users"
+GITHUB_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## variables: GITHUB_HOMEPAGE, GITHUB_SRC_URI
+## functions: github:src_unpack
+inherit github
 
 DESCRIPTION="Fish-like autosuggestions for zsh"
 HOMEPAGE_A=(
-	"${GH_HOMEPAGE}"
+	"${GITHUB_HOMEPAGE}"
 )
 LICENSE="MIT"
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=()
@@ -31,6 +35,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 )
 
 inherit arrays
+
+src_unpack() {
+	github:src_unpack
+}
 
 src_configure() { :; }
 src_compile() { :; }

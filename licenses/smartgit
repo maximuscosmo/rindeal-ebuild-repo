@@ -1,7 +1,7 @@
 LICENSE AGREEMENT FOR SMARTGIT
 
 
-Last date of change: 2015-11-30
+Last date of change: 2019-07-15
 
 1 Subject of the Contract: The license terms of syntevo GmbH
 (hereinafter called "licensor") are applied for the concession of the
@@ -46,30 +46,19 @@ terms. They especially depend on whether the licensee gets a
 licensee, the licensor grants to licensee the non-exclusive,
 non-transferable and permanent right, which is limited according to the
 terms of clause 7 and terminated according to the terms of clause
-3.2.1.2, to have the SOFTWARE used
+3.2.1.1, to have the SOFTWARE used
 
 -   on a arbitrary number of single-user computers or on a central
     server or via terminal server clients,
 -   simultaneously by a arbitrary number of users,
--   solely for non-commercial purposes. A purpose is non-commercial only
-    if it is in no manner primarily intended for or directed toward
-    commercial advantage or private monetary compensation.
-     Examples of non-commercial purposes:
-    -   you are using the SOFTWARE to work on open-source projects,
-    -   you are a student and you are using the SOFTWARE for your
-        academic projects,
-    -   you are using the SOFTWARE in your spare time to manage the
-        website source of your local football club for free.
-
-    Examples of commercial purposes, i.e. when you will need a
-    Commercial License:
-    -   you are using the SOFTWARE to work on open-source as well as on
-        your company's projects,
-    -   you are a student and you are using the SOFTWARE for your work
-        as a freelancer,
-    -   you are using the SOFTWARE in your spare time to manage the
-        website source code of your local football club and you are
-        getting paid for that.
+-   solely for non-commercial purposes. A purpose is considered
+    non-commercial only if the SOFTWARE is exclusively used
+    -   to actively work on open-source projects,
+    -   for learning or teaching on a public academic institution,
+    -   in the spare time to manage projects where you don't get
+        financial compensation for (hobby usage),
+    -   by public charitable organizations primarily targeting
+        philanthropy, health research, education or social well-being.
 
 3.2.1.1 The Non-Commercial License is only valid for the latest version
 of the SOFTWARE as it is published on licensor's website and for all
@@ -80,24 +69,23 @@ Non-Commercial License for older versions by making them stop working
 after the License Transition Period.
 
 3.2.2 If a SOFTWARE Commercial License is agreed-upon with the licensee,
-the licensor grants to licensee the worldwide, non-exclusive,
+the licensor grants the licensee the worldwide, non-exclusive,
 non-transferable right to have the SOFTWARE used
 
--   on a central server or via terminal server clients or as an in situ
-    installation on single-user computers
--   by the agreed-upon number of all users nameable on demand, that
-    means to have the SOFTWARE saved, loaded, displayed and run
-    permanently or temporarily. Every user known by name can be replaced
-    by another user known by name only once in a month. From that time
-    on, said first user must not use the SOFTWARE anymore and said
-    second user may start to use the SOFTWARE. At no time must the
-    number of the users known by name exceed the number of the acquired
-    licenses (example: If the licensee has bought the SOFTWARE for five
-    users whose names he can indicate on demand, only these five users
-    may use the SOFTWARE. This is true independently of the number of
-    the respective installations and of the fact if they are done on a
-    central server or via terminal server clients or as a local
-    installation on single-user computers).
+-   by the agreed-upon number of users nameable on demand, that means to
+    have the SOFTWARE saved, loaded, displayed and run permanently or
+    temporarily.
+-   Every user (person) must be nameable on demand.
+-   Every user can be replaced by another user known by name only once
+    in a month. From that time on, said first user must not use the
+    SOFTWARE anymore and said second user may start to use the SOFTWARE.
+-   The licensee is responsible to perform suitable measures to ensure
+    that the number of users known by name at no time exceeds the number
+    of the agreed-upon licenses.
+-   Each user may use his assigned license on any number of machines,
+    regardless whether the SOFTWARE is installed on a server, used by a
+    terminal server, by a network share, or is installed on a machine or
+    virtual machine.
 
 3.3.2.1 If the Commercial License has been purchased with a one-time
 fee, it is granted permanently (for an unlimited period of time),
@@ -164,8 +152,11 @@ licensor's servers to
 -   check for a new program version
 -   in case of an internal error, report a "crash footprint"
 
-The sent data contains NO POTENTIALLY SENSITIVE INFORMATION. The user
-can opt-out from both SOFTWARE features.
+For the Commercial License, the sent data contains NO POTENTIALLY
+SENSITIVE INFORMATION. For the Non-Commercial License, the sent data may
+contain the user's Git or Mercurial email address, all other sent data
+contains NO POTENTIALLY SENSITIVE INFORMATION. The user can opt-out from
+both SOFTWARE features.
 
 5.2 Only upon user confirmation the SOFTWARE will send a full "bug
 report" to licensor for investigation. The contents of a full "bug
@@ -248,62 +239,125 @@ court of a different place of jurisdiction remains untouched.
 
 9 The following third parties have rights on parts of the SOFTWARE:
 
+-   ANTLR, copyright by Terence Parr and Sam Harwell
+    (http://www.antlr.org).
+    The corresponding license agreement (BSD) can be found at
+    http://www.antlr.org/license.html or in the file
+    licenses/ANTLR-LICENSE within the installation directory of the
+    SOFTWARE.
+-   Autolink-Java, copyright by Robin Stocker
+    (https://github.com/robinst/autolink-java).
+    The corresponding license agreement (MIT) can be found at
+    https://github.com/robinst/autolink-java/blob/master/LICENSE or in
+    the file licenses/AUTOLINK-LICENSE within the installation directory
+    of the SOFTWARE.
+-   Bouncy Castle Crypto API, copyright by Legion of the Bouncy Castle
+    Inc. (https://www.bouncycastle.org/java.html).
+    The corresponding license agreement (MIT) can be found at
+    http://www.bouncycastle.org/licence.html or in the file
+    licenses/BOUNCY-CASTLE-LICENSE within the installation directory of
+    the SOFTWARE.
+-   EdDSA-Java, copyright by str4d
+    (https://github.com/str4d/ed25519-java).
+    The corresponding license agreement (Creative Commons Legal Code)
+    can be found at
+    https://github.com/str4d/ed25519-java/blob/master/LICENSE.txt or in
+    the file licenses/EDDSA-JAVA-LICENSE within the installation
+    directory of the SOFTWARE.
+-   Flexmark-Java, copyright by Atlassian Pty Ltd and Vladimir Schneider
+    (https://github.com/vsch/flexmark-java)
+    The corresponding license agreement (BSD) can be found at
+    https://github.com/vsch/flexmark-java/blob/master/LICENSE.txt or in
+    the file licenses/FLEXMARK-LICENSE within the installation directory
+    of the SOFTWARE.
 -   Java-Prettify, copyright by Chan Wai Shing
-    (https://code.google.com/p/java-prettify/).
-     The corresponding license agreement (Apache License 2.0) can be
-    found at https://code.google.com/p/java-prettify/.
+    (https://gerrit.googlesource.com/java-prettify/).
+    The corresponding license agreement (Apache License 2.0) can be
+    found at
+    https://gerrit.googlesource.com/java-prettify/+/d4822da4d1f90cbe3d7344869491629fc0a2979d/COPYING
+    or in the file licenses/JAVA-PRETTIFY-LICENSE within the
+    installation directory of the SOFTWARE.
+-   JavaEWAH, copyright by Daniel Lemire and others
+    (https://github.com/lemire/javaewah).
+    The corresponding license agreement (Apache License 2.0) can be
+    found at https://github.com/lemire/javaewah/blob/master/LICENSE or
+    in the file licenses/JAVA-EWAH-LICENSE within the installation
+    directory of the SOFTWARE.
 -   JGit, copyright by various authors (http://www.eclipse.org/jgit/).
-     The corresponding license agreement (Eclipse Distribution
-    License 1.0) can be found at
+    The corresponding license agreement (Eclipse Distribution License
+    1.0) can be found at
     http://www.eclipse.org/org/documents/edl-v10.php or in the file
-    licenses/JGIT-LICENSE within the installation directory of SmartGit.
--   JNA, copyright 2008 by Timothy Wall and Wayne Meissner
+    licenses/JGIT-LICENSE within the installation directory of the
+    SOFTWARE.
+-   JMySpell, copyright by DreamTangerine (dreamtangerine@hotmail.com)
+    The corresponding license agreement can be found in the file
+    licenses/JMYSPELL-LICENSE within the installation directory of the
+    SOFTWARE.
+-   JNA, copyright by Timothy Wall and Wayne Meissner
     (https://github.com/twall/jna)
-     The corresponding license agreement (LGPL 2.1) can be found at
+    The corresponding license agreement (LGPL 2.1) can be found at
     https://github.com/twall/jna/blob/master/LGPL2.1 or in the file
-    licenses/JNA-LICENSE within the installation directory of SmartGit.
--   JOpt-Simple, copyright by various
-    authors (http://sourceforge.net/projects/jopt-simple/). The
-    corresponding license agreement (MIT License) can be found at
+    licenses/JNA-LICENSE within the installation directory of the
+    SOFTWARE.
+-   JOpt-Simple, copyright by various authors
+    (http://sourceforge.net/projects/jopt-simple/). The corresponding
+    license agreement (MIT License) can be found at
     http://pholser.github.io/jopt-simple/license.html or in the file
-    licenses/JOPT-SIMPLE-LICENSE within the installation directory
-    of SmartGit.
--   JSon-Simple, copyright by various
-    authors (https://code.google.com/p/json-simple/). The corresponding
-    license agreement (Apache License 2.0) can be found at
+    licenses/JOPT-SIMPLE-LICENSE within the installation directory of
+    the SOFTWARE.
+-   JSch, copyright by Atsuhiko Yamanaka, JCraft, Inc.
+    (http://www.jcraft.com/jsch/). The corresponding license agreement
+    (BSD) can be found at http://www.jcraft.com/jsch/LICENSE.txt or in
+    the file licenses/JSCH-LICENSE within the installation directory of
+    the SOFTWARE.
+-   JSon-Simple, copyright by various authors
+    (https://code.google.com/p/json-simple/). The corresponding license
+    agreement (Apache License 2.0) can be found at
     https://code.google.com/p/json-simple/ or in the file
-    licenses/JSON-SIMPLE-LICENSE within the installation directory
-    of SmartGit.
--   Log4j, copyright by Apache Software Foundation
-     The corresponding license agreement (Apache License 2.0) can be
-    found at http://www.apache.org/licenses/LICENSE-2.0 or in the file
-    licenses/LOG4J-LICENSE within the installation directory
-    of SmartGit.
--   Parboiled, copyright by Mathias Doenitz
-    (https://github.com/sirthias/parboiled)
-     The corresponding license agreement (Apache License 2.0) can be
-    found at https://github.com/sirthias/parboiled/blob/master/LICENSE
-    or in the file licenses/PARBOILED-LICENSE within the installation
-    directory of SmartGit.
--   Pegdown, copyright by Mathias Doenitz
-    (https://github.com/sirthias/pegdown)
-     The corresponding license agreement (Apache License v2.0) can be
-    found at https://github.com/sirthias/pegdown/blob/master/LICENSE or
-    in the file licenses/PEGDOWN-LICENSE within the installation
-    directory of SmartGit.
+    licenses/JSON-SIMPLE-LICENSE within the installation directory of
+    the SOFTWARE.
+-   JZlib, copyright by ymnk, JCraft,Inc. (http://www.jcraft.com/jzlib/)
+    The corresponding license agreement (LGPL) can be found at
+    http://www.jcraft.com/jzlib/LICENSE.txt or in the file
+    licenses/JZLIB-LICENSE within the installation directory of the
+    SOFTWARE.
+-   LZ4 compression for Java, copyright by various authors
+    (https://github.com/lz4/lz4-java/) The corresponding license
+    agreement (LGPL) can be found at
+    https://github.com/lz4/lz4-java/blob/master/LICENSE.txt or in the
+    file licenses/LZ4J-LICENSE within the installation directory of the
+    SOFTWARE.
+-   SSHJ, copyright by various authors
+    (https://github.com/hierynomus/sshj). The corresponding license
+    agreement can be found at
+    https://github.com/hierynomus/sshj/blob/master/LICENSE or in the
+    file licenses/SSHJ-LICENSE within the installation directory of the
+    SOFTWARE.
+-   SLF4J, copyright by QOS.ch (https://www.slf4j.org). The
+    corresponding license agreement (MIT) can be found at
+    https://www.slf4j.org/license.html or in the file
+    licenses/SLF4J-LICENSE within the installation directory of the
+    SOFTWARE.
+-   Snakeyaml, copyright by various authors
+    (https://bitbucket.org/asomov/snakeyaml-engine/src/default/). The
+    corresponding license agreement (Apache License 2.0) can be found at
+    https://bitbucket.org/asomov/snakeyaml-engine/src/default/LICENSE.txt
+    or in the file licenses/SNAKEYML-LICENSE within the installation
+    directory of the SOFTWARE.
 -   SWT, copyright by Eclipse (http://eclipse.org). The corresponding
-    license agreement can be found
-    at http://www.eclipse.org/legal/epl-v10.html.
--   SVNKit, copyright by TMate Software s.r.o. (http://svnkit.com/) The
-    corresponding license agreement (TMate License) can be found in the
-    file licenses/SVNKIT-LICENSE within the installation directory
-    of SmartGit.
--   Trilead SSH API, Copyright (c) 2007 Trilead
-    AG (http://www.trilead.com) and others.
-     The corresponding license agreement can be found in the file
-    licenses/TRILEAD-LICENSE within the installation directory
-    of SmartGit.
+    license agreement can be found at
+    http://www.eclipse.org/legal/epl-v10.html or in the file
+    licenses/SWT-LICENSE within the installation directory of the
+    SOFTWARE.
+-   SVNKit (including SQLJet), copyright by TMate Software s.r.o.
+    (http://svnkit.com/) The corresponding license agreement (TMate
+    License) can be found in the file licenses/SVNKIT-LICENSE within the
+    installation directory of the SOFTWARE.
+-   Trilead SSH API, Copyright (c) Trilead AG (http://www.trilead.com)
+    and others.
+    The corresponding license agreement can be found in the file
+    licenses/TRILEAD-LICENSE within the installation directory of the
+    SOFTWARE.
 
 The licensee is obliged to abide by these third parties license terms.
 Consequently they are part of this license agreement.
-

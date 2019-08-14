@@ -31,7 +31,7 @@ HOMEPAGE_A=(
 )
 LICENSE="GPL-2"
 
-SLOT="0/8"  # libprocps.so
+SLOT="0/7.1"  # libprocps.so
 SRC_URI_A=(
 	"${GITLAB_SRC_URI}"
 )

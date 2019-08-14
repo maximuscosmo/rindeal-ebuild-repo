@@ -31,9 +31,9 @@ declare -g -r -- MY_S_EXTRA="${WORKDIR}/${PN}-extra"
 
 SLOT="0"
 
-gitlab:snap:gen_src_uri --proj "${PN}-oss" --url-var MY_OSS_URL --distfile-var MY_OSS_DISTFILE
-gitlab:snap:gen_src_uri --proj "${PN}-bin" --url-var MY_BIN_URL --distfile-var MY_BIN_DISTFILE
-gitlab:snap:gen_src_uri --proj "${PN}-extra" --ref "v0.1.0" --url-var MY_EXTRA_URL --distfile-var MY_EXTRA_DISTFILE
+gitlab:snap:gen_src_uri PROJ="${PN}-oss" --url-var MY_OSS_URL --distfile-var MY_OSS_DISTFILE
+gitlab:snap:gen_src_uri PROJ="${PN}-bin" --url-var MY_BIN_URL --distfile-var MY_BIN_DISTFILE
+gitlab:snap:gen_src_uri PROJ="${PN}-extra" REF="v0.1.0" --url-var MY_EXTRA_URL --distfile-var MY_EXTRA_DISTFILE
 readonly MY_OSS_DISTFILE MY_BIN_DISTFILE MY_EXTRA_DISTFILE
 SRC_URI_A=(
 # 	https://www.makemkv.com/download{,/old}/${PN}-oss-${PV}.tar.gz

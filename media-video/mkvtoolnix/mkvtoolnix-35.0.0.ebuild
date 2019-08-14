@@ -20,7 +20,10 @@ inherit autotools
 inherit multiprocessing
 
 DESCRIPTION="Tools to create, alter, and inspect Matroska files"
-HOMEPAGE="https://mkvtoolnix.download/ ${GITLAB_HOMEPAGE}"
+HOMEPAGE_A=(
+	"https://mkvtoolnix.download/"
+	"${GITLAB_HOMEPAGE}"
+)
 LICENSE="GPL-2"
 
 SLOT="0"

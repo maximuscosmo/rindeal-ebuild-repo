@@ -5,11 +5,15 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="kernel:utils/${PN}"
+## cgit.eclass:
+CGIT_SVR="https://git.kernel.org"
+CGIT_NS="pub/scm/utils/${PN}"
+CGIT_DOT_GIT="yes"
+CGIT_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## variables: CGIT_HOMEPAGE, CGIT_SRC_URI
+## functions: cgit:src_unpack
+inherit cgit
 
 ## functinos: eautoreconf
 inherit autotools
@@ -23,11 +27,14 @@ inherit toolchain-funcs
 DESCRIPTION="POSIX compliant shell, a direct descendant of the NetBSD version of ash"
 HOMEPAGE_A=(
 	"http://gondor.apana.org.au/~herbert/${PN}/"
-	"${GH_HOMEPAGE}"
+	"${CGIT_HOMEPAGE}"
 )
 LICENSE="BSD"
 
 SLOT="0"
+SRC_URI_A=(
+	"${CGIT_SRC_URI}"
+)
 
 KEYWORDS="amd64 arm arm64"
 IUSE="+fnmatch libedit static"
@@ -47,6 +54,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 inherit arrays
 
+src_unpack() {
+	cgit:src_unpack
+}
+
 src_prepare() {
 # 	eapply "${FILESDIR}"/0.5.9.1-dumb_echo.patch
 	eapply "${FILESDIR}"/0.5.8-SHELL-print-n-upon-EOF-CTRL-D-when-run-interactively.patch
@@ -59,9 +70,12 @@ src_prepare() {
 	# Fix the invalid sort
 	rsed -e 's|LC_COLLATE=C|LC_ALL=C|g' -i -- src/mkbuiltins
 
-	# Use pkg-config for libedit linkage
-	rsed -e "/LIBS/ s|-ledit|\`$(tc-getPKG_CONFIG) --libs libedit $(usex static --static '')\`|" \
-		-i -- configure.ac
+	if use libedit
+	then
+		# Use pkg-config for libedit linkage
+		rsed -e "/LIBS/ s|-ledit|\`$(tc-getPKG_CONFIG) --libs libedit $(usex static --static '')\`|" \
+			-i -- configure.ac
+	fi
 
 	eautoreconf
 }

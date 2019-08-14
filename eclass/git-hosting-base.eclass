@@ -31,37 +31,26 @@ git:hosting:gen_url() {
 	while (( $# > 0 ))
 	do
 		case "${1}" in
-		'--'* )
+		'--url-var' )
 			if [[ $# -lt 2 || -z "${2}" || "${2}" == "--"* ]]
 			then
 				die "${1} value not provided"
 			fi
 
-			case "${1}" in
-			'--url-var' )
-				url_var="${2}"
-				;;
-			* )
-				args+=( "${1}" "${2}" )
-				;;
-			esac
-
-			shift 2
+			url_var="${2}"
+			shift
 			;;
 		* )
-			die
+			args+=( "${1}" )
 			;;
 		esac
+
+		shift
 	done
 
 	[[ -z "${url_var}" ]] && die "--url-var argument is required, but wasn't specified"
 
 	str:tmpl:exp --exp-tmpl-var "${url_var}" "${args[@]}"
-
-	if [[ "${!url_var}" =~ '@'[A-Z_][A-Z0-9_]*'@' ]]
-	then
-		die "Error: Resulting string contains at least one unexpanded template variables: '${BASH_REMATCH[0]}'"
-	fi
 
 	return 0
 }

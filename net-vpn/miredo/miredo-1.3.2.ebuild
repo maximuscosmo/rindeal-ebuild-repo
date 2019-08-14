@@ -28,7 +28,10 @@ inherit user
 inherit systemd
 
 DESCRIPTION="Miredo is an open-source Teredo IPv6 tunneling software"
-HOMEPAGE_A=( "${GITLAB_HOMEPAGE}" "http://www.remlab.net/miredo/" )
+HOMEPAGE_A=(
+	"${GITLAB_HOMEPAGE}"
+	"http://www.remlab.net/miredo/"
+)
 LICENSE_A=( 'GPL-2' )
 
 SLOT="0/6"

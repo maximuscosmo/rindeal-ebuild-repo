@@ -24,7 +24,10 @@ inherit autotools
 inherit ltprune
 
 DESCRIPTION="Set of programs to inspect and build Windows Installer (.MSI) files"
-HOMEPAGE="https://wiki.gnome.org/${PN} ${GITLAB_HOMEPAGE}"
+HOMEPAGE_A=(
+	"https://wiki.gnome.org/${PN}"
+	"${GITLAB_HOMEPAGE}"
+)
 LICENSE="LGPL-2+"
 
 SLOT="0"

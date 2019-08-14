@@ -29,61 +29,64 @@ inherit str-utils
 
 gitlab:homepage:gen_url() {
 	git:hosting:gen_url \
-		--tmpl "@SVR@/@NS@/@PROJ@" \
-		--svr  "${GITLAB_SVR}" \
-		--ns   "${GITLAB_NS}" \
-		--proj "${GITLAB_PROJ}" \
+		--tmpl '${SVR}/${NS}/${PROJ}' \
+		SVR="${GITLAB_SVR}" \
+		NS="${GITLAB_NS}" \
+		PROJ="${GITLAB_PROJ}" \
 		"${@}"
 }
 
 gitlab:snap:gen_url() {
 	git:hosting:gen_url \
-		--tmpl "@SVR@/@NS@/@PROJ@/-/archive/@REF@/@PROJ@-@REF@@EXT@" \
-		--svr  "${GITLAB_SVR}" \
-		--ns   "${GITLAB_NS}" \
-		--proj "${GITLAB_PROJ}" \
-		--ref  "${GITLAB_REF}" \
-		--ext  "${GITLAB_SNAP_EXT}" \
+		--tmpl '${SVR}/${NS}/${PROJ}/-/archive/${REF}/${PROJ}-${REF}${EXT}' \
+		SVR="${GITLAB_SVR}" \
+		NS="${GITLAB_NS}" \
+		PROJ="${GITLAB_PROJ}" \
+		REF="${GITLAB_REF}" \
+		EXT="${GITLAB_SNAP_EXT}" \
 		"${@}"
 }
 
 gitlab:snap:gen_src_uri() {
-	local -- distfile_var=
+	local -- url_var= distfile_var=
 	local -a args=( )
 
 	while (( $# > 0 ))
 	do
-		(( $# < 2 )) && die
-
 		case "${1}" in
-		'--distfile-var' )
-			if [[ -z "${2}" || "${2}" == "--"* ]]
+		'--url-var' | '--distfile-var' )
+			if [[ $# -lt 2 || -z "${2}" || "${2}" == "--"* ]]
 			then
-				die "--distfile-var value not provided"
+				die "${1} value not provided"
 			fi
 
-			distfile_var="${2}"
+			case "${1}" in
+			'--url-var' ) url_var="${2}" ;;
+			'--distfile-var' ) distfile_var="${2}" ;;
+			esac
+
+			shift
 			;;
 		* )
-			args+=( "${1}" "${2}" )
+			args+=( "${1}" )
 			;;
 		esac
 
-		shift 2
+		shift
 	done
-	[[ -z "${distfile_var}" ]] && die
+	[[ -z "${url_var}" || -z "${distfile_var}" ]] && die
 
-	gitlab:snap:gen_url "${args[@]}"
+	gitlab:snap:gen_url --url-var "${url_var}" "${args[@]}"
 
 	local -- distfile=
 
 	str:tmpl:exp \
-		--tmpl "@SVR@--@NS@/@PROJ@--@REF@@EXT@" \
-		--svr  "${GITLAB_SVR}" \
-		--ns   "${GITLAB_NS}" \
-		--proj "${GITLAB_PROJ}" \
-		--ref  "${GITLAB_REF}" \
-		--ext  "${GITLAB_SNAP_EXT}" \
+		--tmpl '${SVR}--${NS}/${PROJ}--${REF}${EXT}' \
+		SVR="${GITLAB_SVR}" \
+		NS="${GITLAB_NS}" \
+		PROJ="${GITLAB_PROJ}" \
+		REF="${GITLAB_REF}" \
+		EXT="${GITLAB_SNAP_EXT}" \
 		"${args[@]}" \
 		--exp-tmpl-var distfile
 
@@ -98,10 +101,10 @@ gitlab:snap:gen_src_uri() {
 
 gitlab:git:gen_url() {
 	git:hosting:gen_url \
-		--tmpl "@SVR@/@NS@/@PROJ@.git" \
-		--svr  "${GITLAB_SVR}" \
-		--ns   "${GITLAB_NS}" \
-		--proj "${GITLAB_PROJ}" \
+		--tmpl '${SVR}/${NS}/${PROJ}.git' \
+		SVR="${GITLAB_SVR}" \
+		NS="${GITLAB_NS}" \
+		PROJ="${GITLAB_PROJ}" \
 		"${@}"
 }
 

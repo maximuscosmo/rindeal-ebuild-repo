@@ -5,9 +5,8 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github"
-GH_REF="v${PV}"
+## github.eclass:
+GITHUB_REF="v${PV}"
 
 ## functions: dsf:eval
 inherit dsf-utils
@@ -15,21 +14,28 @@ inherit dsf-utils
 ## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: GH_HOMEPAGE
-inherit git-hosting
+## functions: github:src_unpack
+## variables: GITHUB_HOMEPAGE, GITHUB_SRC_URI
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit cmake-utils
 
 DESCRIPTION="Linkable library implementation of Git"
-HOMEPAGE="${GH_HOMEPAGE} https://libgit2.github.com/"
+HOMEPAGE_A=(
+	"https://libgit2.org/"
+	"${GITHUB_HOMEPAGE}"
+)
 LICENSE="GPL-2-with-linking-exception"
 
 SLOT="0/$(ver_cut 2)"
 
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
+
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE_A=( debug examples gssapi +ssh test +threads trace +https
+IUSE_A=( debug gssapi +ssh test +threads trace +https
 	"$(rindeal:prefix_flags \
 		sha1_ \
 			generic +openssl mbedtls collision_detection)"
@@ -40,10 +46,10 @@ IUSE_A=( debug examples gssapi +ssh test +threads trace +https
 
 CDEPEND_A=(
 	"$(dsf:eval \
-		'sha1_openssl|https_openssl' \
+		'sha1_openssl | https_openssl' \
 			"dev-libs/openssl:0=")"
 	"$(dsf:eval \
-		'sha1_mbedtls|https_mbedtls' \
+		'sha1_mbedtls | https_mbedtls' \
 			"net-libs/mbedtls:0=")"
 	"sys-libs/zlib"
 	"=net-libs/http-parser-2*:="
@@ -66,6 +72,10 @@ REQUIRED_USE_A=(
 RESTRICT+=" test"
 
 inherit arrays
+
+src_unpack() {
+	github:src_unpack
+}
 
 src_configure() {
 	local mycmakeargs=(
@@ -101,11 +111,4 @@ src_install() {
 	DOCS=( AUTHORS README.md )
 
 	cmake-utils_src_install
-
-	if use examples
-	then
-		find examples -name '.gitignore' -delete || die
-		dodoc -r examples
-		docompress -x /usr/share/doc/${PF}/examples
-	fi
 }

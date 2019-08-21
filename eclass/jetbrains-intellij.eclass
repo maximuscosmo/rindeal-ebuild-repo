@@ -10,7 +10,7 @@ if [[ -z "${_JETBRAINS_INTELLIJ_ECLASS}" ]]
 then
 
 case "${EAPI:-0}" in
-6 | 7 ) ;;
+'6' | '7' ) ;;
 * ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
@@ -63,7 +63,7 @@ RDEPEND="system-jre? ( >=virtual/jre-1.8 )"
 # 	Please put here only files/dirs with big size or many inodes.
 declare -g -r \
 	_JBIJ_DEFAULT_TAR_EXCLUDE=(
-		'license'
+		'license' 'jbr/legal'
 		# This plugin has several QA violations, eg. https://github.com/rindeal/gentoo-overlay/issues/67.
 		# If someone needs it, it can be installed separately from JetBrains plugin repo.
 		'plugins/tfsIntegration'
@@ -144,7 +144,6 @@ declare -g -r \
 	_JBIJ_DEFAULT_DESKTOP_CATEGORIES=(
 		'Development'
 		'IDE'
-		'Java'
 	)
 
 # @ECLASS-VARIABLE: JBIJ_DESKTOP_EXTRAS=()
@@ -153,7 +152,7 @@ declare -g -r \
 # 	An array of lines which will be appended to the generated '.desktop' file.
 declare -g -r \
 	_JBIJ_DEFAULT_DESKTOP_EXTRAS=(
-		"StartupWMClass=jetbrains-${PN}"
+		"StartupWMClass=jetbrains-${PN,,}"
 	)
 
 # @ECLASS-VARIABLE: JBIJ_INSTALL_DIR
@@ -210,16 +209,18 @@ _jetbrains-intellij_src_install-fix() {
 	rchmod a+x bin/${JBIJ_STARTUP_SCRIPT_NAME}
 	rchmod a+x bin/fsnotifier*
 
-	if ! use system-jre ; then
+	if ! use system-jre
+	then
 		# upstream renames/moves this dir very often
 		# https://github.com/rindeal/gentoo-overlay/issues/160
 		# https://github.com/rindeal/gentoo-overlay/issues/165
-		eshopts_push -s globstar
-		rchmod a+x **/jre*/**/bin/*
+		eshopts_push -s globstar nullglob
+		rchmod a+x **/jre*/**/bin/* **/jbr/bin/*
 		eshopts_pop
 	fi
 
-	if [[ -v JBIJ_ADDITIONAL_EXECUTABLES[@] ]] ; then
+	if [[ -v JBIJ_ADDITIONAL_EXECUTABLES[@] ]]
+	then
 		rchmod a+x "${JBIJ_ADDITIONAL_EXECUTABLES[@]}"
 	fi
 }
@@ -231,14 +232,14 @@ _jetbrains-intellij_src_install-post() {
 	dosym "${JBIJ_INSTALL_DIR}/bin/${JBIJ_STARTUP_SCRIPT_NAME}" "/usr/bin/${_JBIJ_PN_SLOTTED}"
 
 	## generate and install .desktop menu file
-	local -r make_desktop_entry_args=(
+	local -r -a make_desktop_entry_args=(
 		# start the script directly
 		"${_JBIJ_PN_SLOTTED} %U"    # exec
 		"${JBIJ_PN_PRETTY} ${SLOT}" # name
 		"${_JBIJ_PN_SLOTTED}"       # icon
 		"$(printf '%s;' "${_JBIJ_DEFAULT_DESKTOP_CATEGORIES[@]}" "${JBIJ_DESKTOP_CATEGORIES[@]}")"  # categories
 	)
-	local -r make_desktop_entry_extras=(
+	local -r -a make_desktop_entry_extras=(
 		"${_JBIJ_DEFAULT_DESKTOP_EXTRAS[@]}"
 		"${JBIJ_DESKTOP_EXTRAS[@]}"
 	)

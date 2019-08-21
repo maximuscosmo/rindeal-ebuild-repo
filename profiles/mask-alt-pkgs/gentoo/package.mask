@@ -15,6 +15,7 @@ app-emulation/sen::gentoo
 app-misc/icdiff::gentoo
 app-misc/mime-types::gentoo
 app-misc/nnn::gentoo
+app-misc/radeontop::gentoo
 app-misc/tmux::gentoo
 app-portage/repoman::gentoo
 app-shells/dash::gentoo
@@ -41,9 +42,12 @@ dev-python/bitstring::gentoo
 dev-python/cffi::gentoo
 dev-python/docker-py::gentoo
 dev-python/fusepy::gentoo
+dev-python/github3::gentoo
 dev-python/ipython::gentoo
+dev-python/jwcrypto::gentoo
 dev-python/kconfiglib::gentoo
 dev-python/mypy::gentoo
+dev-python/networkx::gentoo
 dev-python/posix_ipc::gentoo
 dev-python/progressbar2::gentoo
 dev-python/prompt_toolkit::gentoo
@@ -53,6 +57,7 @@ dev-python/python-utils::gentoo
 dev-python/terminaltables::gentoo
 dev-python/typed-ast::gentoo
 dev-python/typing::gentoo
+dev-python/wcwidth::gentoo
 dev-python/websocket-client::gentoo
 dev-util/clinfo::gentoo
 dev-util/gdbus-codegen::gentoo
@@ -63,6 +68,7 @@ dev-util/spirv-headers::gentoo
 dev-util/spirv-tools::gentoo
 dev-util/strace::gentoo
 dev-util/webstorm::gentoo
+mail-client/aerc::gentoo
 media-gfx/cairosvg::gentoo
 media-gfx/nomacs::gentoo
 media-gfx/rawtherapee::gentoo

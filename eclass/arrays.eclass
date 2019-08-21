@@ -1,6 +1,7 @@
 # Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
+###
 # Usage:
 #
 #     CDEPEND_A=()
@@ -9,10 +10,11 @@
 #
 #     inherit arrays
 #
+###
 
 
 case "${EAPI:-0}" in
-6 | 7 ) ;;
+'6' | '7' ) ;;
 * ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
@@ -47,7 +49,7 @@ do
 		unset "${_v}_A"
 	elif [[ -v ${_v} ]]
 	then
-		debug-print "${ECLASS}: Variable '${_v}' is not an array, but string or number!"
+		debug-print "${ECLASS}: Variable '${_v}' exists, but is not an array."
 	fi
 done
 unset _v _v_a

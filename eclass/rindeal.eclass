@@ -38,8 +38,8 @@ then
 else
 
 command_not_found_handle() {
-	debug-print-function "${FUNCNAME}" "$@"
-	local -r cmd="${1}"
+	debug-print-function "${FUNCNAME[0]}" "${@}"
+	local -r -- cmd="${1}"
 
 	## do not die in a pipe
 	[[ -t 1 ]] || return 127
@@ -81,7 +81,7 @@ _rindeal:hooks:get_orig_prefix() {
 }
 
 _rindeal:hooks:call_orig() {
-	debug-print-function "${FUNCNAME[1]}" "${@}"
+	debug-print-function "${FUNCNAME[0]}" "${@}"
 
 	local -r -- func="$(_rindeal:hooks:get_orig_prefix)${1}"
 
@@ -94,7 +94,7 @@ _rindeal:hooks:call_orig() {
 }
 
 _rindeal:hooks:save() {
-	debug-print-function "${FUNCNAME[1]}" "${@}"
+	debug-print-function "${FUNCNAME[0]}" "${@}"
 
 	(( $# != 1 )) && die
 
@@ -129,16 +129,22 @@ declare -g -A _RINDEAL_ECLASS_SWAPS=(
 fi
 
 inherit() {
+	local -a new_args=( )
+
 	local -- old_eclass
-	local -a new_args
 	for old_eclass in "${@}"
 	do
-		if [[ ${_RINDEAL_ECLASS_SWAPS["${old_eclass}"]+exists} ]]
+		if [[ -v _RINDEAL_ECLASS_SWAPS["${old_eclass}"] ]]
 		then
 			local new_eclass="${_RINDEAL_ECLASS_SWAPS["${old_eclass}"]}"
-			debug-print "${ECLASS}.eclass: ${FUNCNAME[1]}: swapping '${old_eclass}' for '${new_eclass}"
-			# unquoted variable allows us to ignore certain eclasses by supplying empty value
-			new_args+=( ${new_eclass} )
+
+			debug-print "${ECLASS}.eclass, ${FUNCNAME[0]}(): swapping '${old_eclass}' for '${new_eclass}"
+
+			if [[ -n "${new_eclass}" ]]
+			then
+				new_args+=( "${new_eclass}" )
+			fi
+
 			# prevent infinite loops
 			unset "_RINDEAL_ECLASS_SWAPS[${old_eclass}]"
 		else
@@ -146,7 +152,12 @@ inherit() {
 		fi
 	done
 
-	_rindeal:hooks:call_orig inherit "${new_args[@]}"
+	if (( ${#new_args[@]} ))
+	then
+		_rindeal:hooks:call_orig inherit "${new_args[@]}"
+	else
+		debug-print "${ECLASS}.eclass, ${FUNCNAME[0]}(): skipping orig call since all its arguments were erased"
+	fi
 }
 
 ### END: inherit hook
@@ -258,23 +269,25 @@ rsed() {
 }
 
 rdosym() {
-	local -i _rel=0
+	local -i _rel_arg=0
 
 	while (( $# ))
 	do
 		case "${1}" in
-			--rel ) _rel=1 ;;
+			--rel ) _rel_arg=1 ;;
 			-- )
 				(( $# != 3 )) && die
 				local -r -- _src_arg="${2}" _dst_arg="${3}"
 				shift 2
+				;;
+			* ) die "Unknown argument '${1}'" ;;
 		esac
 		shift
 	done
 
 	local -- _src="${_src_arg}" _dst="${_dst_arg}"
 
-	if (( _rel ))
+	if (( _rel_arg ))
 	then
 		local -r -- _src_dir="$(dirname "${_src}" || die)"
 		_dst="$(realpath --canonicalize-missing --no-symlinks --relative-to="${_src_dir}" "${_dst}" || die)"

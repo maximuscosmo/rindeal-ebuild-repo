@@ -25,17 +25,7 @@ SRC_URI_A=(
 	# Upstream's handling of files and permalinks is very bad.
 	# They change URLs, move files from one place to another, delete files, return 3xx HTTP codes when file not found.
 	#
-	# 1) Get download link from:
-	#
-	#        https://www.syntevo.com/smartgit/download/
-	#
-	# 2) Upload it to a 3rd party service usgin this command:
-	#
-	#        curl -s -o - https://www.syntevo.com/downloads/smartgit/smartgit-linux-VERSION.tar.gz | curl -F "file=@-" 'https://file.io/?expires=1y' | jq -r .link
-	#
-	# 3) Copy the output link here:
-	#
-	"https://file.io/zqSrfh -> ${P}.tar.gz"
+	"https://bitbucket.org/smarter-smartgit/smartgit/downloads/smartgit-linux-19_1_1.tar.gz -> ${P}.tar.gz"
 )
 
 # can be used on any 64-bit architecture supported by Linux, but the bundled JRE is for x86_64 only

@@ -40,6 +40,7 @@ dev-python/PyGithub::gentoo
 dev-python/backcall::gentoo
 dev-python/bitstring::gentoo
 dev-python/cffi::gentoo
+dev-python/cssselect2::gentoo
 dev-python/docker-py::gentoo
 dev-python/fusepy::gentoo
 dev-python/github3::gentoo
@@ -55,6 +56,7 @@ dev-python/pycurl::gentoo
 dev-python/pyopenssl::gentoo
 dev-python/python-utils::gentoo
 dev-python/terminaltables::gentoo
+dev-python/tinycss2::gentoo
 dev-python/typed-ast::gentoo
 dev-python/typing::gentoo
 dev-python/wcwidth::gentoo

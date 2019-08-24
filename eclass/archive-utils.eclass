@@ -79,8 +79,8 @@ archive:tar:unpack() {
 
 		local -a tar_cmd=(
 			tar --extract
-			"${tar_args[@]}"
 			--file="${arch}" --directory="${dest_dir}"
+			"${tar_args[@]}"
 		)
 		debug-print "${FUNCNAME[1]}(): ${tar_cmd[*]}"
 		"${tar_cmd[@]}" || die "Failed to unpack '${arch}' archive"

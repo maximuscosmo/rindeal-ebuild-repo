@@ -1,41 +1,58 @@
-# Copyright 1999-2016 Gentoo Foundation
 # Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
+# Based in part upon 'foo-1.23.ebuild' from Gentoo, which is:
+#     Copyright 1999-2007 Gentoo Foundation
 
 EAPI=7
 inherit rindeal
 
-# git-hosting.eclass
-GH_RN="github:${PN}:${PN}-stable"
+## github.eclass
+GITHUB_PROJ="${PN}-stable"
+# https://github.com/systemd/systemd-stable/commits/v242-stable
+GITHUB_REF="07f0549"  # 2019-07-21
 
-# https://github.com/systemd/systemd-stable/commits/v238-stable
-GH_REF="07f0549"  # 2019-05-09
-# python-.eclass
+## python-.eclass
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
-# EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
-# EXPORT_FUNCTIONS: pkg_setup
+## functions: github:src_unpack
+## variables: GITHUB_HOMEPAGE, GITHUB_SRC_URI
+inherit github
+
+## EXPORT_FUNCTIONS: pkg_setup
 inherit python-any-r1
-# EXPORT_FUNCTIONS: pkg_setup
+
+## EXPORT_FUNCTIONS: pkg_setup
 inherit linux-info
-# EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
+
+## functions: archive:tar:unpack
+inherit archive-utils
+
+## EXPORT_FUNCTIONS: src_configure src_compile src_test src_install
 inherit meson
-# functions: getpam_mod_dir
+
+## functions: getpam_mod_dir
 inherit pam
-# functions: tc-*()
+
+## functions: tc-*()
 inherit toolchain-funcs
-# functions: enewuser,/enewgroup
+
+## functions: enewuser,/enewgroup
 inherit user
-# functions: get_bashcompdir()
+
+## functions: get_bashcompdir()
 inherit bash-completion-r1
-# functions: systemd_update_catalog
+
+## functions: systemd_update_catalog
 inherit systemd
-# functions: udev_reload
+
+## functions: udev_reload
 inherit udev
 
 DESCRIPTION="System and service manager for Linux"
-HOMEPAGE="https://www.freedesktop.org/wiki/Software/systemd ${GH_HOMEPAGE}"
+HOMEPAGE_A=(
+	"https://www.freedesktop.org/wiki/Software/systemd"
+	"${GITHUB_HOMEPAGE}"
+)
 # licences are described in the 'README' file
 LICENSE_A=(
 	'LGPL-2.1+' # most of the code
@@ -46,7 +63,10 @@ LICENSE_A=(
 # The subslot versioning follows the Gentoo repo.
 # Explanation: "incremented for ABI breaks in libudev or libsystemd".
 SLOT="0/2"
-SRC_URI+=" http://snapshot.debian.org/archive/debian/20180401T155009Z/pool/main/s/systemd/systemd_238-4.debian.tar.xz"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+	"https://snapshot.debian.org/archive/debian/20190822T033017Z/pool/main/s/systemd/systemd_242-4.debian.tar.xz"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
@@ -305,8 +325,8 @@ pkg_setup() {
 }
 
 src_unpack() {
-	git-hosting_src_unpack
-	default
+	github:src_unpack
+	archive:tar:unpack "${DISTDIR}"/${PN}_${PV}*.debian.tar.xz
 }
 
 src_prepare() {
@@ -361,13 +381,6 @@ meson_use() {
 }
 
 src_configure() {
-	# work around bug in gobject-introspection (gentoo#463846)
-# 	tc-export CC
-
-	# safe defaults
-# 	export EFI_CFLAGS="${EFI_CFLAGS-"-O2"}"
-# 	export CTARGET="${CTARGET:-"${CHOST}"}" # `configure: WARNING: you should use --build, --host, --target`
-
 	my_use() {
 		local -r mode="${1}" prefix="${2}" flag="${3}" option="${4}" value="${5}"
 		if [[ -n "${value}" ]] ; then

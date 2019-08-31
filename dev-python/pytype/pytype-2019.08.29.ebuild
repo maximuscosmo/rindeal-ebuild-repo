@@ -4,23 +4,29 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:google"
+## github.eclass:
+GITHUB_NS="google"
 
 ## python-r1.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: HOMEPAGE, SRC_URI
-inherit git-hosting
+## functions: github:src_unpack
+## variables: GITHUB_HOMEPAGE, GITHUB_SRC_URI
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1
 
 DESCRIPTION="Static type analyzer for Python code"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
 LICENSE="Apache-2.0"
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
@@ -34,6 +40,7 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"sys-apps/gawk"  # for python_prepare_all patching
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
+	"dev-python/attrs[${PYTHON_USEDEP}]"
 	">=dev-python/importlab-0.5.1[${PYTHON_USEDEP}]"
 	"dev-util/ninja"
 	"dev-python/pyyaml[${PYTHON_USEDEP}]"
@@ -42,12 +49,14 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 		'dev-python/typed-ast[${PYTHON_USEDEP}]' \
 			'python-3'
 	)"
-	"dev-python/typeshed"
+	"dev-python/typeshed:*"
 )
 
 inherit arrays
 
-# src_compile()
+src_unpack() {
+	github:src_unpack
+}
 
 python_prepare_all() {
 	## prevent double build during install step
@@ -59,6 +68,7 @@ python_prepare_all() {
 	rsed -r -e '/return .*typeshed/ s@\+ *typeshed@@' -i -- setup.py
 
 	## no tests
+	einfo "Removing tests..."
 	NO_V=1 rrm -r "${PN}"/tests
 	find -type f -\( -name "*test.py" -o -name "test*.py" -\) -print -delete || die
 	rsed -e '/googletest/d' -i -- CMakeLists.txt
@@ -75,5 +85,7 @@ python_prepare_all() {
 python_install() {
 	distutils-r1_python_install
 
-	rdosym --rel -- "$(python_get_sitedir)/${PN}/typeshed" "/usr/share/typeshed"
+	local -- sitedir="$(python_get_sitedir)"
+	sitedir="${sitedir#${EPREFIX}}"
+	rdosym --rel -- "/usr/share/typeshed" "${sitedir}/${PN}/typeshed"
 }

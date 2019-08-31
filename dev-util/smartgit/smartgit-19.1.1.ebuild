@@ -25,7 +25,7 @@ SRC_URI_A=(
 	# Upstream's handling of files and permalinks is very bad.
 	# They change URLs, move files from one place to another, delete files, return 3xx HTTP codes when file not found.
 	#
-	"https://bitbucket.org/smarter-smartgit/smartgit/downloads/smartgit-linux-19_1_1.tar.gz -> ${P}.tar.gz"
+	"https://bitbucket.org/smarter-smartgit/smartgit/downloads/${PN}-linux-${PV//./_}.tar.gz -> ${P}.tar.gz"
 )
 
 # can be used on any 64-bit architecture supported by Linux, but the bundled JRE is for x86_64 only
@@ -43,6 +43,7 @@ S="${WORKDIR}/${PN}"
 
 src_prepare() {
 	eapply_user
+
 	xdg_src_prepare
 }
 
@@ -60,7 +61,7 @@ src_install() {
 
 	## install entrypoint
 	rcp "${FILESDIR}"/${PN,,}.sh "${ED}${install_dir}/bin/"
-	rdosym --rel -- "/usr/bin/${MY_PNS}" "${install_dir}/bin/${PN}.sh"
+	rdosym --rel -- "${install_dir}/bin/${PN}.sh" "/usr/bin/${MY_PNS}"
 
 	## install icons
 	newicon -s 'scalable' "bin/${PN,,}.svg" "${MY_PNS}.png"

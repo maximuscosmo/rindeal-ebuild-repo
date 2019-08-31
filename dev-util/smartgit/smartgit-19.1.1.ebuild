@@ -48,28 +48,32 @@ src_prepare() {
 }
 
 src_install() {
-	local -r vendor_ns="syntevo"
-	local -r install_dir="/opt/${vendor_ns}/${MY_PNS}"
+	local -r -- vendor_ns="syntevo"
+	local -r -- install_dir="/opt/${vendor_ns}/${MY_PNS}"
 
-	rmkdir "${ED}${install_dir}"
+	## remove files not needed
+	NO_V=1 rrm -r licenses jre/legal
+	rrm bin/{add,remove}-menuitem.sh
 
-	## move files to the install image
-	rmv --strip-trailing-slashes --no-target-directory "${S}" "${ED}${install_dir}"
+	# remove executable bit
+	find -type f -executable -print0 | xargs -0 chmod --changes a-x
+	assert
 
-	## make scripts executable
-	rchmod a+x {bin,lib}/*.sh
+	## make scripts and java executable
+	rchmod a+x {bin,lib}/*.sh jre/bin/*
 
 	## install entrypoint
-	rcp "${FILESDIR}"/${PN,,}.sh "${ED}${install_dir}/bin/"
+	rcp "${FILESDIR}"/${PN,,}.sh "bin/"
 	rdosym --rel -- "${install_dir}/bin/${PN}.sh" "/usr/bin/${MY_PNS}"
 
 	## install icons
 	newicon -s 'scalable' "bin/${PN,,}.svg" "${MY_PNS}.png"
-	local s
+	local -i s
 	for s in 32 48 64 128 256
 	do
 		newicon -s ${s} "bin/${PN,,}-${s}.png" "${MY_PNS}.png"
 	done
+	rrm bin/*.{png,svg}
 
 	local -- dme_file="${T}/${PN,,}_${SLOT%%/*}.desktop"
 	cat <<-_EOF_ > "${dme_file}" || die
@@ -89,4 +93,8 @@ src_install() {
 		StartupWMClass=SmartGit
 	_EOF_
 	domenu "${dme_file}"
+
+	## move files to the install image
+	rmkdir "${ED}${install_dir}"
+	rmv --strip-trailing-slashes --no-target-directory "${S}" "${ED}${install_dir}"
 }

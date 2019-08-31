@@ -268,32 +268,52 @@ rsed() {
 	fi
 }
 
+# Usage: rdosym <target> <linkpath> [<linkpath>...]
 rdosym() {
 	local -i _rel_arg=0
 
-	while (( $# ))
+	while (( ${#} ))
 	do
 		case "${1}" in
 			--rel ) _rel_arg=1 ;;
 			-- )
-				(( $# != 3 )) && die
-				local -r -- _src_arg="${2}" _dst_arg="${3}"
-				shift 2
+				(( ${#} < 2 )) && die "Not enough arguments given"
+
+				shift # consume double dash
+
+				local -r -- _target_arg="${1}"
+				shift
+
+				local -r -a _linkpath_args=( "${@}" )
+				break
 				;;
 			* ) die "Unknown argument '${1}'" ;;
 		esac
 		shift
 	done
 
-	local -- _src="${_src_arg}" _dst="${_dst_arg}"
+	local -- _target="${_target_arg}"
 
-	if (( _rel_arg ))
-	then
-		local -r -- _src_dir="$(dirname "${_src}" || die)"
-		_dst="$(realpath --canonicalize-missing --no-symlinks --relative-to="${_src_dir}" "${_dst}" || die)"
-	fi
+	local -- _linkpath
+	for _linkpath in "${_linkpath_args[@]}"
+	do
+		local -- _target="${_target_arg}"
 
-	dosym "${_dst}" "${_src}"
+		if (( _rel_arg ))
+		then
+			local -- _linkpath_dir="$(dirname "${_linkpath}" || die)"
+			local -a realpath_cmd=( realpath
+				--canonicalize-missing
+				--no-symlinks
+				--relative-to="${_linkpath_dir}"
+				"${_target}"
+			)
+			_target="$("${realpath_cmd[@]}" || die)"
+		fi
+
+		echo "dosym: '${_linkpath}' -> '${_target}' ('${_target_arg}')"
+		dosym "${_target}" "${_linkpath}"
+	done
 }
 
 ### END: standard tool wrappers

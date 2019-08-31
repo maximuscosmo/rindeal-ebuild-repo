@@ -8,6 +8,9 @@
 # Utility eclass to update the desktop, icon and shared mime info as laid
 # out in the freedesktop specs & implementations
 
+if ! (( _XDG_ECLASS ))
+then
+
 case "${EAPI:-0}" in
 '6' | '7' ) ;;
 * ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
@@ -15,6 +18,7 @@ esac
 inherit rindeal
 
 
+## functions: xdg_environment_reset, xdg_desktop_database_update, xdg_icon_cache_update, xdg_mimeinfo_database_update
 inherit xdg-utils
 
 
@@ -73,16 +77,10 @@ xdg_pkg_preinst() {
 }
 
 _xdg_post_check_vars_defined() {
-	_is_decl() {
-		declare -p "${@}" &>/dev/null
-	}
-
-	if ! ( _is_decl XDG_ECLASS_DESKTOPFILES && _is_decl XDG_ECLASS_ICONFILES && _is_decl XDG_ECLASS_MIMEINFOFILES )
+	if ! declare -p XDG_ECLASS_{DESKTOPFILES,ICONFILES,MIMEINFOFILES} &>/dev/null
 	then
 		eqawarn "${FUNCNAME[0]}() called, but xdg_pkg_preinst() probably not"
 	fi
-
-	unset -f _is_decl
 }
 
 # @FUNCTION: xdg_pkg_postinst
@@ -144,3 +142,7 @@ xdg_pkg_postrm() {
 		debug-print "No mime info files to remove from database"
 	fi
 }
+
+
+_XDG_ECLASS=1
+fi

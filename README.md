@@ -7,8 +7,9 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 ----------------------------------- BADGES -------------------------------------
 --->
 
-[![][badge-ci-master]][ci-master]
-[![][badge-docker-label]][docker-hub-project][![][badge-docker]][docker-hub-project]
+[![][badge-ci-master]](https://travis-ci.com/rindeal/rindeal-ebuild-repo)
+[![][badge-docker-label]![][badge-docker]](https://hub.docker.com/r/rindeal/portage-amd64-base/)
+[![][badge-code-quality]](https://app.codacy.com/app/rindeal/rindeal-ebuild-repo/)
 <br/>
 [![][badge-commit-stats-label]][git-commits-master]
 [![][badge-first-commit]][git-first-commit][![][badge-last-commit]][git-commits-master]
@@ -66,7 +67,6 @@ but all share the following features:
 [issue-tracker]: https://github.com/rindeal/rindeal-ebuild-repo/issues
 [installation-instructions]: ./INSTALL.md#how-to-install-this-repository
 
-[ci-master]: https://travis-ci.com/rindeal/rindeal-ebuild-repo
 [github-pulse]: https://github.com/rindeal/rindeal-ebuild-repo/pulse "GitHub Pulse for rindeal-ebuild-repo"
 [docker-hub-project]: https://hub.docker.com/r/rindeal/portage-amd64-base/
 [git-first-commit]:            https://github.com/rindeal/rindeal-ebuild-repo/commit/a7fdc35fde3388c2bf95b8beab8a14afb7082f31
@@ -76,6 +76,7 @@ but all share the following features:
 [badge-ci-master]:             https://img.shields.io/travis/rindeal/rindeal-ebuild-repo/master.svg?style=flat-square&label=CI@master&cacheSeconds=300
 [badge-docker-label]:          https://img.shields.io/badge/-image-gray.svg?style=flat-square&logo=docker&cacheSeconds=86400
 [badge-docker]:                https://semaphoreci.com/api/v1/rindeal/portage-docker-images/branches/master/shields_badge.svg
+[badge-code-quality]:          https://img.shields.io/codacy/grade/3705846277d040f0946ac4d4e34c715f?logo=Codacy&style=flat-square&cacheSeconds=60
 [badge-commit-stats-label]:    https://img.shields.io/badge/-commit%20stats:-gray.svg?style=flat-square&cacheSeconds=86400
 [badge-first-commit]:          https://img.shields.io/date/1439332378.svg?label=first&style=flat-square&cacheSeconds=86400
 [badge-last-commit]:           https://img.shields.io/github/last-commit/rindeal/rindeal-ebuild-repo/master.svg?label=last&style=flat-square&cacheSeconds=300

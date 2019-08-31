@@ -70,11 +70,13 @@ python_prepare_all() {
 	## no tests
 	einfo "Removing tests..."
 	NO_V=1 rrm -r "${PN}"/tests
-	find -type f -\( -name "*test.py" -o -name "test*.py" -\) -print -delete || die
+	find . -type f -\( -name "*test.py" -o -name "test*.py" -\) -print -delete || die
 	rsed -e '/googletest/d' -i -- CMakeLists.txt
 	rsed -r -e '/add_subdirectory.*( *tests *)/d' -i -- ${PN}/CMakeLists.txt || die
 	# delete py_test macros
-	gawk -i inplace '/^py_test/{in_py_test=1} !in_py_test{print} /)$/{in_py_test=0}' $(find -type f -name 'CMakeLists.txt') || die
+	local -- gawk_script='/^py_test/{in_py_test=1} !in_py_test{print} /)$/{in_py_test=0}'
+	find . -type f -name 'CMakeLists.txt' -print0 | xargs -0 gawk -i inplace "${gawk_script}"
+	assert
 
 	## this is not a python dep, but runtime cmd dep, so do not specify it in setup.py
 	rsed -e "/'ninja',/d" -i -- setup.py
@@ -85,7 +87,8 @@ python_prepare_all() {
 python_install() {
 	distutils-r1_python_install
 
-	local -- sitedir="$(python_get_sitedir)"
+	local -- sitedir
+	sitedir="$(python_get_sitedir)"
 	sitedir="${sitedir#${EPREFIX}}"
 	rdosym --rel -- "/usr/share/typeshed" "${sitedir}/${PN}/typeshed"
 }

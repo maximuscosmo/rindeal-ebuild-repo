@@ -7,8 +7,8 @@
 if ! (( _STR_UTILS_ECLASS ))
 then
 
-case "${EAPI:-0}" in
-'7' ) ;;
+case "${EAPI:-"0"}" in
+"7" ) ;;
 * ) die "EAPI='${EAPI}' is not supported by '${ECLASS}' eclass" ;;
 esac
 
@@ -17,27 +17,29 @@ inherit rindeal
 
 ### BEGIN: Functions
 
+## Usage: $0 --exp-tmpl-var <VARNAME> --tmpl <STRING> [<VARNAME>=<VALUE> ...]
+## Example: $0 --exp-tmpl-var result --tmpl '${HELLO}, ${WORLD}!' HELLO="hello" WORLD="world"
 str:tmpl:exp() {
 	local -- _tmpl= _exp_tmpl_var=
 	local -A _vars=( )
 
-	while (( $# > 0 ))
+	while (( ${#} > 0 ))
 	do
-		if [[ "${1}" == '--'* ]] && [[ $# -lt 2 || "${2}" == '--'[[:alpha:]]* ]]
+		if [[ "${1}" == "--"* ]] && [[ ${#} -lt 2 || "${2}" == "--"[[:alpha:]]* ]]
 		then
 			die "Argument '${1}' requires a value, but it wasnt provided"
 		fi
 
 		case "${1}" in
-		'--tmpl' )
+		"--tmpl" )
 			_tmpl="${2}"
 			shift
 			;;
-		'--exp-tmpl-var' )
+		"--exp-tmpl-var" )
 			_exp_tmpl_var="${2}"
 			shift
 			;;
-		[A-Z_][A-Z0-9_]*=* )
+		[A-Z_][A-Z0-9_]*"="* )
 			if ! [[ "${1}" =~ ^[A-Z_][A-Z0-9_]*=.*$ ]]
 			then
 				die "Invalid argument: '${1}'"
@@ -60,18 +62,19 @@ str:tmpl:exp() {
 	local -- _key
 	for _key in "${!_vars[@]}"
 	do
-		local _val="${_vars["${_key}"]}"
+		local -- _val="${_vars["${_key}"]}"
 
 		local -r -- "${_key}=${_val}"
 	done
 
 	local -n _exp_tmpl_var_ref="${_exp_tmpl_var}"
 
-	eval _exp_tmpl_var_ref="${_tmpl}"
+	## TODO: make this somewhat safer
+	eval "_exp_tmpl_var_ref=\"${_tmpl}\""
 }
 
 ### END: Functions
 
 
-_STR_UTILS_ECLASS=1
+declare -g -r -i _STR_UTILS_ECLASS=1
 fi

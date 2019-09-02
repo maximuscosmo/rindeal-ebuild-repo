@@ -32,10 +32,14 @@ str:tmpl:exp() {
 
 		case "${1}" in
 		"--tmpl" )
+			[[ -n "${_tmpl}" ]] && die "duplicated '${1}' argument"
+
 			_tmpl="${2}"
 			shift
 			;;
 		"--exp-tmpl-var" )
+			[[ -n "${_exp_tmpl_var}" ]] && die "duplicated '${1}' argument"
+
 			_exp_tmpl_var="${2}"
 			shift
 			;;

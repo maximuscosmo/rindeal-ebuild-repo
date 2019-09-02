@@ -9,7 +9,7 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 
 [![][badge-ci-master]](https://travis-ci.com/rindeal/rindeal-ebuild-repo)
 [![][badge-docker-label]![][badge-docker]](https://hub.docker.com/r/rindeal/portage-amd64-base/)
-[![][badge-code-quality]](https://app.codacy.com/app/rindeal/rindeal-ebuild-repo/)
+[![][badge-code-quality]](https://www.codacy.com/app/rindeal/rindeal-ebuild-repo)
 <br/>
 [![][badge-commit-stats-label]][git-commits-master]
 [![][badge-first-commit]][git-first-commit][![][badge-last-commit]][git-commits-master]

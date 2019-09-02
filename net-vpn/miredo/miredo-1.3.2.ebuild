@@ -12,17 +12,14 @@ GITLAB_NS="rindeal-ns/abandonware"
 ## variables: GITLAB_HOMEPAGE, GITLAB_SRC_URI
 inherit gitlab
 
+## EXPORT_FUNCTIONS: pkg_setup
+inherit linux-info
+
 ## functions: eautoreconf
 inherit autotools
 
 ## functions: prune_libtool_files
 inherit ltprune
-
-## EXPORT_FUNCTIONS: pkg_setup
-inherit linux-info
-
-## functions: enewgroup, enewuser
-inherit user
 
 ## functions: systemd_get_systemunitdir
 inherit systemd
@@ -32,15 +29,31 @@ HOMEPAGE_A=(
 	"${GITLAB_HOMEPAGE}"
 	"http://www.remlab.net/miredo/"
 )
-LICENSE_A=( 'GPL-2' )
+LICENSE_A=( 'GPL-2.0-or-later' )
 
 SLOT="0/6"
-[[ "${PV}" != *9999* ]] && \
-	SRC_URI_A=( "${GITLAB_SRC_URI}" )
+if [[ "${PV}" != *9999* ]]
+then
+	SRC_URI_A=(
+		"${GITLAB_SRC_URI}"
+	)
+fi
 
-[[ "${PV}" != *9999* ]] && \
-	KEYWORDS_A=( 'amd64' 'arm' 'arm64' )
-IUSE_A=( +caps +client nls +assert judy )
+if [[ "${PV}" != *9999* ]]
+then
+	KEYWORDS_A=(
+		"amd64"
+		"arm"
+		"arm64"
+	)
+fi
+IUSE_A=(
+	+"caps"
+	+"client"
+	"nls"
+	"assert"
+	"judy"
+)
 
 CDEPEND_A=(
 	"sys-devel/gettext"
@@ -52,13 +65,17 @@ CDEPEND_A=(
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"app-arch/xz-utils"
 )
+RDEPEND_A=( "${CDEPEND_A[@]}"
+	"acct-user/${PN}"
+	"acct-group/${PN}"
+)
 
 inherit arrays
 
-#tries to connect to external networks (#339180)
-RESTRICT+=" test"
-
-CONFIG_CHECK="~IPV6 ~TUN"
+pkg_setup() {
+	local -r -- CONFIG_CHECK="~IPV6 ~TUN"
+	linux-info_pkg_setup
+}
 
 src_unpack() {
 	gitlab:src_unpack
@@ -76,8 +93,8 @@ src_prepare() {
 src_configure() {
 	local econf_args=(
 		--disable-static
-		--enable-miredo-user=miredo
-		--with-runstatedir=/run
+		--enable-miredo-user="miredo"
+		--with-runstatedir="/run"
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 
 		$(use_enable assert)
@@ -93,13 +110,8 @@ src_install() {
 
 	prune_libtool_files
 
-	rmdir "${ED}/run" || die
+	rrmdir "${ED}/run"
 
 	insinto /etc/miredo
 	doins misc/miredo-server.conf
-}
-
-pkg_preinst() {
-	enewgroup miredo
-	enewuser miredo -1 -1 /var/empty miredo
 }

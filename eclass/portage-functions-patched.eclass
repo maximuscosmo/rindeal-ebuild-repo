@@ -4,25 +4,16 @@
 # @ECLASS: portage-functions-patched.eclass
 # @BLURB: Set of portage functions overrides
 
-case "${EAPI:-0}" in
-'6' | '7' ) ;;
-* ) die "EAPI='${EAPI}' is not supported by '${ECLASS}' eclass" ;;
+case "${EAPI:-"0"}" in
+"6" | "7" ) ;;
+* ) die "EAPI='${EAPI}' is not supported by ECLASS='${ECLASS}'" ;;
 esac
 
 
 ## Origin: portage - bin/isolated-functions.sh
-## PR: https://github.com/gentoo/portage/pull/26
 rindeal:has() {
-	local -- needle="${1}" ; shift
-	local -- haystack=( "${@}" )
+	local -r -- IFS=$'\a'
 
-	local -- IFS=$'\a'
-
-	## wrap every argument in IFS
-	needle="${IFS}${needle}${IFS}"
-	haystack=( "${haystack[@]/#/${IFS}}" )
-	haystack=( "${haystack[@]/%/${IFS}}" )
-
-	[[ "${haystack[*]}" == *"${needle}"* ]]
+	[[ "${IFS}${*:2}${IFS}" == *"${IFS}${1}${IFS}"* ]]
 }
 has() { rindeal:has "${@}" ; }

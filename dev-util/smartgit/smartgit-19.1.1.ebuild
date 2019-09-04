@@ -25,7 +25,7 @@ SRC_URI_A=(
 	# Upstream's handling of files and permalinks is very bad.
 	# They change URLs, move files from one place to another, delete files, return 3xx HTTP codes when file not found.
 	#
-	"https://bitbucket.org/smarter-smartgit/smartgit/downloads/${PN}-linux-${PV//./_}.tar.gz -> ${P}.tar.gz"
+	"https://bitbucket.org/${PN}-mirror/${PN}/downloads/${PN}-linux-${PV//./_}.tar.gz -> ${P}.tar.gz"
 )
 
 # can be used on any 64-bit architecture supported by Linux, but the bundled JRE is for x86_64 only

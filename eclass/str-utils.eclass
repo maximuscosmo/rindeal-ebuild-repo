@@ -17,6 +17,44 @@ inherit rindeal
 
 ### BEGIN: Functions
 
+str:lstrip() {
+	(( ${#} < 1 || ${#} > 2 )) && die
+	local -r -- haystack="${1}"
+	local -r -- needle="${2:-"[[:space:]]"}"
+
+	local -- result="${haystack}"
+
+	while [[ "${result}" == ${needle}* ]]
+	do
+		result="${result#${needle}}"
+	done
+
+	printf -- "%s" "${result}"
+}
+
+str:rstrip() {
+	(( ${#} < 1 || ${#} > 2 )) && die
+	local -r -- haystack="${1}"
+	local -r -- needle="${2:-"[[:space:]]"}"
+
+	local -- result="${haystack}"
+
+	while [[ "${result}" == *${needle} ]]
+	do
+		result="${result%${needle}}"
+	done
+
+	printf -- "%s" "${result}"
+}
+
+str:strip() {
+	(( ${#} < 1 || ${#} > 2 )) && die
+	local -r -- haystack="${1}"
+	local -r -- needle="${2:-"[[:space:]]"}"
+
+	str:lstrip "$(str:rstrip "${haystack}" "${needle}")" "${needle}"
+}
+
 ## Usage: $0 --exp-tmpl-var <VARNAME> --tmpl <STRING> [<VARNAME>=<VALUE> ...]
 ## Example: $0 --exp-tmpl-var result --tmpl '${HELLO}, ${WORLD}!' HELLO="hello" WORLD="world"
 str:tmpl:exp() {

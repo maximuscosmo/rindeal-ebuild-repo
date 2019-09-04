@@ -4,13 +4,18 @@
 EAPI=7
 inherit rindeal
 
+PAGURE_PROJ="mailcap"
+
+## uses are self-explanatory
+inherit pagure
+
 DESCRIPTION="MIME type associations for file types"
-HOMEPAGE="https://pagure.io/mailcap"
+HOMEPAGE="${PAGURE_HOMEPAGE}"
 LICENSE="public-domain"
 
 SLOT="0"
 ref="ec8c60e"
-SRC_URI="${HOMEPAGE}/raw/${ref}/f/mime.types"
+SRC_URI="${PAGURE_HOMEPAGE}/raw/${ref}/f/mime.types"
 
 KEYWORDS="amd64 arm arm64"
 

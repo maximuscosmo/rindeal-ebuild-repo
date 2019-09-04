@@ -56,7 +56,7 @@ declare -g -r -A _PAGURE_TMPLS=(
 declare -g -r -- PAGURE_SVR="${PAGURE_SVR:-"https://pagure.io"}"
 [[ "${PAGURE_SVR:(-1)}" == '/' ]] && die "PAGURE_SVR ends with a slash"
 
-declare -g -r -- PAGURE_NS="${PAGURE_NS:-"${PN}"}"
+declare -g -r -- PAGURE_NS="${PAGURE_NS}"
 
 declare -g -r -- PAGURE_PROJ="${PAGURE_PROJ:-"${PN}"}"
 

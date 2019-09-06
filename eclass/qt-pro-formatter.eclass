@@ -1,19 +1,21 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016, 2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: qt-pro-formatter.eclass
 # @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
+# Jan Chren (rindeal) <dev.rindeal@gmail.com>
 # @BLURB: Format Qt project files (.pro) for easier sed-ing and grep-ing
 # @DESCRIPTION:
 
-if [ -z "${_QT_PRO_FORMATTER_ECLASS}" ] ; then
+if ! (( _QT_PRO_FORMATTER_ECLASS ))
+then
 
-
-case "${EAPI:-0}" in
-    6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+case "${EAPI:-"0"}" in
+"6" | "7" ) ;;
+* ) die "EAPI='${EAPI}' is not supported by ECLASS='${ECLASS}'" ;;
 esac
+
+inherit rindeal
 
 
 # gawk-4.1+ for inplace support
@@ -22,14 +24,19 @@ DEPEND=">=sys-apps/gawk-4.1"
 
 format_qt_pro() {
 	debug-print-function "${FUNCNAME}" "${@}"
-	local files=( "${@}" )
+	local -a files=( "${@}" )
 
-	# check variable type
-	[[ "$(declare -p qt_pro_awk_opts 2>/dev/null)" == "declare --"* ]] && die "qt_pro_awk_opts must be an array"
-	# set default value
-	[[ "$(declare -p qt_pro_awk_opts 2>/dev/null)" == "declare -a"* ]] || local qt_pro_awk_opts=( -i inplace )
+	if [[ -z "${qt_pro_awk_opts}" ]]
+	then
+		local -a qt_pro_awk_opts=( -i inplace )
+	else
+		if [[ "$(declare -p qt_pro_awk_opts 2>/dev/null)" != "declare -a"* ]]
+		then
+			die "qt_pro_awk_opts must be an array"
+		fi
+	fi
 
-	einfo "* Formatting qmake files: ${files[*]}"
+	einfo "Formatting qmake files: ${files[*]}"
 
 	gawk "${qt_pro_awk_opts[@]}" --file=<( cat <<'_EOF_'
 		BEGIN {

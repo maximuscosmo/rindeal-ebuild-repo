@@ -26,28 +26,15 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 ------------------------------ DOCUMENT_START ----------------------------------
 --->
 
-In this repository you can find [ebuild](https://wiki.gentoo.org/wiki/Ebuild)s for [PMS](https://wiki.gentoo.org/wiki/Package_Manager_Specification)-compatible package managers.
+This repository contains [ebuild][wiki-ebuild]s and related files for [PMS][wiki-pms]-compatible package managers such as [Portage][wiki-portage].
 
-Many ebuilds here are my own creatures,
-others are <em>heavily</em> modified forks,
-but all share the following features:
+**Warning**: This repository is not an overlay for [Gentoo™][] repository! At the moment it's still a requirement for some things to work,
+but I'm working towards a complete independence, which means independent ebuilds, eclasses and profiles for a fully working basic system.
+To give an example of incompatibilities, I'm using quite different guidelines and policies for USE-flags, so your [Gentoo™][] config files may not
+enable/disable the features you expect it to.
+For this reason don't expect things to work smoothly if you use this repository just as a pure overlay for [Gentoo™][] repository.
 
-- so much USE **flags**, many appreciated
-- unique **experience** from the start with i<sup>n</sup><sup><sub><em>s</em></sub></sup><sub>a</sub>n<sup>e</sup> **default** configurations
-- wild patches and scripts to hit **annoy**ances in software where it hurts the most
-- source **code smells** like freshly cut grass and looks even better <sub><sup>(doesn't work as much)</sup></sub>
-- gay-like builds - completely irreproducible without **laboratory** equipment
-- support for:
-  - **_systemd_** exclusively
-  - **x86_64**/**armv6**/**armv7**/**armv8** architectures only
-  - **locales** (`nls`/`l10n_*` USE-flags)
-- limited support for:
-  - [<i>Prefix</i>](https://wiki.gentoo.org/wiki/Project:Prefix)
-  - [<i>binpkgs</i>](https://wiki.gentoo.org/wiki/Binary_package_guide)
-- no support for:
-  - non-native targets (32-bit ABI, cross-compilation)
-  - <i>libav</i>, <i>libressl</i>, ...
-  - `src_test` phase
+Otherwise, enjoy your ride!
 
 --------------------------------------------------------------------------------
 
@@ -62,6 +49,9 @@ but all share the following features:
 --->
 
 [Gentoo™]: https://www.gentoo.org/ "main Gentoo project website"
+[wiki-ebuild]: https://wiki.gentoo.org/wiki/Ebuild
+[wiki-pms]: https://wiki.gentoo.org/wiki/Package_Manager_Specification
+[wiki-portage]: https://wiki.gentoo.org/wiki/Portage
 
 [homepage]: https://github.com/rindeal/rindeal-ebuild-repo
 [issue-tracker]: https://github.com/rindeal/rindeal-ebuild-repo/issues

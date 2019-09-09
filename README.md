@@ -26,13 +26,17 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 ------------------------------ DOCUMENT_START ----------------------------------
 --->
 
-This repository contains [ebuild][wiki-ebuild]s and related files for [PMS][wiki-pms]-compatible package managers such as [Portage][wiki-portage].
+This repository contains [ebuild][wiki-ebuild]s and related files for
+[PMS][wiki-pms]-compatible package managerssuch as [Portage][wiki-portage].
 
-**Warning**: This repository is not an overlay for [Gentoo™][] repository! At the moment it's still a requirement for some things to work,
-but I'm working towards a complete independence, which means independent ebuilds, eclasses and profiles for a fully working basic system.
-To give an example of incompatibilities, I'm using quite different guidelines and policies for USE-flags, so your [Gentoo™][] config files may not
-enable/disable the features you expect it to.
-For this reason don't expect things to work smoothly if you use this repository just as a pure overlay for [Gentoo™][] repository.
+**Warning**: This repository is **not** an overlay for [Gentoo™][] repository!
+At the moment it's still a requirement for some things to work,
+but I'm working towards a complete independence, which means independent ebuilds, eclasses and profiles for
+a fully working basic system.
+To give an example of incompatibilities, I'm using quite different guidelines and policies for USE-flags,
+so your [Gentoo™][]-based config files may not enable/disable the features you expect it to.
+For this reason don't expect things to work smoothly if you use this repository just as
+a pure overlay for [Gentoo™][] repository.
 
 Otherwise, enjoy your ride!
 

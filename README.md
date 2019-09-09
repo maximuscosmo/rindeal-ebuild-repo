@@ -3,9 +3,8 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 
 <i>Packages done right™</i>
 
-<!---
------------------------------------ BADGES -------------------------------------
---->
+
+<!--- BADGES ---------------------------------------------------------------------------------------------------------->
 
 [![][badge-ci-master]](https://travis-ci.com/rindeal/rindeal-ebuild-repo)
 [![][badge-docker-label]![][badge-docker]](https://hub.docker.com/r/rindeal/portage-amd64-base/)
@@ -16,49 +15,46 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 [![][badge-commit-cadence-label]![][badge-commit-cadence-week]![][badge-commit-cadence-month]![][badge-commit-cadence-year]][github-pulse]
 [![][badge-commits-queued]][git-compare-master-dev]
 
-<!---
------------------------------------ MENU ---------------------------------------
---->
+
+<!--- MENU ------------------------------------------------------------------------------------------------------------>
 
 [Homepage][homepage] | [Issue tracker][issue-tracker] | **[Installation instructions][installation-instructions]**
 
-<!---
------------------------------- DOCUMENT_START ----------------------------------
---->
+<!--- DOCUMENT_START -------------------------------------------------------------------------------------------------->
 
-This repository contains [ebuild][wiki-ebuild]s and related files for
-[PMS][wiki-pms]-compatible package managerssuch as [Portage][wiki-portage].
+This is an [ebuild repository][wiki-ebuild-repo], in short it's a collection of package build recipes
+called [ebuilds][wiki-ebuild] and related files for [PMS][wiki-pms]&#8209;compatible package managers
+such as [Portage][wiki-portage].
 
-**Warning**: This repository is **not** an overlay for [Gentoo™][] repository!
-At the moment it's still a requirement for some things to work,
+**Warning**: This repository is **not** an overlay for [Gentoo™ ebuild repository][]!
+At the moment this repository still depends on it for some of its functionality,
 but I'm working towards a complete independence, which means independent ebuilds, eclasses and profiles for
 a fully working basic system.
-To give an example of incompatibilities, I'm using quite different guidelines and policies for USE-flags,
-so your [Gentoo™][]-based config files may not enable/disable the features you expect it to.
-For this reason don't expect things to work smoothly if you use this repository just as
-a pure overlay for [Gentoo™][] repository.
+For this reason don't expect things to work smoothly if you use this repository just as a pure overlay.
+You can learn more about this issue in [this document][INSTALL].
 
 Otherwise, enjoy your ride!
 
 --------------------------------------------------------------------------------
 
-### Legal notice
+**Legal notice**
 
 - All code in this repo is licenced under [GPL-2](./LICENSE), if not stated otherwise.
 - _[Gentoo™][]_ is a trademark of the _Gentoo Foundation, Inc._
 - [Animal vector designed by Freepik](https://www.freepik.com/free-vector/polygonal-bull-head_747949.htm)
 
-<!---
------------------------------- END_OF_DOCUMENT ---------------------------------
---->
+<!--- END_OF_DOCUMENT ------------------------------------------------------------------------------------------------->
 
-[Gentoo™]: https://www.gentoo.org/ "main Gentoo project website"
+[Gentoo™]: https://www.gentoo.org/ "main Gentoo™ project website"
+[wiki-ebuild-repo]: https://wiki.gentoo.org/wiki/Ebuild_repository
 [wiki-ebuild]: https://wiki.gentoo.org/wiki/Ebuild
 [wiki-pms]: https://wiki.gentoo.org/wiki/Package_Manager_Specification
 [wiki-portage]: https://wiki.gentoo.org/wiki/Portage
+[Gentoo™ ebuild repository]: https://gitweb.gentoo.org/repo/gentoo.git/tree/
 
 [homepage]: https://github.com/rindeal/rindeal-ebuild-repo
 [issue-tracker]: https://github.com/rindeal/rindeal-ebuild-repo/issues
+[INSTALL]: ./INSTALL.md
 [installation-instructions]: ./INSTALL.md#how-to-install-this-repository
 
 [github-pulse]: https://github.com/rindeal/rindeal-ebuild-repo/pulse "GitHub Pulse for rindeal-ebuild-repo"

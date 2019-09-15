@@ -5,8 +5,8 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:rg3"
+## github.eclass:
+GITHUB_NS="ytdl-org"
 
 ## python-*.eclass
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
@@ -18,13 +18,19 @@ inherit bash-completion-r1
 ## functions: distutils-r1_python_install_all
 inherit distutils-r1
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## self-explanatory
+inherit github
 
 DESCRIPTION="Download videos from YouTube.com (and more sites...)"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
 LICENSE="public-domain"
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( +man test rtmp )
@@ -47,6 +53,10 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
+src_unpack() {
+	github:src_unpack
+}
+
 python_compile_all() {
 	local emake_args=(
 		V=1
@@ -56,10 +66,6 @@ python_compile_all() {
 		$(use man && echo ${PN}.1 README.txt)
 	)
 	emake "${emake_args[@]}"
-}
-
-python_test() {
-	emake test
 }
 
 python_install_all() {

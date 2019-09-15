@@ -4,28 +4,36 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:adsr"
-GH_REF="v${PV}"
-## git-r3.eclass (part of git-hosting.eclass):
-[[ "${PV}" == *9999* ]] && \
-	EGIT_SUBMODULES=() # no submodules please
+## github.eclass:
+GITHUB_NS="adsr"
+GITHUB_REF="v${PV}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## self-explanatory usage
+inherit github
 
 ## functions: append-cflags
 inherit flag-o-matic
 
 DESCRIPTION="Small but powerful console text editor written in C"
-LICENSE="Apache-2.0 BSD-1"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"Apache-2.0"
+	"BSD-1"
+)
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( )
 
-CDEPEND_A=()
+CDEPEND_A=(
+	"dev-libs/libpcre:*"  # TODO: make it optional
+)
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"sys-libs/termbox:0"
 	"dev-libs/uthash:0"
@@ -37,6 +45,10 @@ RESTRICT+=""
 
 inherit arrays
 
+src_unpack() {
+	github:src_unpack
+}
+
 src_prepare() {
 	eapply_user
 
@@ -45,11 +57,11 @@ src_prepare() {
 	rsed -e '/mle_cflags/ s| -O3||g' -i -- Makefile
 
 	# libpcre
-	rsed -e "/mle_libs/ s| -lpcre| $(pkg-config --libs libpcre)|" -i -- Makefile
+	rsed -e "/mle_dynamic_libs/ s|-lpcre| $(pkg-config --libs libpcre)|" -i -- Makefile
 
-	## remove dependency on LUA, because it isn't packaged yet
+	## remove dependency on LUA, because it isn't packaged yet, TODO
 	rsed -e '/lua/d' -i -- mle.h
-	rsed -r -e '/mle_libs/ s|[^ ]*lua[^ ]*||' -i -- Makefile
+	rsed -r -e '/mle_dynamic_libs/ s|[^ ]*lua[^ ]*||' -i -- Makefile
 	rrm *uscript*
 	rsed -e '/uscript_run/d' -i -- mle.h
 	rsed -e '/uscript_destroy/d' -i -- mle.h

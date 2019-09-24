@@ -8,8 +8,8 @@ inherit rindeal
 
 ## github.eclass:
 GITHUB_PROJ="${PN}-stable"
-# https://github.com/systemd/systemd-stable/commits/v242-stable
-GITHUB_REF="07f0549"  # 2019-07-21
+# https://github.com/systemd/systemd-stable/commits/v243-stable
+GITHUB_REF="fab6f01"  # 2019-09-18
 
 ## python-.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )
@@ -73,7 +73,8 @@ LICENSE_A=(
 SLOT="0/2"
 SRC_URI_A=(
 	"${GITHUB_SRC_URI}"
-	"https://snapshot.debian.org/archive/debian/20190822T033017Z/pool/main/s/systemd/systemd_242-4.debian.tar.xz"
+	## NOTE >> remember to bump debian patches as well << NOTE
+	"https://snapshot.debian.org/archive/debian/20190922T150956Z/pool/main/s/systemd/systemd_243-2.debian.tar.xz"
 )
 
 KEYWORDS="~amd64 ~arm ~arm64"
@@ -97,6 +98,7 @@ IUSE_A=(
 	+ldconfig
 	+resolved
 		+resolvconf  # install `resolvconf` symlink to resolvectl
+		+nss-resolve
 	+efi
 		efi-boot-manager
 	tpm
@@ -104,18 +106,18 @@ IUSE_A=(
 	+binfmt
 	+coredump
 		stacktrace
+	pstore
 	+logind
 	+hostnamed
 	+localed
 	+machined
+		+nss-mymachines
 	+portabled
 	+networkd
 	+timedated
 	+timesyncd
 	remote
 	+nss-myhostname
-	+nss-mymachines
-	+nss-resolve
 	+nss-systemd
 	firstboot
 	random-seed
@@ -128,7 +130,7 @@ IUSE_A=(
 	+hwdb
 	+rfkill
 	man
-# 	html
+# 	html  # no need for this
 
 	adm-group-acl
 	wheel-group-acl
@@ -176,34 +178,36 @@ IUSE_A=(
 	+sysv-utils
 
 	dnssec
-		$(rindeal:prefix_flags \
-			dnssec_default_ \
-				yes  \
-				+allow-downgrade \
-				no \
+		$(rindeal:prefix_flags    \
+			dnssec_default_       \
+				yes               \
+				+allow-downgrade  \
+				no                \
 		)
 	dns-over-tls
-		$(rindeal:prefix_flags \
-			dot_ \
-				gnutls  \
-				+openssl \
+		$(rindeal:prefix_flags    \
+			dot_                  \
+				gnutls            \
+				+openssl          \
 		)
 
-		$(rindeal:prefix_flags \
-			dot_default_ \
-				+opportunistic  \
-				no \
+		$(rindeal:prefix_flags    \
+			dot_default_          \
+				yes               \
+				+opportunistic    \
+				no                \
 		)
 
-	$(rindeal:prefix_flags \
+	$(rindeal:prefix_flags        \
 		default_cgroup_hierarchy_ \
-			legacy  \
-			+hybrid \
-			unified \
+			legacy                \
+			hybrid                \
+			+unified              \
 	)
 )
 ## END: IUSE
 
+## BEGIN: Dependencies
 declare -r -A my_deps=(
 	['curl']="
 		net-misc/curl:0=
@@ -218,7 +222,7 @@ declare -r -A my_deps=(
 )
 CDEPEND_A=(
 	# `libmount = dependency('mount',`
-	"sys-apps/util-linux:0=[libmount,libmount-force-mountinfo]"
+	"sys-apps/util-linux:0=[libmount]"
 
 	# `libcap = dependency('libcap'`
 	"sys-libs/libcap:0="
@@ -338,6 +342,7 @@ PDEPEND_A=(
 	# ">=sys-fs/udev-init-scripts-25" # required for systemd+OpenRC support only
 # 	"!vanilla?	( sys-apps/gentoo-systemd-integration )"
 )
+## END: Dependencies
 
 REQUIRED_USE_A=(
 	"efi? ( blkid )"
@@ -353,7 +358,8 @@ inherit l10n-r1
 
 MY_DEB_PATCH_DIR="${WORKDIR}/debian-patches"
 
-my_get_rootprefix() {
+my_get_rootprefix()
+{
 	if ! [[ -v _MY_ROOTPREFIX ]]
 	then
 		declare -g -r -- _MY_ROOTPREFIX="$(usex split-usr "" "/usr")"
@@ -361,7 +367,8 @@ my_get_rootprefix() {
 	printf -- "%s" "${_MY_ROOTPREFIX}"
 }
 
-pkg_pretend() {
+pkg_pretend()
+{
 	if [[ -n "${EPREFIX}" ]]
 	then
 		die "Gentoo Prefix is not supported"
@@ -458,7 +465,8 @@ pkg_pretend() {
 	fi
 }
 
-pkg_setup() {
+pkg_setup()
+{
 	linux-info_pkg_setup
 	python-any-r1_pkg_setup
 
@@ -470,58 +478,61 @@ pkg_setup() {
 	fi
 }
 
-src_unpack() {
+src_unpack()
+{
 	github:src_unpack
 	archive:tar:unpack --strip-components=3 debian/patches/debian -- \
 		"${DISTDIR}"/${PN}_${PV}*.debian.tar.xz "${MY_DEB_PATCH_DIR}"
 }
 
-src_prepare-locales() {
-    local l locales dir="po" pre="" post=".po"
+src_prepare-locales()
+{
+	local l locales dir="po" pre="" post=".po"
 
-    l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
+	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
-    if use nls
-    then
-        l10n_get_locales locales app off
-        for l in ${locales}
-        do
-            rrm "${dir}/${pre}${l}${post}"
-            rsed -e "/${l}/d" -i -- "${dir}/LINGUAS"
+	if use nls
+	then
+		l10n_get_locales locales app off
+		for l in ${locales}
+		do
+			rrm "${dir}/${pre}${l}${post}"
+			rsed -e "/${l}/d" -i -- "${dir}/LINGUAS"
 
-            rrm "catalog/systemd.${l}.catalog.in"
-            rsed -e "/systemd.${l}.catalog/d" -i -- catalog/meson.build
-        done
+			rrm "catalog/systemd.${l}.catalog.in"
+			rsed -e "/systemd.${l}.catalog/d" -i -- catalog/meson.build
+		done
 	else
 		rrm -r "${dir}"
 		rsed -e "/subdir.*'po'/d" -i -- meson.build
 
 		rrm "catalog/systemd."*".catalog.in"
 		rsed -e "/systemd.[^.]*.catalog/d" -i -- catalog/meson.build
-    fi
+	fi
 }
 
-src_prepare() {
+src_prepare()
+{
 	# BEGIN - Custom patches
 	# END - Custom patches
 
 	# BEGIN - Debian patches
 	local -a deb_patches=(
-# 		Use-Debian-specific-config-files.patch
-# 		Bring-tmpfiles.d-tmp.conf-in-line-with-Debian-defaul.patch
-# 		Make-run-lock-tmpfs-an-API-fs.patch
+# 		Add-env-variable-for-machine-ID-path.patch
 # 		Add-support-for-TuxOnIce-hibernation.patch
-# 		Re-enable-journal-forwarding-to-syslog.patch
+# 		Bring-tmpfiles.d-tmp.conf-in-line-with-Debian-defaul.patch
 		Don-t-enable-audit-by-default.patch
+# 		Drop-seccomp-system-call-filter-for-udev.patch
+		Let-graphical-session-pre.target-be-manually-started.patch
+# 		Make-run-lock-tmpfs-an-API-fs.patch
 		Only-start-logind-if-dbus-is-installed.patch
-# 		fsckd-daemon-for-inter-fsckd-communication.patch
-		Skip-filesystem-check-if-already-done-by-the-initram.patch
+# 		Re-enable-journal-forwarding-to-syslog.patch
+		Revert-core-enable-TasksMax-for-all-services-by-default-a.patch
 		Revert-core-one-step-back-again-for-nspawn-we-actual.patch
 		Revert-core-set-RLIMIT_CORE-to-unlimited-by-default.patch
-		Revert-core-enable-TasksMax-for-all-services-by-default-a.patch
-		Let-graphical-session-pre.target-be-manually-started.patch
-# 		Add-env-variable-for-machine-ID-path.patch
-# 		Drop-seccomp-system-call-filter-for-udev.patch
+		Skip-filesystem-check-if-already-done-by-the-initram.patch
+# 		Use-Debian-specific-config-files.patch
+# 		fsckd-daemon-for-inter-fsckd-communication.patch
 	)
 	local p
 	for p in "${deb_patches[@]}"
@@ -559,8 +570,10 @@ src_prepare() {
 	src_prepare-locales
 }
 
-src_configure() {
-	my_str_opt() {
+src_configure()
+{
+	my_str_opt()
+	{
 		(( ${#} < 1 )) && die
 		local -r -- opt_arg="${1}"
 		local -r -- var_arg="${2}"
@@ -588,7 +601,8 @@ src_configure() {
 		printf -- "-D%s=%s\n" "${opt_arg}" "${!varname}"
 	}
 
-	meson_use_combo() {
+	meson_use_combo()
+	{
 		(( ${#} != 2 )) && die
 		local -- opt_name="${1}"
 		local -- use_prefix="${2}"
@@ -598,6 +612,7 @@ src_configure() {
 		printf -- "-D %s=%s\n" "${opt_name}" "${BASH_REMATCH[1]}"
 	}
 
+	## BEGIN: emesonargs
 	local -a emesonargs=(
 		# override for some reason
 		--localstatedir="/var"
@@ -649,6 +664,7 @@ src_configure() {
 		$(meson_use environment-d)
 		$(meson_use binfmt)
 		$(meson_use coredump)
+		$(meson_use pstore)
 		$(meson_use logind)
 		$(meson_use hostnamed)
 		$(meson_use localed)
@@ -658,9 +674,10 @@ src_configure() {
 		$(meson_use timedated)
 		$(meson_use timesyncd)
 		$(meson_use remote)
+		-D create-log-dirs=true  # `create /var/log/journal{,/remote}`
 		$(meson_use nss-myhostname)
-		$(meson_use nss-mymachines)
-		$(meson_use nss-resolve)
+		-D nss-mymachines=false  # override down the road as needed
+		-D nss-resolve=false     # override down the road as needed
 		$(meson_use nss-systemd)
 		$(meson_use firstboot)
 		$(meson_use random-seed randomseed)
@@ -691,6 +708,7 @@ src_configure() {
 		-D compat-gateway-hostname=false
 		$(meson_use_combo default-hierarchy default_cgroup_hierarchy_)
 		"$(my_str_opt default-net-naming-scheme)"  # `default net.naming-scheme= value`
+		-D status-unit-format-default=name  # 'use unit name or description in messages by default'
 		"$(my_str_opt time-epoch)"  # `time epoch for time clients`, default determined from mtime of 'NEWS' file
 		"$(my_str_opt system-uid-max)"  # default determined from '/etc/login.defs' file
 		"$(my_str_opt system-gid-max)"  # default determined from '/etc/login.defs' file
@@ -698,11 +716,11 @@ src_configure() {
 		"$(my_str_opt dynamic-uid-max)"
 		"$(my_str_opt container-uid-base-min)"
 		"$(my_str_opt container-uid-base-max)"
-		"$(my_str_opt tty-gid)"  # `the numeric GID of the "tty" group`
+		"$(my_str_opt tty-gid)"    # `the numeric GID of the "tty" group`
 		"$(my_str_opt users-gid)"  # `the numeric GID of the "users" group`
 		$(meson_use adm-group-acl adm-group)
 		$(meson_use wheel-group-acl wheel-group)
-		"$(my_str_opt nobody-user)"  # `The name of the nobody user (the one with UID 65534)`
+		"$(my_str_opt nobody-user)"   # `The name of the nobody user (the one with UID 65534)`
 		"$(my_str_opt nobody-group)"  # `The name of the nobody group (the one with GID 65534)`
 		"$(my_str_opt dev-kvm-mode)"
 		"$(my_str_opt group-render-mode)"
@@ -710,9 +728,9 @@ src_configure() {
 		$(meson_use gshadow)
 		"$(my_str_opt default-locale)"  # `default locale used when /etc/locale.conf does not exist`
 
-		-D default-dnssec=no  # override down the road as needed
-		-D default-dns-over-tls=no
-		-D dns-over-tls=false  # override down the road as needed
+		-D default-dnssec=no        # override down the road as needed
+		-D default-dns-over-tls=no  # override down the road as needed
+		-D dns-over-tls=false       # override down the road as needed
 		"$(my_str_opt dns-servers)"
 		"$(my_str_opt ntp-servers "" "$(echo {0..3}".gentoo.pool.ntp.org")")"
 		"$(my_str_opt support-url "" "https://github.com/rindeal/rindeal-ebuild-repo/issues")"
@@ -771,7 +789,11 @@ src_configure() {
 
 		-D oss-fuzz=false
 		-D llvm-fuzz=false
+		-D fuzzbuzz=false
+# 		-D fuzzbuzz-engine=
+# 		-D fuzzbuzz-engine-dir=
 	)
+	## END: emesonargs
 
 	if use resolved
 	then
@@ -801,6 +823,13 @@ src_configure() {
 			emesonargs+=(
 				-D idn=true
 				-D libidn2=true
+			)
+		fi
+
+		if use nss-resolve
+		then
+			emesonargs+=(
+				-D nss-resolve=true
 			)
 		fi
 	fi
@@ -850,6 +879,13 @@ src_configure() {
 		)
 	fi
 
+	if use machined && use nss-mymachines
+	then
+		emesonargs+=(
+			-D nss-mymachines=true
+		)
+	fi
+
 	# --------------
 
 	## remove empty elements
@@ -865,9 +901,8 @@ src_configure() {
 	meson_src_configure
 }
 
-src_install() {
-	meson_src_install
-
+src_install:rm_util_symlinks()
+{
 	local -a util_symlinks_to_delete=()
 
 	if ! use sysv-utils
@@ -876,36 +911,19 @@ src_install() {
 			init
 			halt poweroff reboot runlevel shutdown telinit
 		)
-# 		einfo "Removing 'sysv-utils' compatibility symlinks"
-#
-# 		local -a sysv_utils=(
-# 			halt poweroff reboot runlevel shutdown telinit
-# 		)
-# 		local -- u
-# 		for u in "${sysv_utils[@]}"
-# 		do
-# 			rrm "${ED}${rootprefix}/sbin/${u}"
-# 			use man && rrm -f "${ED}/usr/share/man/man8/${u}.8" # TODO: remove the `-f` option in v244
-# 		done
-#
-# 		rrm "${ED}${rootprefix}/sbin/init"
-# 		use man && rrm "${ED}/usr/share/man/man1/init.1"
 	fi
 
-	if ! ( use resolved && use resolvconf )
+	if use resolved && ! use resolvconf
 	then
-# 		einfo "Removing 'resolvconf' compatibility symlinks"
-#
 		util_symlinks_to_delete+=(
 			resolvconf
 		)
-#
-# 		rrm "${ED}${rootprefix}/sbin/resolvconf"
-# 		use man && rrm "${ED}/usr/share/man/man1/resolvconf.1"
 	fi
 
 	if (( ${#util_symlinks_to_delete[@]} ))
 	then
+		einfo "Removing utility symlinks$(usex man " and their manpages:" "")"
+
 		local u
 		for u in "${util_symlinks_to_delete[@]}"
 		do
@@ -915,26 +933,84 @@ src_install() {
 		then
 			for u in "${util_symlinks_to_delete[@]}"
 			do
-				rrm -f "${ED}"/usr/share/man/man?/${u}.?  # TODO: remove the `-f` option in v244
+				rrm "${ED}"/usr/share/man/man?/${u}.?
 			done
+		fi
+
+		# under some scenarios, `/sbin` will end up empty
+		rmdir --verbose --ignore-fail-on-non-empty "${ED}"/sbin || die
+
+		echo
+	fi
+}
+
+src_install:empty_dirs()
+{
+	local -a empty_dirs_known=(
+		/etc/kernel/install.d
+		/etc/systemd/{network,system,user}
+		/etc/udev/{hwdb.d,rules.d}
+		"$(my_get_rootprefix)"/lib/systemd/{system-shutdown,system-sleep}
+		/usr/lib/{binfmt.d,modules-load.d}
+		/usr/lib/systemd/user-generators
+		/etc/{binfmt.d,modules-load.d,sysctl.d,tmpfiles.d}
+		/var/lib/systemd
+		/var/log/journal
+	)
+
+	if [[ -n "${RINDEAL_DEBUG}" ]]
+	then
+		local -a empty_dirs_found empty_dirs_unknown empty_dirs_superfluous
+		readarray -t empty_dirs_found < <(find "${ED}" -type d -empty | cut -c$(( ${#ED} + 1 ))- | sort) || die
+
+		local d
+		for d in "${empty_dirs_found[@]}"
+		do
+			if ! has "${d}" "${empty_dirs_known[@]}"
+			then
+				empty_dirs_unknown+=( "${d}" )
+			fi
+		done
+		for d in "${empty_dirs_known[@]}"
+		do
+			if ! has "${d}" "${empty_dirs_found[@]}"
+			then
+				empty_dirs_superfluous+=( "${d}" )
+			fi
+		done
+
+		if (( ${#empty_dirs_unknown[@]} ))
+		then
+			eqawarn "Unknown empty dirs found:"
+			printf "'%s'\n" "${empty_dirs_unknown[@]}"
+			echo
+		fi
+
+		if (( ${#empty_dirs_superfluous[@]} ))
+		then
+			eqawarn "Superfluous empty dirs found:"
+			printf "'%s'\n" "${empty_dirs_superfluous[@]}"
+			echo
 		fi
 	fi
 
+	# Preserve empty dirs in /etc & /var, bug #437008
+	for d in "${empty_dirs_known[@]}"
+	do
+		keepdir "${d}"
+	done
+}
+
+src_install()
+{
+	meson_src_install
+
+	src_install:rm_util_symlinks
+
+	src_install:empty_dirs
+
 	# Symlink /etc/sysctl.conf for easy migration.
 	rdosym --rel -- "/etc/sysctl.d/99-sysctl.conf" "/etc/sysctl.conf"
-
-	# Preserve empty dirs in /etc & /var, bug #437008
-# 	keepdir /etc/{binfmt.d,modules-load.d,tmpfiles.d}
-# 	keepdir /etc/kernel/install.d
-# 	keepdir /etc/systemd/{network,user}
-# 	keepdir /etc/udev/{hwdb.d,rules.d}
-# 	keepdir "$(my_get_rootprefix)"/lib/systemd/{system-sleep,system-shutdown}
-# 	keepdir /usr/lib/{binfmt.d,modules-load.d}
-# 	keepdir /usr/lib/systemd/user-generators
-# 	keepdir /var/lib/systemd
-# 	keepdir /var/log/journal
-	einfo "Empty dirs:"
-	find "${ED}" -type d -empty
 
 	if use split-usr
 	then
@@ -952,11 +1028,12 @@ src_install() {
 		rrm -r "${ED}$(my_get_rootprefix)/lib/udev/hwdb.d"
 	fi
 
-	die
+# 	die
 }
 
 # this function is taken from the Gentoo ebuild
-my_migrate_locale_conf() {
+my_migrate_locale_conf()
+{
 	local envd_locale_def="${ROOT}/etc/env.d/02locale"
 	local envd_locale=( "${ROOT}"/etc/env.d/??locale )
 	local locale_conf="${ROOT}/etc/locale.conf"
@@ -1004,7 +1081,8 @@ my_migrate_locale_conf() {
 	return ${FAIL}
 }
 
-pkg_postinst() {
+pkg_postinst()
+{
 	# set to 1 if some pkg_postinst phase fails
 	local -i FAIL=0
 
@@ -1072,7 +1150,8 @@ pkg_postinst() {
 	fi
 }
 
-pkg_prerm() {
+pkg_prerm()
+{
 	# If removing systemd completely, remove the catalog database.
 	if [[ -z "${REPLACED_BY_VERSION}" ]]
 	then

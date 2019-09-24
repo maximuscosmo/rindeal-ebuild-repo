@@ -7,7 +7,7 @@ inherit rindeal
 ## github.eclass:
 GITHUB_NS="mesonbuild"
 
-## variables: GITHUB_HOMEPAGE, GITHUB_SRC_URI
+## usage is self-explanatory
 inherit github
 
 ## git-hosting.eclass:
@@ -60,6 +60,10 @@ src_unpack() {
 }
 
 python_prepare_all() {
+	# https://github.com/mesonbuild/meson/issues/5909
+	# `[PATCH] mconf: Fix meson configure crash (fixes #5909)`
+	eapply "${FILESDIR}"/47bdea504067d00e9bed522e9575bd2416bfe4ee.patch
+
 	eapply_user
 
 	rsed -e "s|data_files=data_files,||" -i -- setup.py
@@ -77,12 +81,12 @@ python_install_all() {
 	insinto /usr/share/zsh/site-functions
 	doins data/shell-completions/zsh/_meson
 
-	insinto /usr/share/vim/vimfiles
 	local -A vim_plugins
 	local -- f
 	for f in data/syntax-highlighting/vim/*/*.vim
 	do
 		vim_plugins["$(dirname "${f}")"]=
 	done
+	insinto /usr/share/vim/vimfiles
 	doins -r "${!vim_plugins[@]}"
 }

@@ -146,6 +146,7 @@ IUSE_A=(
 	apparmor
 	smack
 	polkit
+	policykit  # Gentoo compat
 	ima
 
 	acl
@@ -339,6 +340,10 @@ REQUIRED_USE_A=(
 
 	# systemd-journal-remote requires systemd-sysusers
 	"remote? ( sysusers )"
+
+	# Gentoo compat
+	"policykit? ( polkit )"
+	"!policykit? ( !polkit )"
 )
 
 inherit arrays

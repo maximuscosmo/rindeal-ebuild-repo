@@ -61,9 +61,11 @@ LICENSE_A=(
 	#         - except src/journal/lookup3.c which is Public Domain
 	#         - except src/udev/* which is (currently still) GPLv2, GPLv2+
 	# ```
-	'LGPL-2.1+' # most of the code
-	'GPL-2' # udev
-	'public-domain' # MurmurHash2, siphash24, lookup3
+	'LGPL-2.1-or-later' # most of the code
+	'GPL-2.0-only'      # udev
+	'GPL-2.0-or-later'  # udev
+	'public-domain'     # MurmurHash2, siphash24, lookup3
+	'CC0-1.0'           # `src/basic/siphash24.c`
 
 	'MIT'  # some other code not described in the README file
 )
@@ -80,6 +82,8 @@ SRC_URI_A=(
 KEYWORDS="~amd64 ~arm ~arm64"
 ## BEGIN: IUSE
 IUSE_A=(
+	# NOTE: order of USE-flags is not the same as in meson_options.txt
+
 	+split-usr
 	+split-bin
 	link-udev-shared
@@ -106,10 +110,11 @@ IUSE_A=(
 	+binfmt
 	+coredump
 		stacktrace
-	pstore
+	+pstore
 	+logind
 	+hostnamed
 	+localed
+		+xkb
 	+machined
 		+nss-mymachines
 	+portabled
@@ -120,7 +125,7 @@ IUSE_A=(
 	+nss-myhostname
 	+nss-systemd
 	firstboot
-	random-seed
+	+random-seed
 	+backlight
 	+vconsole
 	quotacheck
@@ -130,7 +135,6 @@ IUSE_A=(
 	+hwdb
 	+rfkill
 	man
-# 	html  # no need for this
 
 	adm-group-acl
 	wheel-group-acl
@@ -149,25 +153,14 @@ IUSE_A=(
 	+blkid  # should be always enabled unless embedded
 	+kmod  # should be always enabled unless embedded
 	pam
-# 	microhttpd
 	cryptsetup
-# 	curl
+	iptables
 	idn
-# 	libidn2
-# 	libidn
-	+iptables
-# 	gcrypt
-# 	gnutls
-# 	openssl
-# 	elfutils
 	zlib
 	bzip2
 	lzma
 	lz4
-	xkb
 	pcre2
-
-# 	gnu-efi
 
 	# ------ custom flags below
 
@@ -190,7 +183,6 @@ IUSE_A=(
 				gnutls            \
 				+openssl          \
 		)
-
 		$(rindeal:prefix_flags    \
 			dot_default_          \
 				yes               \
@@ -246,10 +238,7 @@ CDEPEND_A=(
 		"${my_deps['gcrypt']}"
 	")"
 	"iptables? ( net-firewall/iptables:0= )"
-	"$(dsf:eval \
-		"dnssec | journal-fss" \
-			"${my_deps['gcrypt']}"
-	)"
+	"journal-fss? ( ${my_deps['gcrypt']} )"
 	"resolved? ("
 		"dnssec? ( ${my_deps['gcrypt']} )"
 		"dns-over-tls? ("
@@ -327,6 +316,7 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 	"selinux? ( sec-policy/selinux-base-policy[systemd] )"
 	"nss-myhostname? ( !sys-auth/nss-myhostname )" # bundled since 197
 	"sysv-utils? ( !sys-apps/sysvinit )"
+	"resolvconf? ( !net-dns/openresolv )"
 
 	"!<sys-kernel/dracut-044"
 	## udev is now part of systemd
@@ -517,7 +507,7 @@ src_prepare()
 	# END - Custom patches
 
 	# BEGIN - Debian patches
-	local -a deb_patches=(
+	local -r -a deb_patches=(
 # 		Add-env-variable-for-machine-ID-path.patch
 # 		Add-support-for-TuxOnIce-hibernation.patch
 # 		Bring-tmpfiles.d-tmp.conf-in-line-with-Debian-defaul.patch
@@ -548,9 +538,6 @@ src_prepare()
 	# BEGIN - Scripted modifications
 	rsed -r -e "s|^(udevlibexecdir *= *).*|\1'$(get_udevdir)'|" -i -- meson.build
 
-	# Avoid the log bloat to the user
-	rsed -e 's|#SystemMaxUse=|SystemMaxUse=500M|' -i -- src/journal/journald.conf
-
 	local -a meson_scripts_to_null=(
 		"tools/add-git-hook.sh"
 		"tools/meson-check-api-docs.sh"
@@ -558,13 +545,16 @@ src_prepare()
 	local -- s
 	for s in "${meson_scripts_to_null[@]}"
 	do
-		printf "#!/usr/bin/env true\n\n" >"${s}"
+		printf "#!/bin/true\n\n" >"${s}"
 	done
 
 	rsed -r -e "/('-fdiagnostics-[^']*'|'-fstack-protector[^']*'|'--param=ssp-[^']*')/d" -i -- meson.build
 
-	# don not install LICENSE files
+	# do not install LICENSE files
 	rsed -r -e "s|'LICENSE.[^']*',||" -i -- meson.build
+
+	# Avoid the log bloat to the user
+	rsed -e 's|#SystemMaxUse=|SystemMaxUse=500M|' -i -- src/journal/journald.conf
 	# END - Scripted modifications
 
 	src_prepare-locales
@@ -601,7 +591,7 @@ src_configure()
 		printf -- "-D%s=%s\n" "${opt_arg}" "${!varname}"
 	}
 
-	meson_use_combo()
+	my_use_combo()
 	{
 		(( ${#} != 2 )) && die
 		local -- opt_name="${1}"
@@ -611,6 +601,19 @@ src_configure()
 		[[ "${haystack}" =~ " "${use_prefix}([a-zA-Z0-9_-]+)" " ]] || die
 		printf -- "-D %s=%s\n" "${opt_name}" "${BASH_REMATCH[1]}"
 	}
+
+	local -r -a default_nameservers=(
+		1.1.1.1   # Cloudflare
+		9.9.9.10  # Quad9
+		8.8.8.8   # Google
+		2606:4700:4700::1111  # Cloudflare
+		2620:fe::10           # Quad9
+		2001:4860:4860::8888  # Google
+	)
+	local -r -a default_timeservers=(
+		"$(echo {0..3}".gentoo.pool.ntp.org")"
+	)
+	local -r -- default_support_url="https://github.com/rindeal/rindeal-ebuild-repo/issues"
 
 	## BEGIN: emesonargs
 	local -a emesonargs=(
@@ -706,7 +709,7 @@ src_configure()
 
 		"$(my_str_opt fallback-hostname)"  # `the hostname used if none configured`
 		-D compat-gateway-hostname=false
-		$(meson_use_combo default-hierarchy default_cgroup_hierarchy_)
+		$(my_use_combo default-hierarchy default_cgroup_hierarchy_)
 		"$(my_str_opt default-net-naming-scheme)"  # `default net.naming-scheme= value`
 		-D status-unit-format-default=name  # 'use unit name or description in messages by default'
 		"$(my_str_opt time-epoch)"  # `time epoch for time clients`, default determined from mtime of 'NEWS' file
@@ -731,9 +734,9 @@ src_configure()
 		-D default-dnssec=no        # override down the road as needed
 		-D default-dns-over-tls=no  # override down the road as needed
 		-D dns-over-tls=false       # override down the road as needed
-		"$(my_str_opt dns-servers)"
-		"$(my_str_opt ntp-servers "" "$(echo {0..3}".gentoo.pool.ntp.org")")"
-		"$(my_str_opt support-url "" "https://github.com/rindeal/rindeal-ebuild-repo/issues")"
+		"$(my_str_opt dns-servers "" "${default_nameservers[*]}")"
+		"$(my_str_opt ntp-servers "" "${default_timeservers[*]}")"
+		"$(my_str_opt support-url "" "${default_support_url}")"
 # 		-D www-target  # internal option for devs
 
 		$(meson_use seccomp)
@@ -800,7 +803,7 @@ src_configure()
 		if use dnssec
 		then
 			emesonargs+=(
-				$(meson_use_combo default-dnssec dnssec_default_)
+				$(my_use_combo default-dnssec dnssec_default_)
 				-D gcrypt=true
 			)
 		fi
@@ -814,7 +817,7 @@ src_configure()
 				-D dns-over-tls=${dot}
 				-D ${dot}=true
 
-				$(meson_use_combo default-dns-over-tls dot_default_)
+				$(my_use_combo default-dns-over-tls dot_default_)
 			)
 		fi
 
@@ -1010,7 +1013,7 @@ src_install()
 	src_install:empty_dirs
 
 	# Symlink /etc/sysctl.conf for easy migration.
-	rdosym --rel -- "/etc/sysctl.d/99-sysctl.conf" "/etc/sysctl.conf"
+	rdosym --rel -- "/etc/sysctl.conf" "/etc/sysctl.d/99-sysctl.conf"
 
 	if use split-usr
 	then
@@ -1018,7 +1021,7 @@ src_install()
 		local -- b
 		for b in systemd{,-shutdown}
 		do
-			rdosym --rel -- /usr/lib/systemd/${b} /lib/systemd/${b}
+			rdosym --rel -- "/lib/systemd/${b}" "/usr/lib/systemd/${b}"
 		done
 	fi
 
@@ -1094,7 +1097,7 @@ pkg_postinst()
 	then
 		local -r -- resolv_conf_path="${ROOT}/etc/resolv.conf"
 		local -r -- systemd_resolv_conf_path="${ROOT}$(my_get_rootprefix)/lib/systemd/resolv.conf"
-		if [[ "$(readlink "${resolv_conf_path}")" != "${systemd_resolv_conf_path}" ]] && \
+		if [[ "$(realpath "${resolv_conf_path}")" != "$(realpath "${systemd_resolv_conf_path}")" ]] && \
 			! grep -q "^nameserver *127.0.0.1" "${resolv_conf_path}"
 		then
 			echo
@@ -1112,13 +1115,13 @@ pkg_postinst()
 
 	local -r -- mtab_path="${ROOT}/etc/mtab"
 	local -r -- mounts_path="/proc/self/mounts"
-	if [[ -e "${mtab_path}" && "$(readlink "${mtab_path}")" != "${mounts_path}" ]]
+	if [[ -e "${mtab_path}" ]] && [[ "$(readlink "${mtab_path}")" != *"${mounts_path}" ]]
 	then
 		echo
 		ewarn "'${mtab_path}' is not a symlink to '${mounts_path}'! ${PN} may fail to work."
 		ewarn "Either delete this file altogether or convert it to a symlink to '${mounts_path}':"
 		ewarn ""
-		ewarn "    ln -snf '${mounts_path}' '${mtab_path}'"
+		ewarn "    ln -svnf '${mounts_path}' '${mtab_path}'"
 		echo
 	fi
 
@@ -1135,12 +1138,12 @@ pkg_postinst()
 
 	systemd_update_catalog || FAIL=1
 
-	if [[ -z "${ROOT}" && -d /run/systemd/system ]]
-	then
-		ebegin "Reexecuting system manager"
-		nonfatal systemctl daemon-reexec
-		eend $? || FAIL=1
-	fi
+# 	if [[ -z "${ROOT}" && -d /run/systemd/system ]]
+# 	then
+# 		ebegin "Reexecuting system manager"
+# 		nonfatal systemctl daemon-reexec
+# 		eend $? || FAIL=1
+# 	fi
 
 	if (( FAIL ))
 	then

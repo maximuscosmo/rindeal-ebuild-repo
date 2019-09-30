@@ -6,6 +6,8 @@
     <name>Jan Chren (rindeal)</name>
   </maintainer>
   <use>
+<!--     meson introspect -buildoptions meson.build | jq -r '.[] | select(.section == "user") | "<flag name=\"\(.name)\">\(.description)</flag>"' -->
+
     <flag name="split-usr">assume that /bin, /sbin aren't symlinks into /usr</flag>
     <flag name="rootlibdir">[/usr]/lib/x86_64-linux-gnu or such</flag>
     <flag name="rootprefix">override the root prefix</flag>

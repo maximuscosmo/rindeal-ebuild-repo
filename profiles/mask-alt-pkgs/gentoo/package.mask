@@ -64,7 +64,6 @@ dev-python/websocket-client::gentoo
 dev-util/clinfo::gentoo
 dev-util/gdbus-codegen::gentoo
 dev-util/glib-utils::gentoo
-dev-util/lxqt-build-tools::gentoo
 dev-util/meson::gentoo
 dev-util/premake::gentoo
 dev-util/spirv-headers::gentoo

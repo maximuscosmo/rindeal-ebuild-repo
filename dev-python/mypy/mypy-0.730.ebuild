@@ -1,4 +1,3 @@
-# Copyright 1999-2017 Gentoo Foundation
 # Copyright 2017-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
@@ -15,8 +14,6 @@ PYTHON_COMPAT=( python3_{5,6,7} )
 inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
-## functions: distutils-r1_python_prepare_all, distutils-r1_python_install_all
-## variables: PYTHON_USEDEP
 inherit distutils-r1
 
 DESCRIPTION="Optional static typing for Python"

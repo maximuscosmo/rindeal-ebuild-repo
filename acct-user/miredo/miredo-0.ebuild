@@ -14,3 +14,6 @@ RDEPEND="
 declare -g -i ACCT_USER_ID=-1
 declare -g -- ACCT_USER_HOME="/var/empty"
 declare -g -a ACCT_USER_GROUPS=( "${PN}" )
+
+# This must be called if ACCT_USER_GROUPS are set.
+acct-user_add_deps

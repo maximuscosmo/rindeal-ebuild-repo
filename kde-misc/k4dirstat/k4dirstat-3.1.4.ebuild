@@ -1,23 +1,30 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="bitbucket:jeromerobert"
-GH_REF="${P}"
+## bitbucket.eclass:
+BITBUCKET_NS="jeromerobert"
+BITBUCKET_REF="${P}"
+
 ## kde5.eclass:
 KDE_HANDBOOK="forceoptional"
 
 ## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+inherit bitbucket
+
 ## EXPORT_FUNCTIONS: pkg_setup pkg_nofetch src_unpack src_prepare src_configure src_compile src_test src_install pkg_preinst pkg_postinst pkg_postrm
 inherit kde5
 
 DESCRIPTION="Nice KDE replacement to the du command"
+HOMEPAGE="${BITBUCKET_HOMEPAGE}"
 LICENSE="GPL-2"
+
+SRC_URI_A=(
+	"${BITBUCKET_SRC_URI}"
+)
 
 KEYWORDS="~amd64"
 IUSE_A=( nls )
@@ -47,14 +54,17 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
-src_unpack() {
-	git-hosting_src_unpack
+src_unpack()
+{
+	bitbucket:src_unpack
 }
 
-src_prepare() {
+src_prepare()
+{
 	eapply_user
 
-	if ! use nls ; then
+	if ! use nls
+	then
 		rsed -e '/add_subdirectory( *po *)/d' -i -- CMakeLists.txt
 	fi
 

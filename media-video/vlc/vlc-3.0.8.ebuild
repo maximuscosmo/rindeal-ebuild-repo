@@ -6,11 +6,10 @@ EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
-GH_RN="github:videolan:${PN}-3.0"
+GITHUB_NS="videolan"
+GITHUB_PROJ="${PN}-3.0"
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: GH_HOMEPAGE
-inherit git-hosting
+inherit github
 
 ## functions: eautoreconf
 inherit autotools
@@ -28,10 +27,22 @@ inherit xdg
 inherit ltprune
 
 DESCRIPTION="VLC media player - Video player and streamer"
-HOMEPAGE="https://www.videolan.org/vlc/ ${GH_HOMEPAGE}"
-LICENSE="LGPL-2.1 GPL-2"
+HOMEPAGE_A=(
+	"https://www.videolan.org/vlc/"
+	"${GITHUB_HOMEPAGE}"
+	# "https://git.videolan.org/?p=vlc/vlc-3.0.git;a=summary" # TODO
+)
+LICENSE_A=(
+	"LGPL-2.1"
+	"GPL-2"
+)
 
-SLOT="0/5-8" # vlc - vlccore
+libvlc_soname="5"
+libvlccore_soname="9"
+SLOT="0/${libvlc_soname}-${libvlccore_soname}"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
@@ -375,7 +386,8 @@ REQUIRED_USE_A=(
 
 inherit arrays
 
-pkg_setup() {
+pkg_setup()
+{
 	# If qtchooser is installed, it may break the build, because moc,rcc and uic binaries for wrong qt version may be used.
 	# Setting QT_SELECT environment variable will enforce correct binaries.
 	use qt5 && export QT_SELECT=qt5
@@ -391,7 +403,13 @@ pkg_setup() {
 	append-ldflags "-L/usr/$(get_libdir)/sidplay/builders/"
 }
 
-src_prepare() {
+src_unpack()
+{
+	github:src_unpack
+}
+
+src_prepare()
+{
 	# Fix build system mistake.
 	eapply "${FILESDIR}"/${PN}-2.1.0-fix-libtremor-libs.patch
 	# Fix up broken audio when skipping using a fixed reversed bisected commit.
@@ -418,7 +436,8 @@ src_prepare() {
 	assert
 }
 
-src_configure() {
+src_configure()
+{
 	local econf_args=(
 		### Optional Features and Packages:
 		--disable-maintainer-mode
@@ -655,17 +674,20 @@ src_configure() {
 	rsed -e '1i#undef _FORTIFY_SOURCE' -i -- "${S}"/config.h
 }
 
-src_test() {
+src_test()
+{
 	Xemake check-TESTS
 }
 
-src_install() {
+src_install()
+{
 	default
 
 	prune_libtool_files
 }
 
-pkg_postinst() {
+pkg_postinst()
+{
 	xdg_pkg_postinst
 
 	## Refresh plugins cache, required to prevent error messages like:

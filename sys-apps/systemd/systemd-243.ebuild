@@ -124,7 +124,7 @@ IUSE_A=(
 	remote
 	+nss-myhostname
 	+nss-systemd
-	firstboot
+	+firstboot
 	+random-seed
 	+backlight
 	+vconsole
@@ -405,7 +405,7 @@ pkg_pretend()
 			"$(kernel_is -lt 4 7 &>/dev/null && echo '~DEVPTS_MULTIPLE_INSTANCES')"
 
 			# Required for PrivateUsers= in service units:
-			"~CONFIG_USER_NS"
+			"~USER_NS"
 
 			## Required for CPUShares= in resource control unit settings
 			'~CGROUP_SCHED'
@@ -515,7 +515,7 @@ src_prepare()
 # 		Drop-seccomp-system-call-filter-for-udev.patch
 		Let-graphical-session-pre.target-be-manually-started.patch
 # 		Make-run-lock-tmpfs-an-API-fs.patch
-		Only-start-logind-if-dbus-is-installed.patch
+#		Only-start-logind-if-dbus-is-installed.patch
 # 		Re-enable-journal-forwarding-to-syslog.patch
 		Revert-core-enable-TasksMax-for-all-services-by-default-a.patch
 		Revert-core-one-step-back-again-for-nspawn-we-actual.patch

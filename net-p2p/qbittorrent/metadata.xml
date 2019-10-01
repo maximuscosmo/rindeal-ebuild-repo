@@ -8,5 +8,6 @@
   <use>
     <flag name="gui">Qt based GUI</flag>
     <flag name="webui">Enable the Web UI</flag>
+    <flag name="stacktrace">Print stacktrace to stdout on crashes</flag>
   </use>
 </pkgmetadata>

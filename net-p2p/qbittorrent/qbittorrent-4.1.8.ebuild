@@ -51,7 +51,7 @@ IUSE_A=( +dbus debug nls +gui webui stacktrace )
 CDEPEND_A=(
 	"dev-libs/boost:="
 	">=net-libs/libtorrent-rasterbar-1.1.10:0="
-	"<net-libs/libtorrent-rasterbar-1.3:0="
+	"<net-libs/libtorrent-rasterbar-1.2:0="  # TODO: bump to 1.3 in 4.2.x
 	">=dev-libs/openssl-1.0:0="
 	"sys-libs/zlib:0"
 

@@ -4,9 +4,11 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:qbittorrent:qBittorrent"
-GH_REF="release-${PV}"
+# TODO: revamp systemd service files and possibly fork them into a separate repo
+
+## github.eclass:
+GITHUB_PROJ="qBittorrent"
+GITHUB_REF="release-${PV}"
 
 ## functions: append-cppflags
 inherit flag-o-matic
@@ -14,9 +16,7 @@ inherit flag-o-matic
 ## functions: eqmake5
 inherit qmake-utils
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: GH_HOMEPAGE
-inherit git-hosting
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
@@ -34,27 +34,40 @@ inherit systemd
 inherit multibuild
 
 DESCRIPTION="BitTorrent client in C++/Qt based on libtorrent-rasterbar"
-HOMEPAGE="https://www.qbittorrent.org/ ${GH_HOMEPAGE}"
+HOMEPAGE_A=(
+	"https://www.qbittorrent.org/"
+	"${GITHUB_HOMEPAGE}"
+)
 LICENSE="GPL-2"
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
-IUSE_A=( +dbus debug nls +gui webui )
+IUSE_A=( +dbus debug nls +gui webui stacktrace )
 
 CDEPEND_A=(
 	"dev-libs/boost:="
-	"<net-libs/libtorrent-rasterbar-1.2:0="
-	"sys-libs/zlib"
+	">=net-libs/libtorrent-rasterbar-1.1.10:0="
+	"<net-libs/libtorrent-rasterbar-1.3:0="
+	">=dev-libs/openssl-1.0:0="
+	"sys-libs/zlib:0"
 
 	"dev-qt/qtcore:5"
 	"dev-qt/qtnetwork:5[ssl]"
-	"dev-qt/qtsingleapplication"
 	"dev-qt/qtxml:5"
+
+	"dev-qt/qtsingleapplication"
+
 	"gui? ("
 		"dev-qt/qtgui:5"
+		"dev-qt/qtsvg:5"
 		"dev-qt/qtwidgets:5"
+
 		"dbus? ( dev-qt/qtdbus:5 )"
+
 		"dev-qt/qtsingleapplication[X]"
 	")"
 )
@@ -62,7 +75,9 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 	"nls? ( dev-qt/linguist-tools:5 )"
 	"virtual/pkgconfig"
 )
-RDEPEND_A=( "${CDEPEND_A[@]}" )
+RDEPEND_A=( "${CDEPEND_A[@]}"
+	# TODO python deps
+)
 
 REQUIRED_USE_A=(
 	"|| ( gui webui )"
@@ -70,28 +85,34 @@ REQUIRED_USE_A=(
 
 inherit arrays
 
-L10N_LOCALES=( ar be bg ca cs da de el en en_AU en_GB eo es eu fi fr gl he hi_IN hr hu hy id is it
-	ja ka ko lt lv_LV ms_MY nb nl oc pl pt_BR pt_PT ro ru sk sl sr sv tr uk uz@Latn vi zh zh_HK zh_TW )
-inherit l10n-r1
-
-pkg_setup() {
-	declare -g -r -a MULTIBUILD_VARIANTS=( $(usev gui) $(usev webui) )
+pkg_setup()
+{
+	declare -g -r -a MULTIBUILD_VARIANTS=(
+		$(usev gui)
+		$(usev webui)
+	)
 }
 
-src_prepare-locales() {
-	local l locales loc_dir='src/lang' loc_pre='qbittorrent_' loc_post='.ts'
-
-	l10n_find_changes_in_dir "${loc_dir}" "${loc_pre}" "${loc_post}"
-
-	l10n_get_locales locales app $(usex nls off all)
-	for l in ${locales}
-	do
-		rrm "${loc_dir}/${loc_pre}${l}${loc_post}"
-		rsed -e "/qbittorrent_${l}.qm/d" -i -- "${loc_dir}"/lang.qrc
-	done
+src_unpack()
+{
+	github:src_unpack
 }
 
-src_prepare() {
+src_prepare-locales()
+{
+	if ! use nls
+	then
+		NO_V=1 rrm -r src/lang || die
+		rsed -e "\|lang/lang.qrc|d" -i -- src/src.pro
+		rsed -e "/lang.pri/d" -i -- qbittorrent.pro  # TODO: change in 4.1.9+
+
+		NO_V=1 rrm -r src/webui/www/translations || die
+		rsed -e "/RESOURCES[^=]*=/ s|[^ ]*www/translations[^ ]*||" -i -- src/webui/webui.pri
+	fi
+}
+
+src_prepare()
+{
 	eapply_user
 
 	xdg_src_prepare
@@ -106,56 +127,56 @@ src_prepare() {
 
 	# disable qmake call inside ./configure script,
 	# we'll call it ourselves from eqmake wrapper
-	rsed -e '/^$QT_QMAKE/ s|^|echo |' -i -- configure.ac
+	rsed -e '/^$QT_QMAKE/ s|^|true |' -i -- configure.ac
 
 	eautoreconf
 
 	multibuild_copy_sources
 }
 
-my_multi_src_configure() {
-	# workaround build issue with older boost
-	# https://github.com/qbittorrent/qBittorrent/issues/4112
-	if has_version '<dev-libs/boost-1.58'
-	then
-		append-cppflags -DBOOST_NO_CXX11_REF_QUALIFIERS
-	fi
-
+my_multi_src_configure()
+{
 	local econf_args=(
 		--with-qtsingleapplication=system
 		--disable-systemd # we have services of our own
+		--disable-qt-dbus  # enable down the road as needed
 
-		$(use_enable dbus qt-dbus) # introduced for macOS
+		$(use_enable stacktrace)
 		$(use_enable debug)
 	)
 
-	if [[ "${MULTIBUILD_VARIANT}" == 'gui' ]]
-	then
+	case "${MULTIBUILD_VARIANT}" in
+	'gui' )
 		econf_args+=( --enable-gui --disable-webui )
-	elif [[ "${MULTIBUILD_VARIANT}" == 'webui' ]]
-	then
+		econf_args+=( $(use_enable dbus qt-dbus) )
+		;;
+	'webui' )
 		econf_args+=( --disable-gui --enable-webui )
-	else
-		die
-	fi
+		;;
+	* ) die ;;
+	esac
 
 	econf "${econf_args[@]}"
 
 	eqmake5 -r ./qbittorrent.pro
 }
 
-src_configure() {
+src_configure()
+{
 	multibuild_foreach_variant run_in_build_dir \
 		my_multi_src_configure
 }
 
-src_compile() {
+src_compile()
+{
 	multibuild_foreach_variant run_in_build_dir \
 		default_src_compile
 }
 
-src_install() {
-	my_multi_src_install() {
+src_install()
+{
+	my_multi_src_install()
+	{
 		emake INSTALL_ROOT="${D}" install
 	}
 	multibuild_foreach_variant run_in_build_dir \

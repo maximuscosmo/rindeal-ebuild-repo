@@ -145,6 +145,7 @@ my_multi_src_configure()
 		$(use_enable debug)
 	)
 
+	# shellcheck disable=SC2153 "Possible Misspelling"
 	case "${MULTIBUILD_VARIANT}" in
 	'gui' )
 		econf_args+=( --enable-gui --disable-webui )

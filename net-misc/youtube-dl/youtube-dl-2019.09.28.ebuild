@@ -45,7 +45,6 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 			"app-text/pandoc"
 		")"
 	")"
-	"test? ( dev-python/nose[coverage(+)] )"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	"rtmp? ( media-video/rtmpdump )"
@@ -53,29 +52,32 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
-src_unpack() {
+src_unpack()
+{
 	github:src_unpack
 }
 
-python_compile_all() {
-	local emake_args=(
+python_compile_all()
+{
+	local -a emake_args=(
 		V=1
 		bash-completion
 		zsh-completion
 		fish-completion
-		$(use man && echo ${PN}.1 README.txt)
+		$(use man && echo "${PN}.1" README.txt)
 	)
 	emake "${emake_args[@]}"
 }
 
-python_install_all() {
+python_install_all()
+{
 	if use man
 	then
-		doman ${PN}.1
+		doman "${PN}.1"
 		dodoc README.txt
 	fi
 
-	newbashcomp ${PN}.bash-completion ${PN}
+	newbashcomp "${PN}.bash-completion" "${PN}"
 
 	insinto /usr/share/zsh/site-functions
 	newins youtube-dl.zsh _youtube-dl

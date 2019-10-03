@@ -28,15 +28,6 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
-src_prepare() {
-	eapply_user
-
-	rrm config/ltmain.sh
-	rcp /usr/share/libtool/build-aux/ltmain.sh config/ltmain.sh
-
-	e2fsprogs_src_prepare
-}
-
 src_configure() {
 	# do not check for these libs as they're not used in this minimal build
 	export ac_cv_lib_{uuid_uuid_generate,blkid_blkid_get_cache}=yes
@@ -51,7 +42,4 @@ src_install() {
 	# split /usr (e.g. "e2fsck" from sys-fs/e2fsprogs is installed in /sbin and
 	# links to libcom_err.so).
 	gen_usr_ldscript -a com_err ss
-
-	# Package installs same header twice -- use symlink instead
-	dosym et/com_err.h /usr/include/com_err.h
 }

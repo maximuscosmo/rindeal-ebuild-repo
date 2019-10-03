@@ -12,13 +12,14 @@ esac
 inherit rindeal
 
 
-## git-hosting.eclass:
-GH_RN="kernel:fs/ext2:e2fsprogs"
-GH_REF="v${PV}"
+## cgit.eclass:
+CGIT_SVR="https://git.kernel.org"
+CGIT_NS="pub/scm/fs/ext2"
+CGIT_PROJ="e2fsprogs"
+CGIT_DOT_GIT="yes"
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: GH_HOMEPAGE, SRC_URI
-inherit git-hosting
+##
+inherit cgit
 
 ## functions: eautoreconf
 inherit autotools
@@ -26,11 +27,8 @@ inherit autotools
 ## functions: append-cppflags
 inherit flag-o-matic
 
-## functions: tc-getCC, tc-getBUILD_CC, tc-getBUILD_LD
+## functions: tc-has-tls, tc-is-static-only
 inherit toolchain-funcs
-
-## functions: prune_libtool_files
-inherit ltprune
 
 ## functions: get_udevdir
 inherit udev
@@ -40,9 +38,9 @@ inherit systemd
 
 
 HOMEPAGE_A=(
-	"http://e2fsprogs.sourceforge.net/"
-	"${GH_HOMEPAGE}"
-	"https://github.com/tytso/e2fsprogs"
+	"http://${PN}.sourceforge.net/"
+	"${CGIT_HOMEPAGE}"
+	"https://github.com/tytso/${PN}"
 )
 LICENSE_A=(
 	"GPL-2"
@@ -50,9 +48,14 @@ LICENSE_A=(
 )
 
 SLOT="0"
+SRC_URI_A=(
+	"${CGIT_SRC_URI}"
+)
 
 IUSE_A=(
-	static-libs debug threads
+	static-libs
+	debug
+# 	threads
 )
 
 inherit arrays
@@ -61,33 +64,39 @@ inherit arrays
 EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install
 
 
-e2fsprogs_src_unpack() {
-	git-hosting_src_unpack
+e2fsprogs_src_unpack()
+{
+	cgit:src_unpack
 }
 
-e2fsprogs_src_prepare() {
-	default
+e2fsprogs_src_prepare()
+{
+	eapply_user
 
+	# rename changelog so that einstalldocs() will pick it automagically
 	rcp doc/RelNotes/v${PV}.txt ChangeLog
 
 	## don't bother with docs, Gentoo-Bug: 305613
-	printf 'all:\n%%:;@:\n' > doc/Makefile.in || die
-
 	NO_V=1 rrm -r doc
+
+	rsed -e 's,@LIBINTL@,@LTLIBINTL@,' -i -- MCONFIG.in
+
+	# https://bugs.gentoo.org/686716
+	rsed -e "/AM_GNU_GETTEXT/ s/$/([external])/" -i -- configure.ac
+	rsed -e "s/ intl//" -i -- Makefile.in
 
 	eautoreconf
 }
 
-e2fsprogs_src_configure() {
-	# needs open64() prototypes and friends
-	append-cppflags -D_GNU_SOURCE
-
+e2fsprogs_src_configure()
+{
+	# ```
+	# /sbin/ldconfig
+	# /sbin/ldconfig: Can't create temporary cache file /etc/ld.so.cache~: Permission denied
+	# ```
 	export ac_cv_path_LDCONFIG=:
-	export CC="$(tc-getCC)"
-	export BUILD_CC="$(tc-getBUILD_CC)"
-	export BUILD_LD="$(tc-getBUILD_LD)"
 
-	local _econf_args=(
+	local -a _econf_args=(
 		--enable-option-checking
 		--disable-maintainer-mode
 		--enable-symlink-install  # use symlinks when installing instead of hard links
@@ -119,18 +128,18 @@ e2fsprogs_src_configure() {
 		--disable-bmap-stats  # enable if needed
 		--disable-bmap-stats-ops  # enable if needed
 		--disable-nls  # enable if needed
-		$(usex threads "--enable-threads=posix" "--disable-threads")
+# 		$(usex threads "--enable-threads=posix" "--disable-threads")
 		--disable-rpath
 		--disable-fuse2fs  # enable if needed
 		--disable-lto  # we can enable it ourselves
 		$(use_enable debug ubsan)
 		$(use_enable debug addrsan)
 		$(use_enable debug threadsan)
-		--with-udev-rules-dir="$(get_udevdir)"
+		--with-udev-rules-dir="${EPREFIX}$(get_udevdir)/rules.d"
 		--without-crond-dir
 		--with-systemd-unit-dir="$(systemd_get_systemunitdir)"
 
-		--with-root-prefix="${EPREFIX}/"  # ??
+		--with-root-prefix="${EPREFIX}"  # ??
 
 		"${@}"
 	)
@@ -138,16 +147,18 @@ e2fsprogs_src_configure() {
 	econf "${_econf_args[@]}"
 }
 
-e2fsprogs_src_compile() {
-	local _emake_args=(
+e2fsprogs_src_compile()
+{
+	local -a _emake_args=(
 		V=1
 		"${@}"
 	)
 	emake "${_emake_args[@]}"
 }
 
-e2fsprogs_src_install() {
-	local _emake_args=(
+e2fsprogs_src_install()
+{
+	local -a _emake_args=(
 		STRIP=:
 		DESTDIR="${D}"
 		install
@@ -158,12 +169,12 @@ e2fsprogs_src_install() {
 
 	einstalldocs
 
-	prune_libtool_files
-
 	# configure doesn't have an option to disable static libs :/
 	if ! use static-libs
 	then
-		find "${D}" -name '*.a' -delete || die
+		printf -- "* Deleting static libs as requested...\n"
+		find "${D}" -name '*.a' -print -delete || die
+		echo
 	fi
 }
 

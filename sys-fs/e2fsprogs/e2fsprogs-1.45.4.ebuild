@@ -36,10 +36,9 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 inherit arrays
 
-src_prepare() {
+src_prepare()
+{
 	eapply_user
-
-	rsed -e 's,@LIBINTL@,@LTLIBINTL@,' -i -- MCONFIG.in
 
 	### BEGIN force separation of libss and libet
 
@@ -53,7 +52,7 @@ src_prepare() {
 	local f
 	for f in **/Makefile.in
 	do
-		if egrep -q "/lib/(ss|et)" "${f}"
+		if grep -E -q "/lib/(ss|et)" "${f}"
 		then
 			rsed -r -e "s,[^ \t]+lib/(ss|et)[^ \t]*,,g" -i -- "${f}"
 		fi
@@ -65,7 +64,8 @@ src_prepare() {
 	e2fsprogs_src_prepare
 }
 
-src_configure() {
+src_configure()
+{
 	local my_econf_args=(
 		$(use_enable backtrace)
 		$(use_enable debugfs)
@@ -81,14 +81,13 @@ src_configure() {
 		$(use_enable nls)
 
 		$(use_enable fuse fuse2fs)
-
-		--without-included-gettext  # ??
 	)
 	e2fsprogs_src_configure "${my_econf_args[@]}"
 }
 
-src_compile() {
-	local emake_args=(
+src_compile()
+{
+	local -a emake_args=(
 		# default values point to internal paths
 		COMPILE_ET=compile_et
 		MK_CMDS=mk_cmds
@@ -97,14 +96,12 @@ src_compile() {
 	e2fsprogs_src_compile "${emake_args[@]}"
 }
 
-src_install() {
-	local emake_args=(
+src_install()
+{
+	local -a emake_args=(
 		install-libs
 	)
-	e2fsprogs_src_install
-
-# 	dodoc README
-# 	newdoc $(realpath RELEASE-NOTES) RELEASE-NOTES
+	e2fsprogs_src_install "${emake_args[@]}"
 
 	insinto /etc
 	doins "${FILESDIR}"/e2fsck.conf

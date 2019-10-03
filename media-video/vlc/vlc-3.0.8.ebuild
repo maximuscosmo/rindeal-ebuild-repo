@@ -411,9 +411,9 @@ src_unpack()
 src_prepare()
 {
 	# Fix build system mistake.
-	eapply "${FILESDIR}"/${PN}-2.1.0-fix-libtremor-libs.patch
+	eapply "${FILESDIR}/${PN}-2.1.0-fix-libtremor-libs.patch"
 	# Fix up broken audio when skipping using a fixed reversed bisected commit.
-	eapply "${FILESDIR}"/${PN}-2.1.0-TomWij-bisected-PA-broken-underflow.patch
+	eapply "${FILESDIR}/${PN}-2.1.0-TomWij-bisected-PA-broken-underflow.patch"
 
 	eapply_user
 
@@ -421,7 +421,8 @@ src_prepare()
 	touch src/revision.txt || die
 
 	# Don't use --started-from-file when not using dbus.
-	if ! use dbus ; then
+	if ! use dbus
+	then
 		rsed -e 's, --started-from-file,,' -i -- share/vlc.desktop.in
 	fi
 
@@ -432,7 +433,7 @@ src_prepare()
 	eautoreconf
 
 	# Disable automatic running of tests.
-	find -name 'Makefile.in' -print0 | xargs -0 sed -i 's/\(..*\)check-TESTS/\1/'
+	find . -name 'Makefile.in' -print0 | xargs -0 sed -i 's/\(..*\)check-TESTS/\1/'
 	assert
 }
 
@@ -659,9 +660,9 @@ src_configure()
 	if use truetype || use projectm ; then
 		local dejavu_dir="${EPREFIX}/usr/share/fonts/dejavu/"
 		econf_args+=(
-			--with-default-font=${dejavu_dir}/DejaVuSans.ttf
+			--with-default-font="${dejavu_dir}/DejaVuSans.ttf"
 			--with-default-font-family=Sans
-			--with-default-monospace-font=${dejavu_dir}/DejaVuSansMono.ttf
+			--with-default-monospace-font="${dejavu_dir}/DejaVuSansMono.ttf"
 			--with-default-monospace-font-family=Monospace
 		)
 	fi

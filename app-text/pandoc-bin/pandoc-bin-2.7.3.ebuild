@@ -4,11 +4,8 @@
 EAPI=7
 inherit rindeal
 
-# to unpack .deb archive
-## EXPORT_FUNCTIONS: src_unpack
-inherit unpacker
-
 PN_NB="${PN//-bin/}"
+P_NB="${PN_NB}-${PV}"
 
 DESCRIPTION="Universal markup converter"
 HOMEPAGE_A=(
@@ -18,47 +15,50 @@ HOMEPAGE_A=(
 LICENSE="GPL-2"
 
 SLOT="0"
-SRC_URI="amd64? ( https://github.com/jgm/${PN_NB}/releases/download/${PV}/${PN_NB}-${PV}-1-amd64.deb )"
+SRC_URI_A=(
+	"https://github.com/jgm/${PN_NB}/releases/download/${PV}/${P_NB}-linux.tar.gz"
+)
 
 KEYWORDS="-* amd64"
 IUSE_A=( citeproc )
 
-CDEPEND_A=(
-	"dev-libs/gmp:*"
-	"sys-libs/zlib:*"
-)
+CDEPEND_A=( )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}"
+	"dev-libs/gmp:*"
+	"sys-libs/zlib:*"
+
 	"!app-text/${PN_NB}"
 	"citeproc? ( !dev-haskell/${PN_NB}-citeproc )"
 )
 
-RESTRICT+=" mirror"
+RESTRICT+=" primaryuri"
 
 inherit arrays
 
-S="${WORKDIR}"
+S="${WORKDIR}/${P_NB}"
 
-src_prepare() {
-	eapply_user
+src_unpack()
+{
+	default
 
-	# docs are gzipped
-	find -name "*.gz" | xargs gunzip
+	# docs/manpages are gzipped
+	find . -name "*.gz" | xargs gunzip
 	assert
 }
 
-src_configure() { : ; }
-src_compile() { : ; }
+src_configure(){ :;}
+src_compile(){ :;}
 
-src_install() {
-	cd "${S}"/usr/bin || die
+src_install()
+{
+	cd "${S}/bin" || die
 	dobin "${PN_NB}"
 	use citeproc && dobin "${PN_NB}-citeproc"
 
-	cd "${S}"/usr/share/man/man1 || die
+	cd "${S}/share/man/man1" || die
 	doman "${PN_NB}.1"
 	use citeproc && doman "${PN_NB}-citeproc.1"
 }
 
-QA_EXECSTACK="usr/bin/.*"
 QA_PRESTRIPPED="usr/bin/.*"

@@ -11,8 +11,7 @@ PYTHON_COMPAT=( python3_{5,6,7} )
 GITLAB_SVR="https://0xacab.org"
 GITLAB_NS="jvoisin"
 
-## functions: gitlab:src_unpack
-## variables: GITLAB_SRC_URI, GITLAB_HOMEPAGE
+##
 inherit gitlab
 
 ## EXPORT: src_prepare, src_configure, src_compile, src_test, src_install
@@ -38,7 +37,7 @@ SRC_URI_A=(
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
 	audio +image video +exif pdf sandbox
-# 	nautilus
+# 	nautilus  # probably not worth implementing
 )
 
 CDEPEND_A=(
@@ -87,10 +86,10 @@ python_install_all() {
 	local -a DOCS=( README.md doc/*.md )
 	distutils-r1_python_install_all
 
-	doman doc/${PN}.1
+	doman "doc/${PN}.1"
 
-	doicon -s 512 data/${PN}.png
-	doicon -s scalable data/${PN}.svg
+	doicon -s 512      "data/${PN}.png"
+	doicon -s scalable "data/${PN}.svg"
 
 # 	if use nautilus
 # 	then

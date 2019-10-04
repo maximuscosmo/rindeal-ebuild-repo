@@ -7,7 +7,7 @@ inherit rindeal
 ## git-hosting.eclass
 GH_RN="github:zealdocs"
 # GH_REF="v${PV}"
-GH_REF="419ef8d"
+GH_REF="c4ad995" # 1 10 2019
 
 ## EXPORT_FUNCTIONS: src_unpack
 inherit git-hosting
@@ -78,6 +78,8 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	"x11-themes/hicolor-icon-theme"
 )
+
+inherit arrays
 
 src_prepare() {
 	eapply_user

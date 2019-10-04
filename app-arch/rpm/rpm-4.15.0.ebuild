@@ -170,7 +170,6 @@ src_configure() {
 		$(use_with dmalloc)
 # 		--with-rundir=RUNDIR
 
-
 		$(use_enable threads openmp)
 	)
 	econf "${my_econf_args[@]}"

@@ -5,9 +5,11 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:karelzak"
-GH_REF="v${PV}"
+# TODO: revamp USE-flags for better readability/maintainability
+
+## github.eclass:
+GITHUB_NS="karelzak"
+GITHUB_REF="v${PV}"
 
 ## python-*.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
@@ -15,9 +17,8 @@ PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 ## functions: dsf:eval
 inherit dsf-utils
 
-## functions: git-hosting_unpack
-## variables: GH_HOMEPAGE
-inherit git-hosting
+##
+inherit github
 
 ## TODO: make it python-r1
 inherit python-single-r1
@@ -38,20 +39,31 @@ inherit systemd
 inherit ltprune
 
 ## functions: gen_usr_ldscript
-inherit toolchain-funcs
+inherit usr-ldscript
 
 ## functions: newpamd
 inherit pam
 
 DESCRIPTION="Various useful system utilities for Linux"
-HOMEPAGE="https://www.kernel.org/pub/linux/utils/${PN}/ ${GH_HOMEPAGE}"
-LICENSE="GPL-2 LGPL-2.1 BSD-4 MIT public-domain"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"GPL-2"
+	"LGPL-2.1"
+	"BSD-4"
+	"MIT"
+	"public-domain"
+)
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="amd64 arm arm64"
 IUSE_A=(
-	doc libpython test nls +shared-libs static-libs +assert +symvers +largefile rpath +unicode
+	doc libpython test nls +shared-libs static-libs +assert +symvers +largefile +unicode
 
 	# TODO: categorize these
 	+suid selinux audit +udev +ncurses systemd +pam
@@ -326,18 +338,18 @@ inherit arrays
 L10N_LOCALES=( ca cs da de es et eu fi fr gl hr hu id it ja nl pl pt_BR ru sl sv tr uk vi zh_CN zh_TW )
 inherit l10n-r1
 
-pkg_setup() {
+pkg_setup()
+{
 	use libpython && python-single-r1_pkg_setup
 }
 
-my_use_build_init() {
-	local flag="${1}" option="${2:-"${1}"}"
-	grep -F -q "UL_BUILD_INIT([${option}]" configure.ac || die
-	rsed -r -e "s@^(UL_BUILD_INIT *\( *\[${option}\])(, *\[[a-z]{2,}\])?@\1, [$(usex ${flag})]@" \
-		-i -- configure.ac
+src_unpack()
+{
+	github:src_unpack
 }
 
-src_prepare-locales() {
+src_prepare:locales()
+{
 	local l locales dir="po" pre="" post=".po"
 
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
@@ -349,20 +361,29 @@ src_prepare-locales() {
 		do
 			rrm "${dir}/${pre}${l}${post}"
 		done
+	else
+		NO_V=1 rrm -r po/
+		rsed -e "/AM_GNU_GETTEXT/d" -e "\@po/@d" -i -- configure.ac
+		rsed -e "/SUBDIRS/ s, po, ," -i -- Makefile.am
 	fi
 }
 
-src_prepare() {
-	eapply_user
+## although my_use_build_init is src_configure-type function,
+## it edits configure.ac, therefore it must be src_prepare type.
+src_prepare:build_init()
+{
+	local -A used_options=()
 
-	src_prepare-locales
+	my_use_build_init()
+	{
+		local flag="${1}" option="${2:-"${1}"}"
+		[[ -v "used_options[${option}]" ]] && die "duplicated option"
+		used_options+=( ["${option}"]= )
+		grep -F -q -e "UL_BUILD_INIT([${option}]" -- configure.ac || die
+		rsed -r -e "s@^(UL_BUILD_INIT *\( *\[${option}\])(, *\[[a-z]{2,}\])?@\1, [$(usex ${flag})]@" \
+			-i -- configure.ac
+	}
 
-	# AC_PACKAGE_VERSION, PACKAGE_VERSION get initialized from this file via `./tools/git-version-gen` script
-	# fixes https://github.com/rindeal/gentoo-overlay/issues/157
-	echo "${PV}" > .tarball-version || die
-
-	## although my_use_build_init is src_configure-type function,
-	## it edits configure.ac, therefore it must be here
 	my_use_build_init fdisk
 	my_use_build_init sfdisk
 	my_use_build_init cfdisk
@@ -427,38 +448,78 @@ src_prepare() {
 	my_use_build_init chrt
 
 	my_use_build_init hardlink  # TODO: new additions -> categorize
-	my_use_build_init choom  # TODO: new additions -> categorize
+	my_use_build_init choom     # TODO: new additions -> categorize
 
-	cat <<-_EOF_ >> configure.ac || die
+	local -- configure_status_msg
+	read -r -d '' configure_status_msg <<-_EOF_
 	AC_MSG_RESULT([
+	The resulting build status:
 	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	The resulting build status:
-
-	$( egrep -o '\$build_[a-zA-Z0-9_-]{2,}' configure.ac | \
-		gawk '{ a[$0]=$0 }
+	$(
+		gawk -e '
+			BEGIN {
+				re  = "\\$(build|enable|have)_([a-zA-Z0-9_-]{2,})"
+			}
+			{
+				if (!match($0, re, m))
+					next
+				a[m[2], m[1]]
+			}
 			END {
 				asorti(a)
-				for (s in a)
-					printf "%-12s = %s\n",substr(a[s],8),a[s]
-			}'
+				for (i in a)
+				{
+					split(a[i], x, SUBSEP)
+					opt = x[1]
+					cat = x[2]
+					varname = sprintf("%s_%s", cat, opt)
+					printf("%-18s: \\$%-25s = $%s\n", opt, varname, varname)
+				}
+			}
+		' -- configure.ac
 	)
+
 	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	])
-_EOF_
+	_EOF_
+	printf -- "%s" "${configure_status_msg}" >> configure.ac || die
+}
 
-	po/update-potfiles  # required step taken from autogen.sh
+src_prepare()
+{
+	# https://github.com/karelzak/util-linux/pull/878
+	eapply "${FILESDIR}/po-update-potfiles-find.patch"
+
+	eapply_user
+
+	if use nls
+	then
+		## generate POTFILES.in file used by GNU l10n tools
+		po/update-potfiles  # required step taken from autogen.sh
+	fi
+	src_prepare:locales
+
+	# Set version manually, otherwise it uses a script which derives the version from ".tarball-version" file or git.
+	#
+	# AC_PACKAGE_VERSION, PACKAGE_VERSION get initialized from this file via `./tools/git-version-gen` script
+	# Fixes: https://github.com/rindeal/gentoo-overlay/issues/157
+	rsed -r -e "s@m4_esyscmd\(.*\.tarball-version.*\)@[${PV}]@" -i -- configure.ac
+
+	src_prepare:build_init
+
 	eautoreconf
 	elibtoolize
 }
 
-src_configure() {
+src_configure()
+{
 	export ac_cv_header_security_pam_misc_h="$(usex pam)" # gentoo#485486
 	export ac_cv_header_security_pam_appl_h="$(usex pam)" # gentoo#545042
 
-	local my_econf_args=(
+	local -a my_econf_args=(
 		--enable-fs-paths-extra="${EPREFIX}/usr/sbin:${EPREFIX}/bin:${EPREFIX}/usr/bin"
-		--docdir='${datarootdir}'/doc/${PF}
+		--docdir="\${datarootdir}/doc/${PF}"
 
 		## BASH completion
 		--with-bashcompletiondir="$(get_bashcompdir)"
@@ -476,8 +537,7 @@ src_configure() {
 		$(use_enable assert)
 		$(use_enable symvers)
 		$(use_enable largefile)
-		$(use_enable nls)
-		$(use_enable rpath)
+		$(usex nls "--enable-nls" "")
 		--disable-asan
 		$(use_enable shared-libs shared)
 		$(use_enable static-libs static)
@@ -565,7 +625,7 @@ src_configure() {
 		$(use_with udev)
 
 		# build with non-wide ncurses, default is wide version (--without-ncurses disables all ncurses(w) support)
-		--with-ncurses="$(usex ncurses $(usex unicode auto yes) no)"
+		--with-ncurses=$(usex ncurses $(usex unicode auto yes) no)
 		$(use_with slang)
 		$(use_with tinfo)	# compile without libtinfo
 		$(use_with readline)
@@ -587,22 +647,28 @@ src_configure() {
 	econf "${my_econf_args[@]}"
 }
 
-src_install() {
+src_install()
+{
 	default
 
-	dodoc AUTHORS NEWS README* Documentation/{TODO,*.txt,releases/*}
+	dodoc -r Documentation/
 
-	if use runuser ; then
+	NO_V=1 rrm "${ED}/usr/share/doc/${PF}/"{AUTHORS,ChangeLog,NEWS,README.licensing}
+	NO_V=1 rrm -r "${ED}/usr/share/doc/${PF}/Documentation/licenses"
+
+	rdosym --rel -- /usr/share/doc/${PF}/{Documentation/releases/v${PV}-ReleaseNotes,ChangeLog}
+
+	if use runuser
+	then
 		# files taken from sys-auth/pambase
 		newpamd "${FILESDIR}/runuser.pamd" runuser
 		newpamd "${FILESDIR}/runuser-l.pamd" runuser-l
 	fi
 
-	# e2fsprogs-libs didnt install .la files, and .pc work fine
 	prune_libtool_files
 
 	# need the libs in /
-	local gul_args=(
+	local -a gul_args=(
 		$(usex libblkid blkid '')
 		$(usex mount mount '')
 		$(usex libsmartcols smartcols '')

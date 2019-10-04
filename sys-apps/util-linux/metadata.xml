@@ -13,7 +13,6 @@
     <flag name="assert">Toggle assertions</flag>
     <flag name="symvers">Library symbol versioning</flag>
     <flag name="largefile">support for large files</flag>
-    <flag name="rpath">Hardcode runtime library paths</flag>
     <!--     <flag name="caps">build setpriv helper (run programs with diff capabilities)</flag> -->
     <!--     <flag name="cramfs">build mkfs/fsck helpers for cramfs filesystems</flag> -->
     <!--     <flag name="fdformat">build fdformat (floppy disk format)</flag> -->

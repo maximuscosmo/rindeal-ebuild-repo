@@ -378,7 +378,7 @@ src_prepare:build_init()
 	{
 		local flag="${1}" option="${2:-"${1}"}"
 		[[ -v "used_options[${option}]" ]] && die "duplicated option"
-		used_options+=( ["${option}"]= )
+		used_options+=( ["${option}"]="" )
 		grep -F -q -e "UL_BUILD_INIT([${option}]" -- configure.ac || die
 		rsed -r -e "s@^(UL_BUILD_INIT *\( *\[${option}\])(, *\[[a-z]{2,}\])?@\1, [$(usex ${flag})]@" \
 			-i -- configure.ac
@@ -625,7 +625,7 @@ src_configure()
 		$(use_with udev)
 
 		# build with non-wide ncurses, default is wide version (--without-ncurses disables all ncurses(w) support)
-		--with-ncurses=$(usex ncurses $(usex unicode auto yes) no)
+		--with-ncurses="$(usex ncurses "$(usex unicode auto yes)" no)"
 		$(use_with slang)
 		$(use_with tinfo)	# compile without libtinfo
 		$(use_with readline)
@@ -656,7 +656,7 @@ src_install()
 	NO_V=1 rrm "${ED}/usr/share/doc/${PF}/"{AUTHORS,ChangeLog,NEWS,README.licensing}
 	NO_V=1 rrm -r "${ED}/usr/share/doc/${PF}/Documentation/licenses"
 
-	rdosym --rel -- /usr/share/doc/${PF}/{Documentation/releases/v${PV}-ReleaseNotes,ChangeLog}
+	rdosym --rel -- "/usr/share/doc/${PF}/"{Documentation/releases/"v${PV}-ReleaseNotes",ChangeLog}
 
 	if use runuser
 	then

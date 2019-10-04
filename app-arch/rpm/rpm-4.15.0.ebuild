@@ -5,15 +5,16 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:rpm-software-management"
-GH_REF="${P}-release"
+# TODO: revise 4.15.* changes
 
-PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
+## github.eclass:
+GITHUB_NS="rpm-software-management"
+GITHUB_REF="${P}-release"
 
-## EXPORT_FUNCTIONS: src_unpack
-## variables: GH_HOMEPAGE
-inherit git-hosting
+PYTHON_COMPAT=( python3_{5,6,7} )
+
+##
+inherit github
 
 ## functions: eautoreconf
 inherit autotools
@@ -24,16 +25,30 @@ inherit flag-o-matic
 ## variables: PYTHON_DEPS, PYTHON_REQUIRED_USE
 inherit python-single-r1
 
+## functions: tc-check-openmp
+inherit toolchain-funcs
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="Red Hat Package Management Utils"
-HOMEPAGE="http://www.rpm.org ${GH_HOMEPAGE}"
-LICENSE="GPL-2 LGPL-2"
+HOMEPAGE_A=(
+	"https://rpm.org/"
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"|| ("
+		"GPL-2"
+		"LGPL-2"
+	")"
+)
 
 SLOT="0"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
-KEYWORDS="amd64 arm arm64"
+KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
 	static-libs +shared-libs +largefile
 
@@ -46,27 +61,29 @@ IUSE_A=(
 
 	# automagic deps
 	+bzip2 +lzma +elf +libdw
+
+	threads
 )
 
 # NOTE: do not care about any `AC_PATH_PROG` deps
 CDEPEND_A=(
 	"sys-libs/zlib:0"
-	"bzip2? ( app-arch/bzip2:0 )"
-	"lzma? ( app-arch/xz-utils:0 )"
-	"zstd? ( app-arch/zstd:0 )"
-	"elf? ( virtual/libelf:0 )"
+	"bzip2?   ( app-arch/bzip2:0 )"
+	"lzma?    ( app-arch/xz-utils:0 )"
+	"zstd?    ( app-arch/zstd:0 )"
+	"elf?     ( virtual/libelf:0 )"
 	"openssl? ( dev-libs/openssl:0 )"
-	"nss? ( dev-libs/nss:0 )"
+	"nss?     ( dev-libs/nss:0 )"
 	"sys-apps/file:0"  # libmagic
 	"dev-libs/popt:0"
 	"archive? ( app-arch/libarchive )"
 	">=sys-libs/db-4.5:*"
-	"lmdb? ( dev-db/lmdb:0 )"
-	"python? ( ${PYTHON_DEPS} )"
-	"imaevm? ( amd64? ( app-crypt/ima-evm-utils:0 ) )"
-	"caps? ( sys-libs/libcap:0 )"
-	"acl? ( virtual/acl )"
-	"lua? ( >=dev-lang/lua-5.1.0:*[deprecated] )"
+	"lmdb?    ( dev-db/lmdb:0 )"
+	"python?  ( ${PYTHON_DEPS} )"
+	"imaevm?  ( amd64? ( app-crypt/ima-evm-utils:0 ) )"
+	"caps?    ( sys-libs/libcap:0 )"
+	"acl?     ( virtual/acl )"
+	"lua?     ( >=dev-lang/lua-5.2.0:* )"
 	"plugins? ( sys-apps/dbus:0 )"
 	"dmalloc? ( dev-libs/dmalloc:0 )"
 
@@ -74,6 +91,8 @@ CDEPEND_A=(
 	">=dev-lang/perl-5.8.8"
 	"virtual/libintl"
 	"app-crypt/gnupg:0"
+
+	"threads? ( virtual/openmp:* )"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"nls? ("
@@ -97,16 +116,23 @@ RESTRICT+=" test"
 
 inherit arrays
 
+src_unpack()
+{
+	github:src_unpack
+}
+
 src_prepare() {
-	eapply "${FILESDIR}"/${PN}-4.11.0-autotools.patch
-	eapply "${FILESDIR}"/${PN}-4.8.1-db-path.patch
-	eapply "${FILESDIR}"/${PN}-4.9.1.2-libdir.patch
+# 	eapply "${FILESDIR}/${PN}-4.11.0-autotools.patch"
+	eapply "${FILESDIR}/${PN}-4.8.1-db-path.patch"
+	eapply "${FILESDIR}/${PN}-4.9.1.2-libdir.patch"
 	eapply_user
 
 	# fix #356769
 	rsed -e 's:%{_var}/tmp:/var/tmp:' -i -- macros.in
 	# fix #492642
 	rsed -e "s:@__PYTHON@:${PYTHON}:" -i -- macros.in
+
+	rsed -e "s/AC_CONFIG_SUBDIRS(db3)/foo=bar/" -i -- configure.ac
 
 	eautoreconf
 
@@ -135,7 +161,6 @@ src_configure() {
 		--with-crypto=$(usex openssl{,} $(usex nss{,} ERROR))
 		--without-internal-beecrypt
 		$(use_with archive)
-		--with-external-db  # build against an external Berkeley db
 		$(use_with doc hackingdocs)
 		--without-selinux
 		$(use_with imaevm)
@@ -144,6 +169,9 @@ src_configure() {
 		$(use_with lua)
 		$(use_with dmalloc)
 # 		--with-rundir=RUNDIR
+
+
+		$(use_enable threads openmp)
 	)
 	econf "${my_econf_args[@]}"
 }

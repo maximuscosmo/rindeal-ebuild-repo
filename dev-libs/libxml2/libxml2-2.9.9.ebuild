@@ -5,6 +5,8 @@
 EAPI=6
 inherit rindeal
 
+# TODO: revamp ebuild and sync eith actual upstream state
+
 ## git-hosting.eclass:
 GH_RN="github:GNOME"
 GH_REF="v${PV}"

@@ -103,8 +103,8 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-2.9.2-python-ABIFLAG.patch
 
 	## debian patches
-	eapply "${FILESDIR}/0003-python-remove-single-use-of-_PyVerify_fd.patch"
-	eapply "${FILESDIR}/0004-CVE-2017-8872.patch"
+	#eapply "${FILESDIR}/0003-python-remove-single-use-of-_PyVerify_fd.patch"
+	#eapply "${FILESDIR}/0004-CVE-2017-8872.patch"
 
 	rsed -r -e '/^(DIST_)?SUBDIRS/ s, (doc|example),,g' -i -- Makefile.am
 

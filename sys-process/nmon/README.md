@@ -1,3 +1,0 @@
-- always newest version
-- man page
-- default config

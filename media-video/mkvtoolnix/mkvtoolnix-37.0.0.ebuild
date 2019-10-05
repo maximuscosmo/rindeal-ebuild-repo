@@ -14,6 +14,9 @@ inherit gitlab
 ## functions: eautoreconf
 inherit autotools
 
+## functions: qt5_get_bindir
+inherit qmake-utils
+
 ## functions: append-cppflags
 inherit flag-o-matic
 
@@ -181,10 +184,7 @@ src_prepare()
 }
 
 src_configure() {
-	local -- qt_bin_dir="$(
-		eval "$(qtchooser -qt=5 -print-env)"
-		printf -- "%s" "${QTTOOLDIR}"
-	)"
+	local -- qt_bin_dir="$(qt5_get_bindir)"
 
 	# source files just try to include <utf8.h> directly
 	append-cppflags "-I${EPREFIX}/usr/include/utf8cpp"

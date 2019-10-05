@@ -1,32 +1,32 @@
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2018-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: help2man.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal@gmail.com>
-# @BLURB: TODO
-# @DESCRIPTION: TODO
 
 
-if ! (( _HELP2MAN_ECLASS )) ; then
+if ! (( _HELP2MAN_ECLASS ))
+then
 
 case "${EAPI:-0}" in
-    6) ;;
-    *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
+"6" | "7" ) ;;
+* ) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
+
+inherit rindeal
 
 
 DEPEND="sys-apps/help2man"
 
 
-newhelp2man() {
-	debug-print "${ECLASS}: ${FUNCNAME} $*"
-	local -r binpath="${1}" ; shift
-	local -r manname="${1}" ; shift
-	local tmpfile="$(mktemp --suffix=".${FUNCNAME}")"
-	local bindirname="$(dirname "${binpath}")"
+newhelp2man()
+{
+	debug-print "${ECLASS}: ${FUNCNAME} ${*}"
+	local -r -- binpath="${1}" ; shift
+	local -r -- manname="${1}" ; shift
+	local -- tmpfile="$(mktemp --suffix=".${FUNCNAME}")"
+	local -- bindirname="$(dirname "${binpath}")"
 
-	local default_opts=()
+	local -a default_opts=()
 
 	(( H2M_NO_DEFAULT_NAME           )) || default_opts+=( --name="${PN}"           )
 	(( H2M_NO_DEFAULT_VERSION_STRING )) || default_opts+=( --version-string="${PV}" )
@@ -34,7 +34,7 @@ newhelp2man() {
 	(( H2M_NO_DEFAULT_DISCARD_STDERR )) || default_opts+=( --no-discard-stderr      )
 	(( H2M_NO_DEFAULT_HELP_OPTION    )) || default_opts+=( --help-option="-h"       )
 
-	local help2man=(
+	local -a help2man=(
 		help2man
 
 		"${default_opts[@]}"
@@ -50,7 +50,8 @@ newhelp2man() {
 	newman "${tmpfile}" "${manname}"
 }
 
-dohelp2man() {
+dohelp2man()
+{
 	newhelp2man "${1}" "$(basename "${1}").1"
 }
 

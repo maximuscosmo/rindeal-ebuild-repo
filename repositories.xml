@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE repositories SYSTEM "https://www.gentoo.org/dtd/repositories.dtd">
 <repositories version="1.0">
-    <repo quality="stable" status="unofficial">
+    <repo quality="experimental" status="unofficial">
         <name>rindeal</name>
         <description lang="en">Rindeal's collection of solid ebuilds and whatnot</description>
         <homepage>https://github.com/rindeal/rindeal-ebuild-repo</homepage>

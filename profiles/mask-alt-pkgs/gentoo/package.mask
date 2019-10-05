@@ -30,6 +30,7 @@ dev-java/xz-java::gentoo
 dev-libs/capnproto::gentoo
 dev-libs/glib::gentoo
 dev-libs/gnulib::gentoo
+dev-libs/libebml::gentoo
 dev-libs/libgit2::gentoo
 dev-libs/libgit2-glib::gentoo
 dev-libs/libmaxminddb::gentoo
@@ -37,6 +38,7 @@ dev-libs/libstrophe::gentoo
 dev-libs/libxml2::gentoo
 dev-libs/uthash::gentoo
 dev-python/PyGithub::gentoo
+dev-python/attrdict::gentoo
 dev-python/backcall::gentoo
 dev-python/bitstring::gentoo
 dev-python/cffi::gentoo
@@ -75,6 +77,8 @@ media-gfx/cairosvg::gentoo
 media-gfx/nomacs::gentoo
 media-gfx/rawtherapee::gentoo
 media-libs/flac::gentoo
+media-libs/libmatroska::gentoo
+media-libs/libmypaint::gentoo
 media-libs/libplacebo::gentoo
 media-libs/libvorbis::gentoo
 media-libs/openal::gentoo

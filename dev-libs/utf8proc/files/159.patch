@@ -1,0 +1,33 @@
+From 513fe2452a224b7c225d4c3897ce33815703a9f4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zolt=C3=A1n=20Mizsei?= <zmizsei@extrowerk.com>
+Date: Tue, 2 Jul 2019 20:16:20 +0200
+Subject: [PATCH] GNUInstallDirs support
+
+---
+ CMakeLists.txt | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7e8be20..a548d10 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -49,13 +49,15 @@ set_target_properties (utf8proc PROPERTIES
+ )
+ 
+ if (UTF8PROC_INSTALL)
++  include(GNUInstallDirs)
++  mark_as_advanced(CLEAR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR)
+   install(TARGETS utf8proc
+-    RUNTIME DESTINATION bin
+-    LIBRARY DESTINATION lib
+-    ARCHIVE DESTINATION lib)
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${INSTALL_SUFFIX}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}${INSTALL_SUFFIX})
+ 
+   install(
+     FILES
+       "${PROJECT_SOURCE_DIR}/utf8proc.h"
+-    DESTINATION include)
++    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}${INSTALL_SUFFIX})
+ endif()

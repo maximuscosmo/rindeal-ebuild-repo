@@ -3,7 +3,6 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 
 <i>Packages done right™</i>
 
-
 <!--- BADGES ---------------------------------------------------------------------------------------------------------->
 
 [![][badge-ci-master]](https://travis-ci.com/rindeal/rindeal-ebuild-repo)
@@ -14,7 +13,6 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 [![][badge-first-commit]][git-first-commit][![][badge-last-commit]][git-commits-master]
 [![][badge-commit-cadence-label]![][badge-commit-cadence-week]![][badge-commit-cadence-month]![][badge-commit-cadence-year]][github-pulse]
 [![][badge-commits-queued]][git-compare-master-dev]
-
 
 <!--- MENU ------------------------------------------------------------------------------------------------------------>
 
@@ -58,7 +56,6 @@ Otherwise, enjoy your ride!
 [installation-instructions]: ./INSTALL.md#how-to-install-this-repository
 
 [github-pulse]: https://github.com/rindeal/rindeal-ebuild-repo/pulse "GitHub Pulse for rindeal-ebuild-repo"
-[docker-hub-project]: https://hub.docker.com/r/rindeal/portage-amd64-base/
 [git-first-commit]:            https://github.com/rindeal/rindeal-ebuild-repo/commit/a7fdc35fde3388c2bf95b8beab8a14afb7082f31
 [git-commits-master]:          https://github.com/rindeal/rindeal-ebuild-repo/commits/master
 [git-compare-master-dev]:      https://github.com/rindeal/rindeal-ebuild-repo/compare/master...dev/rindeal

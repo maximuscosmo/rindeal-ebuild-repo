@@ -1,24 +1,23 @@
-# Copyright 1999-2018 Gentoo Authors
-# Copyright 2018 Jan Chren (rindeal)
+# Copyright 2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="Build utilities for GLib using projects"
 HOMEPAGE="https://www.gtk.org/"
-LICENSE="LGPL-2.1+"
+LICENSE="LGPL-2.1-or-later"
 
 SLOT="0"
 
-KEYWORDS="~amd64 ~arm ~arm64"
+KEYWORDS="amd64 arm arm64"
 IUSE_A=( )
 
 CDEPEND_A=(
-	"!<dev-libs/glib-2.56.2:2"
+	"!<dev-libs/glib-2.$(ver_cut 2):2"
 )
 DEPEND_A=( "${CDEPEND_A[@]}" )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	"dev-libs/glib"
+	"dev-libs/glib:2"
 )
 
 inherit arrays

@@ -1,32 +1,51 @@
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="7"
 inherit rindeal
 
-GH_RN="github:lxde"
+## github.eclass:
+GITHUB_NS="lxqt"
 
-inherit git-hosting
+##
+inherit github
+
+## EXPORT_FUNCTIONS:
 inherit cmake-utils
 
-DESCRIPTION="Qt port of pavucontrol"
-LICENSE="GPL-2"
+DESCRIPTION="Pulseaudio mixer in Qt (port of pavucontrol)"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"GPL-2.0-or-later"
+)
 
 SLOT="0"
 
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
+
 KEYWORDS="~amd64"
-IUSE="doc"
+
+IUSE_A=(
+	nls
+)
 
 CDEPEND_A=(
-	"dev-libs/glib:2"
-	">=lxqt-base/liblxqt-0.10"
-	"media-sound/pulseaudio[glib]"
-	"dev-qt/qtdbus:5"
 	"dev-qt/qtwidgets:5"
+	"dev-qt/qtdbus:5"
+
+	">=dev-libs/glib-2.50.0:2"
+
+	"media-sound/pulseaudio[glib]"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
-	">=dev-util/lxqt-build-tools-${PV}"
-	"dev-qt/linguist-tools:5"
+	"nls? ( dev-qt/linguist-tools:5 )"
+
+	">=dev-util/lxqt-build-tools-0.6.0"
+
 	"virtual/pkgconfig"
 	"x11-misc/xdg-user-dirs"
 )
@@ -34,19 +53,39 @@ RDEPEND_A=( "${CDEPEND_A[@]}" )
 
 inherit arrays
 
-src_prepare() {
-	default
+L10N_LOCALES=( as bn_IN ca cs cy da de el es fi fr gl gu he hi hu id it ja kn lt ml mr nb_NO nl or pa pl pt pt_BR ru sk
+	sr sr@latin sv ta te th tr uk zh_CN zh_TW )
+inherit l10n-r1
 
-	# https://github.com/lxde/pavucontrol-qt/issues/31
-	sed -e 's|"changes-prevent"|"changes-prevent-symbolic"|' -i src/*.ui || die
+src_prepare:locales()
+{
+	local l locales dir="src/translations" pre="${PN}_" post=".ts"
+
+	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
+
+	l10n_get_locales locales app $(usex nls off all)
+	for l in ${locales}
+	do
+		rrm "${dir}/${pre}${l}${post}"
+		rrm -f "${dir}/${pre}${l}.desktop"
+	done
+}
+
+
+src_prepare()
+{
+	eapply_user
+
+	src_prepare:locales
 
 	cmake-utils_src_prepare
 }
 
-src_configure() {
-	local mycmakeargs=(
+src_configure()
+{
+	local -a mycmakeargs=(
 		# prevent lxqt-build-tools from pulling translations from a remote git server
-		-D PULL_TRANSLATIONS=''
+		-D UPDATE_TRANSLATIONS=OFF
 	)
 
 	cmake-utils_src_configure

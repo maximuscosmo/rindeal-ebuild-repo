@@ -25,11 +25,13 @@ esac
 inherit rindeal
 
 
-_l10n_var_is_defined() {
+_l10n_var_is_defined()
+{
 	declare -p "${1}" &>/dev/null
 }
 
-_l10n_var_is_type() {
+_l10n_var_is_type()
+{
 	local -- type="${1:0:1}" varname="${2}"
 
 	case "${type}" in
@@ -52,7 +54,8 @@ _l10n_var_is_type() {
 # 	`i` = integer
 # 	`s` = string
 #
-_l10n_ensure_var_type() {
+_l10n_ensure_var_type()
+{
 	local type="${1:0:1}" varname="${2}"
 	local typename
 
@@ -180,7 +183,8 @@ fi
 IUSE+=" ${L10N_LOCALES[@]/#/l10n_}"
 
 
-_l10n_generate_locale_caches() {
+_l10n_generate_locale_caches()
+{
 	debug-print-function ${FUNCNAME}
 
 	local _var_names=( _{app,global}_locales_{all,on,off} )
@@ -254,7 +258,8 @@ _l10n_generate_locale_caches() {
 # are selected, fall back on L10N_LOCALES_BACKUP. When the disabled argument is
 # given, return the disabled useflags instead of the enabled ones.
 ##
-l10n_get_locales() {
+l10n_get_locales()
+{
 	[[ -z "${1}" ]] && die "dst_var is empty"
 	local -n dst_var="${1}" ; shift
 	local type="${1:-"global"}" ; shift
@@ -293,7 +298,8 @@ l10n_get_locales() {
 #
 # Example: l10n_find_changes_in_dir "${S}/src/translations" "${PN}_" '.ts'
 ##
-l10n_find_changes_in_dir() {
+l10n_find_changes_in_dir()
+{
 	debug-print-function ${FUNCNAME} "${@}"
 	(( ${#} == 3 )) || die "Exactly 3 arguments are needed!"
 	local -r -- dir="${1}" pre="${2}" post="${3}"
@@ -340,19 +346,18 @@ l10n_find_changes_in_dir() {
 	then
 		eqawarn "There are changes in locales!"
 
-		__my_sort() {
-			echo $(printf '%s\n' "${@}" | LC_ALL=C sort)
-		}
+		__my_sort(){ echo $(printf '%s\n' "${@}" | LC_ALL=C sort); }
 
 		(( ${#added[@]} > 0 )) && \
 			eqawarn "Locales added: '$(__my_sort "${added[@]}")'"
 		(( ${#removed[@]} > 0 )) && \
 			eqawarn "Locales removed: '$(__my_sort "${removed[@]}")'"
-		eqawarn "All locales found: '$(__my_sort "${found[@]}")'"
+		eqawarn "All locales found: '$(__my_sort "${!found[@]}")'"
 	fi
 }
 
-l10n_set_LINGUAS() {
+l10n_set_LINGUAS()
+{
 	debug-print-function "${FUNCNAME}"
 
 	[[ -v LINGUAS ]] && debug-print "${ECLASS}/${FUNCNAME}: warning - LINGUAS is already set to '${LINGUAS}'"

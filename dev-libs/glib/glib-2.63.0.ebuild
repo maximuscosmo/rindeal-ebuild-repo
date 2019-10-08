@@ -51,10 +51,11 @@ SRC_URI_A=(
 	"${GITLAB_SRC_URI}"
 )
 
+unstable="~"
 KEYWORDS_A=(
-	'amd64'
-	'arm'
-	'arm64'
+	"${unstable}amd64"
+	"${unstable}arm"
+	"${unstable}arm64"
 )
 IUSE_A=(
 	dbus

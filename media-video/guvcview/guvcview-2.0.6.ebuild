@@ -1,31 +1,47 @@
 # Copyright 1999-2016 Gentoo Foundation
-# Copyright 2016-2018 Jan Chren (rindeal)
+# Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="7"
 inherit rindeal
 
 ## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
+
 ## functions: append-cxxflags
 inherit flag-o-matic
+
 ## functions: qt5_get_bindir
 inherit qmake-utils
+
 ## functions: eautoreconf
 inherit autotools
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="Simple v4l2 full-featured video grabber"
-HOMEPAGE="http://guvcview.sourceforge.net/"
+HOMEPAGE_A=(
+	"http://guvcview.sourceforge.net/"
+)
 LICENSE="GPL-3"
 
 SLOT="0"
+
 MY_P="${PN}-src-${PV}"
-SRC_URI="mirror://sourceforge/${PN}/${MY_P}.tar.gz"
+SRC_URI_A=(
+	"mirror://sourceforge/${PN}/${MY_P}.tar.gz"
+)
 
 KEYWORDS="~amd64"
-IUSE_A=( builtin-mjpg gsl nls pulseaudio qt5 +sdl2 )
+IUSE_A=(
+	builtin-mjpg
+	gsl
+	nls
+	pulseaudio
+	qt5
+	+sdl2
+)
 
 CDEPEND_A=(
 	"media-libs/libpng:0="
@@ -63,14 +79,16 @@ S="${WORKDIR}/${MY_P}"
 L10N_LOCALES=( bg bs cs da de en_AU es eu fo fr gl he hr it ja lv nl pl pt pt_BR ru si sr tr uk zh_TW )
 inherit l10n-r1
 
-pkg_setup() {
+pkg_setup()
+{
 	# required for compilation with newer Qt
 	append-cxxflags -std=gnu++11
 
 	export MOC="$(qt5_get_bindir)/moc"
 }
 
-src_prepare-locales() {
+src_prepare:locales()
+{
 	local l locales dir="po" pre="" post=".po"
 
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
@@ -82,12 +100,13 @@ src_prepare-locales() {
 	done
 }
 
-src_prepare() {
+src_prepare()
+{
 	eapply_user
 
 	xdg_src_prepare
 
-	src_prepare-locales
+	src_prepare:locales
 
 	# do not make some compiler prefered over another and let user make the choice
 	rsed -r -e 's:^AC_PROG_(CC|CXX).*:AC_PROG_\1:' -i -- configure.ac
@@ -97,8 +116,9 @@ src_prepare() {
 	eautoreconf
 }
 
-src_configure() {
-	local myeconfargs=(
+src_configure()
+{
+	local -a my_econf_args=(
 		--disable-debian-menu
 		--disable-static
 		$(use_enable builtin-mjpg)
@@ -110,10 +130,11 @@ src_configure() {
 		$(use_enable sdl2)
 	)
 
-	econf "${myeconfargs[@]}"
+	econf "${my_econf_args[@]}"
 }
 
-src_install() {
+src_install()
+{
 	default
 
 	prune_libtool_files

@@ -14,7 +14,6 @@
     <flag name="iconv_gnu">iconv_gnu</flag>
     <flag name="iconv_libc">iconv_libc</flag>
     <flag name="iconv_native">iconv_native</flag>
-    <flag name="internal-pcre">internal-pcre</flag>
     <flag name="libmount">libmount</flag>
     <flag name="fam">Use fam for file system monitoring</flag>
   </use>

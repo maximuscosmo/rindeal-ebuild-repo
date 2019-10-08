@@ -7,22 +7,13 @@ inherit rindeal
 ## github.eclass:
 GITHUB_NS="mesonbuild"
 
-## usage is self-explanatory
-inherit github
-
-## git-hosting.eclass:
-GH_RN="github:docker"
-
 ## python-r1.eclass:
 PYTHON_COMPAT=( python3_{5,6,7} )
 
-## EXPORT_FUNCTIONS: src_unpack
-## functions: github:src_unpack
-## variables: HOMEPAGE, SRC_URI
-inherit git-hosting
+## usage is self-explanatory
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
-## functions: distutils-r1_python_install_all
 inherit distutils-r1
 
 ## functions: dobashcomp
@@ -30,6 +21,7 @@ inherit bash-completion-r1
 
 DESCRIPTION="Meson Build System"
 HOMEPAGE_A=(
+	"https://mesonbuild.com/"
 	"${GITHUB_HOMEPAGE}"
 )
 LICENSE_A=(
@@ -37,11 +29,17 @@ LICENSE_A=(
 )
 
 SLOT="0"
+
 SRC_URI_A=(
 	"${GITHUB_SRC_URI}"
 )
 
-KEYWORDS="~amd64 ~arm ~arm64"
+unstable="~"
+KEYWORDS_A=(
+	"${unstable}amd64"
+	"${unstable}arm"
+	"${unstable}arm64"
+)
 IUSE_A=(
 )
 
@@ -60,10 +58,6 @@ src_unpack() {
 }
 
 python_prepare_all() {
-	# https://github.com/mesonbuild/meson/issues/5909
-	# `[PATCH] mconf: Fix meson configure crash (fixes #5909)`
-	eapply "${FILESDIR}"/47bdea504067d00e9bed522e9575bd2416bfe4ee.patch
-
 	eapply_user
 
 	rsed -e "s|data_files=data_files,||" -i -- setup.py
@@ -74,12 +68,12 @@ python_prepare_all() {
 python_install_all() {
 	distutils-r1_python_install_all
 
-	doman man/meson.1
+	doman "man/meson.1"
 
-	dobashcomp data/shell-completions/bash/${PN}
+	dobashcomp "data/shell-completions/bash/${PN}"
 
-	insinto /usr/share/zsh/site-functions
-	doins data/shell-completions/zsh/_meson
+	insinto "/usr/share/zsh/site-functions"
+	doins "data/shell-completions/zsh/_meson"
 
 	local -A vim_plugins
 	local -- f

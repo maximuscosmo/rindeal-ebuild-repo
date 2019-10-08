@@ -17,7 +17,6 @@ CDEPEND_A=(
 DEPEND_A=( "${CDEPEND_A[@]}"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
-	"!<dev-libs/glib-2.$(ver_cut 2):2"
 	"dev-libs/glib:2"
 )
 

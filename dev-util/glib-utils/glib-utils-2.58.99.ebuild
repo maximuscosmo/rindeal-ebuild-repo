@@ -13,10 +13,11 @@ KEYWORDS="amd64 arm arm64"
 IUSE_A=( )
 
 CDEPEND_A=(
-	"!<dev-libs/glib-2.$(ver_cut 2):2"
 )
-DEPEND_A=( "${CDEPEND_A[@]}" )
+DEPEND_A=( "${CDEPEND_A[@]}"
+)
 RDEPEND_A=( "${CDEPEND_A[@]}"
+	"!<dev-libs/glib-2.$(ver_cut 2):2"
 	"dev-libs/glib:2"
 )
 
@@ -24,6 +25,6 @@ inherit arrays
 
 S="${WORKDIR}"
 
-src_configure() { :; }
-src_compile() { :; }
-src_install() { :; }
+src_configure(){ :;}
+src_compile(){ :;}
+src_install(){ :;}

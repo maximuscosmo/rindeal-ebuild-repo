@@ -5,7 +5,4 @@
     <email>dev.rindeal+ebuild-repo@gmail.com</email>
     <name>Jan Chren (rindeal)</name>
   </maintainer>
-  <use>
-    <flag name="gtk3">Use gtk3 instead of gtk2</flag>
-  </use>
 </pkgmetadata>

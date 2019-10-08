@@ -1,43 +1,55 @@
-# Copyright 1999-2015 Gentoo Foundation
-# Copyright 2016-2017 Jan Chren (rindeal)
+# Copyright 2016-2017,2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit rindeal
 
+## gitlab.eclass:
+GITLAB_SVR="https://gitlab.freedesktop.org"
+GITLAB_NS="pulseaudio"
+GITLAB_REF="v${PV}"
+
+##
+inherit gitlab
+
+## EXPORT_FUNCTIONS: src_prepare pkg_preinst pkg_postinst pkg_postrm
 inherit xdg
-# functions: eautoreconf
+
+## functions: eautoreconf
 inherit autotools
 
+## functions: append-cxxflags, append-cppflags
+inherit flag-o-matic
+
 DESCRIPTION="Pulseaudio Volume Control, GTK based mixer for Pulseaudio"
-HOMEPAGE="https://freedesktop.org/software/pulseaudio/pavucontrol/"
+HOMEPAGE_A=(
+	"https://freedesktop.org/software/pulseaudio/pavucontrol/"
+	"${GITLAB_HOMEPAGE}"
+)
 LICENSE="GPL-2"
 
 SLOT="0"
-SRC_URI="https://freedesktop.org/software/pulseaudio/pavucontrol/${P}.tar.xz"
+
+SRC_URI_A=(
+	"${GITLAB_SRC_URI}"
+)
 
 KEYWORDS="amd64"
-IUSE_A=( gtk3 nls )
+IUSE_A=(
+	nls
+)
 
 CDEPEND_A=(
 	">=dev-libs/libsigc++-2.0:2"
-	">=media-sound/pulseaudio-3[glib]"
+	">=media-sound/pulseaudio-5[glib]"
 
-	"gtk3? ("
-		">=dev-cpp/gtkmm-2.99:3.0"
-		">=media-libs/libcanberra-0.16[gtk3]"
-	")"
-	"!gtk3? ("
-		">=dev-cpp/gtkmm-2.16:2.4"
-		">=media-libs/libcanberra-0.16[gtk]"
-	")"
+	">=dev-cpp/gtkmm-3.0:3.0"
+	">=media-libs/libcanberra-0.16[gtk3]"
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"virtual/pkgconfig"
-	"nls? ("
-		"dev-util/intltool"
-		"sys-devel/gettext"
-	")"
+	"dev-util/intltool"
+	"sys-devel/gettext"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}"
 	"virtual/freedesktop-icon-theme"
@@ -45,41 +57,45 @@ RDEPEND_A=( "${CDEPEND_A[@]}"
 
 inherit arrays
 
-L10N_LOCALES=( as ru pt_BR uk nl de bn_IN es hu da or gu hi zh_CN el sr@latin kn fr sk pt mr cs tr
-	pa th ca te sr ml fi pl ta sv ja it )
+L10N_LOCALES=( as bn_IN ca ca@valencia cs da de el es fi fr gu hi hr hu it ja kn ko lt ml mr nl nn or pa pl pt pt_BR ru
+	sk sr sr@latin sv ta te th tr uk zh_CN zh_TW )
 inherit l10n-r1
 
-src_prepare-locales() {
+src_unpack()
+{
+	gitlab:src_unpack
+}
+
+src_prepare:locales()
+{
 	local l locales dir='po' pre='' post='.po'
 
 	l10n_find_changes_in_dir "${dir}" "${pre}" "${post}"
 
 	l10n_get_locales locales app off
-	for l in ${locales} ; do
+	for l in ${locales}
+	do
 		rrm "${dir}/${pre}${l}${post}"
-		sed -e "/${l}/d" -i -- "${dir}"/LINGUAS || die
+		rsed -e "/^${l}$/d" -i -- "${dir}/LINGUAS"
 	done
 }
 
 src_prepare() {
 	xdg_src_prepare
 
-	src_prepare-locales
-
-	# https://bugs.gentoo.org/show_bug.cgi?id=567216
-	# https://cgit.freedesktop.org/pulseaudio/pavucontrol/commit/?id=4acb3ef0203647062b37b11e1d54700e3833c364
-	# TODO: remove in >3.0
-	sed -e '/AC_PROG_CXX/a AX_CXX_COMPILE_STDCXX_11' \
-		-i -- configure.ac || die
+	src_prepare:locales
 
 	eautoreconf
 }
 
-src_configure() {
-	local my_econf_args=(
-		--disable-lynx	# Turn off lynx usage for documentation generation
+src_configure()
+{
+	# lots of warnings when glib is updated more often
+	append-cxxflags "-Wno-deprecated-declarations"
 
-		$(use_enable gtk3)
+	local -a my_econf_args=(
+		--disable-lynx	# Turn off lynx usage for plain-text documentation generation
+
 		$(use_enable nls)
 	)
 	econf "${my_econf_args[@]}"

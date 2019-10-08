@@ -1,4 +1,0 @@
-- xdg.eclass (menu entry in your DE is automatically refreshed)
-- gtk3 USE flag
-  - allows to build against gtk2 when disabled
-- locales support

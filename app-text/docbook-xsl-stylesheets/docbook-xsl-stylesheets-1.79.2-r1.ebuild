@@ -21,7 +21,8 @@ MY_P="${MY_PN}-${PV}"
 SLOT="0"
 SRC_URI="https://github.com/docbook/xslt10-stylesheets/releases/download/release/${PV}/${MY_P}.tar.bz2"
 
-KEYWORDS="amd64 arm arm64"
+# 1.79.2 contains lots of breaking changes
+KEYWORDS=""
 IUSE_A=(
 	ruby
 	slides params webhelp images fo

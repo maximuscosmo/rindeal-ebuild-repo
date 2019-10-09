@@ -71,7 +71,6 @@ src_prepare:locales()
 	done
 }
 
-
 src_prepare()
 {
 	eapply_user

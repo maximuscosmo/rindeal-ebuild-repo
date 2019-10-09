@@ -233,6 +233,9 @@ src_install()
 	meson_src_install
 	einstalldocs
 
+	# workaround for python_wrapper_setup messing with PATH
+	python_fix_shebang "${ED}/usr/bin/"{gdbus-codegen,glib-genmarshal,glib-mkenums,gtester-report}
+
 	keepdir "/usr/$(get_libdir)/gio/modules"
 
 	# glib-gettextize errors out if this dir doesn't exist

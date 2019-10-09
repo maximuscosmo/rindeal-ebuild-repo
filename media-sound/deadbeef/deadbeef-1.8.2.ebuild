@@ -1,11 +1,11 @@
 # Copyright 2016-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI="7"
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:Alexey-Yakovenko"
+## github.eclass:
+GITHUB_NS="Alexey-Yakovenko"
 
 ## functions: dsf:eval
 inherit dsf-utils
@@ -13,8 +13,8 @@ inherit dsf-utils
 ## functions: rindeal:prefix_flags
 inherit rindeal-utils
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+##
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
@@ -22,42 +22,114 @@ inherit xdg
 ## functions: eautoreconf
 inherit autotools
 
+## functions: apppend-cflags
+inherit flag-o-matic
+
 ## functions: prune_libtool_files
 inherit ltprune
 
 DESCRIPTION="Music player for *nix-like systems"
-HOMEPAGE="http://deadbeef.sf.net/ ${GH_HOMEPAGE}"
-LICENSE="GPL-2"
+HOMEPAGE_A=(
+	"http://deadbeef.sf.net/"
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"Zlib"
+
+	"public-domain"  # utf8.c, utf8.h
+	"BSD-3-Clause"  # fastftoi.h based on libvorbis/vorbis/lib/os.h
+	"BSD-2-Clause"  # fft.c, fft.h
+	"BSD-3-Clause"  #  md5/md5.c, md5/md5.h
+	# ???  # ConvertUTF/ConvertUTF.c, ConvertUTF/ConvertUTF.h
+)
 
 SLOT="0"
+
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 
 IUSE_A=(
-	doc nls threads static rpath
+	doc
+	nls
+	threads
+	static
+	rpath
 
 	abstract-socket
-	+gtk2 gtk3
+	gtk2
+	+gtk3
 
-	$(rindeal:prefix_flags \
-		"plugin_decoder_" \
-		aac adplug alac cdda cdda-paranoia dca dumb ffap +ffmpeg flac gme mp3 +mp3-libmad mp3-libmpg123 musepack \
-		opus psf sc68 shn sid sndfile tta vorbis vtx wavpack wildmidi wma)
-	$(rindeal:prefix_flags \
-		"plugin_output_" \
-		+alsa nullout oss +pulse)
-	$(rindeal:prefix_flags \
-		"plugin_dsp_" \
-		supereq mono2stereo src) # soundtouch
-	$(rindeal:prefix_flags \
-		"plugin_misc_" \
-		shellexec shellexecui converter hotkeys lfm pltbrowser notify artwork artwork-network artwork-imlib2 oggedit rgscanner)
-	$(rindeal:prefix_flags \
-		"plugin_vfs_" \
-		zip curl mms)
-	$(rindeal:prefix_flags \
-		"plugin_playlist_" \
-		+m3u)
+	$(rindeal:prefix_flags  \
+		"plugin_decoder_"   \
+			aac             \
+			adplug          \
+			alac            \
+			cdda            \
+			cdda-paranoia   \
+			dca             \
+			dumb            \
+			ffap            \
+			+ffmpeg         \
+			flac            \
+			gme             \
+			mp3             \
+			+mp3-libmad     \
+			mp3-libmpg123   \
+			musepack        \
+			opus            \
+			psf             \
+			sc68            \
+			shn             \
+			sid             \
+			sndfile         \
+			tta             \
+			vorbis          \
+			vtx             \
+			wavpack         \
+			wildmidi        \
+			wma             \
+	)
+	$(rindeal:prefix_flags  \
+		"plugin_output_"    \
+			+alsa           \
+			nullout         \
+			oss             \
+			+pulse          \
+	)
+	$(rindeal:prefix_flags  \
+		"plugin_dsp_"       \
+			supereq         \
+			mono2stereo     \
+			src             \
+	) # soundtouch
+	$(rindeal:prefix_flags  \
+		"plugin_misc_"      \
+			shellexec       \
+			shellexecui     \
+			converter       \
+			hotkeys         \
+			lfm             \
+			pltbrowser      \
+			notify          \
+			artwork         \
+			artwork-network \
+			artwork-imlib2  \
+			oggedit         \
+			rgscanner       \
+	)
+	$(rindeal:prefix_flags  \
+		"plugin_vfs_"       \
+			zip             \
+			curl            \
+			mms             \
+	)
+	$(rindeal:prefix_flags  \
+		"plugin_playlist_"  \
+			+m3u            \
+	)
 )
 
 CDEPEND_A=(
@@ -169,7 +241,8 @@ DEPEND_A=( "${CDEPEND_A[@]}"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
-my_filter() {
+my_filter()
+{
 	local pattern="${1}" ; shift
 	local haystack=( "${@}" )
 	local f regex="^(-|\+)*([a-zA-Z0-9_-]*)"
@@ -230,15 +303,19 @@ RESTRICT+=""
 
 inherit arrays
 
-src_prepare() {
+src_prepare()
+{
+	# https://github.com/DeaDBeeF-Player/deadbeef/pull/2238
+	eapply "${FILESDIR}/gettext.patch"
+
 	eapply_user
 
 	# clear out `docs_DATA`
 	rsed -e '/^EXTRA_DIST/i docs_DATA =' -i -- Makefile.am
 
 	# `groups extending the format should start with "X-"`
-	# TODO: removein nex version; fixed in https://github.com/DeaDBeeF-Player/deadbeef/commit/7dc7ef37bcbe4a2d5926d1b0ae9f59f3ee8b56da
-	rsed -r -e '\@^\[[^]]* Shortcut Group\]@ s@^\[@[X-@' -i -- ${PN}.desktop.in
+	# TODO: remove in next version; fixed in https://github.com/DeaDBeeF-Player/deadbeef/commit/7dc7ef37bcbe4a2d5926d1b0ae9f59f3ee8b56da
+	rsed -r -e '\@^\[[^]]* Shortcut Group\]@ s@^\[@[X-@' -i -- "${PN}.desktop.in"
 
 	# automake: `error: required file `./config.rpath' not found`
 	touch config.rpath || die
@@ -246,7 +323,8 @@ src_prepare() {
 	eautoreconf
 }
 
-my_gen_econf_args() {
+my_gen_econf_args()
+{
 	local -n var_out="$1" ; shift
 	local type="$1" ; shift
 	local cat="${1}" ; shift
@@ -263,7 +341,11 @@ my_gen_econf_args() {
 	done
 }
 
-src_configure() {
+src_configure()
+{
+	# gtk/glib produce lots of these
+	append-cflags "-Wno-deprecated-declarations"
+
 	# plugin lists can be generated with
 	#     $ ag --files-with-matches DB_PLUGIN_DECODER plugins | grep -Po '(?<=plugins/)[^/]+' | sort
 	local -A gen_econf_args=()
@@ -312,7 +394,8 @@ src_configure() {
 	econf "${gen_econf_args[@]}" "${my_econf_args[@]}"
 }
 
-src_install() {
+src_install()
+{
 	default
 
 	prune_libtool_files --modules

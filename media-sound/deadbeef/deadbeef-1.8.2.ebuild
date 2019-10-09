@@ -47,6 +47,8 @@ SLOT="0"
 
 SRC_URI_A=(
 	"${GITHUB_SRC_URI}"
+
+	"https://androidhost.org/d/62mdacS -> gettext.patch"
 )
 
 KEYWORDS="~amd64 ~arm ~arm64"
@@ -306,7 +308,7 @@ inherit arrays
 src_prepare()
 {
 	# https://github.com/DeaDBeeF-Player/deadbeef/pull/2238
-	eapply "${FILESDIR}/gettext.patch"
+	eapply "${DISTDIR}/gettext.patch"
 
 	eapply_user
 

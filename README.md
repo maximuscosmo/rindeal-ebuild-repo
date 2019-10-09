@@ -16,22 +16,23 @@ Rindeal's Ebuild Repository <img src="./assets/logo_96.png" title="Sir Benjamin 
 
 <!--- MENU ------------------------------------------------------------------------------------------------------------>
 
-[Homepage][homepage] | [Issue tracker][issue-tracker] | **[Installation instructions][installation-instructions]**
+**[Homepage][homepage]** | **[Issue tracker][issue-tracker]**
 
 <!--- DOCUMENT_START -------------------------------------------------------------------------------------------------->
 
-This is an [ebuild repository][wiki-ebuild-repo], in short it's a collection of package build recipes
+This is an [ebuild repository][wiki-ebuild-repo]. In short, it's a collection of package build recipes
 called [ebuilds][wiki-ebuild] and related files for [PMS][wiki-pms]&#8209;compatible package managers
 such as [Portage][wiki-portage].
 
-**Warning**: This repository is **not** an overlay for [Gentoo™ ebuild repository][]!
-At the moment this repository still depends on it for some of its functionality,
-but I'm working towards a complete independence, which means independent ebuilds, eclasses and profiles for
-a fully working basic system.
+**Notice**: This repository is **not** an overlay for [Gentoo™ ebuild repository][]!
+At the moment this repository still uses it for some of its functionality,
+but it's on the path towards complete independence, with the final goal of creating a real mini-distro.
 For this reason don't expect things to work smoothly if you use this repository just as a pure overlay.
-You can learn more about this issue in [this document][INSTALL].
+It shouldn't cause you data-loss, but `emerge` breakage and un-bootable system is very much possible.
+Mixing packages from both repos is strongly discouraged and you should avoid it using `package.mask`
+such as [this one](https://github.com/rindeal/rindeal-ebuild-repo/blob/master/profiles/mask-alt-pkgs/gentoo/package.mask).
 
-Otherwise, enjoy your ride!
+If you know what you're doing, I welcome you here and wish you a pleasant stay!
 
 --------------------------------------------------------------------------------
 

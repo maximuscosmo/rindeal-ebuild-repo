@@ -4,8 +4,8 @@
 EAPI=7
 inherit rindeal
 
-## git-hosting.eclass:
-GH_RN="github:goldmann"
+## github.eclass:
+GITHUB_NS="goldmann"
 
 ## python-*.eclass:
 PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
@@ -13,16 +13,23 @@ PYTHON_COMPAT=( python2_7 python3_{5,6,7} )
 ## distutils-r1.eclass:
 DISTUTILS_SINGLE_IMPL=1
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+## self-explanatory
+inherit github
 
 ## EXPORT_FUNCTIONS: src_prepare src_configure src_compile src_test src_install
 inherit distutils-r1
 
 DESCRIPTION="Docker image squashing tool"
+HOMEPAGE_A=(
+	"${GITHUB_HOMEPAGE}"
+)
 LICENSE="MIT"
 
 SLOT="0"
+
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
 
 KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=( )
@@ -37,3 +44,8 @@ REQUIRED_USE_A=(  )
 RESTRICT+=""
 
 inherit arrays
+
+src_unpack()
+{
+	github:src_unpack
+}

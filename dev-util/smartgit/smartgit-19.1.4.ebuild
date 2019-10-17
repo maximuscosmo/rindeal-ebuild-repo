@@ -1,7 +1,7 @@
 # Copyright 2015-2019 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI="7"
 inherit rindeal
 
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
@@ -11,8 +11,12 @@ inherit xdg
 inherit desktop
 
 DESCRIPTION="Git client with support for GitHub Pull Requests+Comments, SVN and Mercurial"
-HOMEPAGE="https://www.syntevo.com/${PN,,}"
-LICENSE="${PN}"
+HOMEPAGE_A=(
+	"https://www.syntevo.com/${PN,,}"
+)
+LICENSE_A=(
+	"${PN}"
+)
 
 # slot number is based on the upstream slotting mechanism which creates a new subdir
 # in `~/.smartgit/` for each new major release. The subdir name corresponds with SLOT.
@@ -41,13 +45,15 @@ inherit arrays
 
 S="${WORKDIR}/${PN}"
 
-src_prepare() {
+src_prepare()
+{
 	eapply_user
 
 	xdg_src_prepare
 }
 
-src_install() {
+src_install()
+{
 	local -r -- vendor_ns="syntevo"
 	local -r -- install_dir="/opt/${vendor_ns}/${MY_PNS}"
 
@@ -84,8 +90,8 @@ src_install() {
 		GenericName=Git GUI
 		Comment=${DESCRIPTION}
 		Icon=${MY_PNS}
-		TryExec=${EROOT}${install_dir}/bin/${PN,,}.sh
-		Exec=${EROOT}${install_dir}/bin/${PN,,}.sh %U
+		TryExec=${EPREFIX}${install_dir}/bin/${PN,,}.sh
+		Exec=${EPREFIX}${install_dir}/bin/${PN,,}.sh %U
 		Terminal=false
 		MimeType=x-scheme-handler/git;x-scheme-handler/smartgit;x-scheme-handler/sourcetree;
 		Categories=Development;RevisionControl;

@@ -15,14 +15,16 @@
     <flag name="rpath">hardcode runtime library paths</flag>
     <flag name="largefile">support large files</flag>
     <!--     <flag name="audit"></flag> -->
-    <!--     <flag name="pam"></flag> -->
     <!--     <flag name="selinux"></flag> -->
+    <!--     <flag name="pam"></flag> -->
+    <flag name="btrfs">TODO</flag>
     <!--     <flag name="acl"></flag> -->
     <!--     <flag name="xattr"></flag> -->
     <flag name="skey">S/Key support</flag>
     <flag name="libcrack">libcrack</flag>
     <flag name="sha-crypt">allow the SHA256 and SHA512 password encryption algorithms</flag>
     <flag name="nscd">enable support for nscd</flag>
+    <flag name="sssd">TODO</flag>
     <!-- util-linux special -->
     <flag name="vipw-vigr">Install `vipw`-related files which collide with util-linux suite</flag>
     <flag name="newgrp">Install `newgrp`-related files which collide with util-linux suite</flag>

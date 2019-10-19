@@ -26,7 +26,7 @@ LICENSE="BSD"
 SLOT="0"
 
 KEYWORDS="amd64 arm arm64"
-IUSE_A=( +drop-root smi ssl samba suid test )
+IUSE_A=( +drop-root smi ssl samba suid )
 
 CDEPEND_A=(
 	"net-libs/libpcap"
@@ -37,12 +37,6 @@ CDEPEND_A=(
 )
 DEPEND_A=( "${CDEPEND_A[@]}"
 	"drop-root? ( virtual/pkgconfig )"
-	"test? ("
-		"|| ("
-			"app-arch/sharutils"
-			"sys-freebsd/freebsd-ubin )"
-		"dev-lang/perl"
-	")"
 )
 RDEPEND_A=( "${CDEPEND_A[@]}" )
 
@@ -66,17 +60,6 @@ src_configure() {
 		$(usex drop-root --with-user="${PN}" '')
 	)
 	econf "${my_econf_args[@]}"
-}
-
-src_test() {
-	if (( EUID )) || ! use drop-root ; then
-		rsed -e '/^\(espudp1\|eapon1\)/d;' -i -- tests/TESTLIST
-		emake check
-	else
-		ewarn "Tests skipped!"
-		ewarn "If you want to run the test suite, make sure you either"
-		ewarn "set FEATURES=userpriv or set USE=-drop-root"
-	fi
 }
 
 src_install() {

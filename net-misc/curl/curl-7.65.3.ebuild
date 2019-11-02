@@ -47,13 +47,35 @@ KEYWORDS_A=(
 	"arm64"
 )
 IUSE_A=(
-	curldebug +largefile libgcc +rt +symbol-hiding versioned-symbols static-libs +shared-libs test threads
+	curldebug
+	+largefile
+	libgcc
+	+rt
+	+symbol-hiding
+	versioned-symbols
+	+shared-libs
+	test
+	threads
 
-	libcurl-option manual +verbose
+	libcurl-option
+	manual
+	+verbose
 
-	ipv6 +unix-sockets +zlib brotli dns_c-ares dns_threaded idn psl
+	ipv6
+	+unix-sockets
+	+zlib
+	brotli
+	dns_c-ares
+	dns_threaded
+	idn
+	psl
 
-	+cookies metalink proxy libssh2 libssh +alt-svc
+	+cookies
+	metalink
+	proxy
+	libssh2
+	libssh
+	+alt-svc
 
 	$(rindeal:prefix_flags \
 		"auth_" \
@@ -85,21 +107,21 @@ CDEPEND_A=(
 				"app-misc/ca-certificates")"
 
 		"ssl_gnutls?	("
-			"net-libs/gnutls:0=[static-libs?]"
+			"net-libs/gnutls:0="
 			"dev-libs/nettle:0="
 		")"
 		"ssl_mbedtls?	( net-libs/mbedtls:0= )"
-		"ssl_openssl?	( dev-libs/openssl:0=[static-libs?] )"
+		"ssl_openssl?	( dev-libs/openssl:0= )"
 		"ssl_nss?		( dev-libs/nss:0 )"
 	")"
 	"protocol_http2?	( net-libs/nghttp2 )"
-	"idn?				( net-dns/libidn2:0[static-libs?] )"
+	"idn?				( net-dns/libidn2:0 )"
 	"dns_c-ares?		( net-dns/c-ares:0 )"
 	"auth_kerberos?		( >=virtual/krb5-0-r1 )"
 	"metalink?			( >=media-libs/libmetalink-0.1.1 )"
 	"protocol_rtmp?		( media-video/rtmpdump )"
-	"libssh2?			( net-libs/libssh2[static-libs?] )"
-	"libssh?			( net-libs/libssh[static-libs?] )"
+	"libssh2?			( net-libs/libssh2 )"
+	"libssh?			( net-libs/libssh )"
 	"zlib?				( sys-libs/zlib )"
 	"brotli?			( app-arch/brotli )"
 	"protocol_ldap?		( net-nds/openldap )"
@@ -225,7 +247,7 @@ src_configure() {
 # 		--disable-code-coverage  # TODO: enable this after https://github.com/curl/curl/pull/4099 is merged
 		$(use_enable   largefile)
 		$(use_enable   shared-libs shared)
-		$(use_enable   static-libs static)
+		--disable-static-libs
 		$(myprotouse e http)
 		$(myprotouse e ftp)
 		$(myprotouse e file)

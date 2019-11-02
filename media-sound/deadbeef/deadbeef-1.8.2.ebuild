@@ -48,7 +48,7 @@ SLOT="0"
 SRC_URI_A=(
 	"${GITHUB_SRC_URI}"
 
-	"https://androidhost.org/d/62mdacS -> gettext.patch"
+# 	"https://androidhost.org/d/62mdacS -> gettext.patch"
 )
 
 KEYWORDS="~amd64 ~arm ~arm64"
@@ -56,7 +56,6 @@ KEYWORDS="~amd64 ~arm ~arm64"
 IUSE_A=(
 	doc
 	nls
-	threads
 	static
 	rpath
 
@@ -308,7 +307,8 @@ inherit arrays
 src_prepare()
 {
 	# https://github.com/DeaDBeeF-Player/deadbeef/pull/2238
-	eapply "${DISTDIR}/gettext.patch"
+# 	eapply "${DISTDIR}/gettext.patch"
+	eapply "${FILESDIR}/70339732d8530570861d8fe26112b9f203077e91.patch"
 
 	eapply_user
 
@@ -379,14 +379,12 @@ src_configure()
 	local -a my_econf_args=(
 		--disable-coreaudio  # MacOS
 		--disable-portable
-		--without-included-gettext
 
 		$(use_enable rpath)
 		$(use_enable static staticlink)
 		--disable-static # --enable-static does nothing
 
 		$(use_enable nls)
-		$(use_enable threads threads posix) # posix is the only viable option for linux
 		$(use_enable abstract-socket)	# use abstract UNIX socket for IPC (default: disabled)
 
 		## GUI

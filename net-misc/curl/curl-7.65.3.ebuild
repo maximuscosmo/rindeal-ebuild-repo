@@ -6,11 +6,10 @@ EAPI=7
 inherit rindeal
 
 ## git-hosting.eclass:
-GH_RN="github"
-GH_REF="curl-${PV//./_}"
+GITHUB_REF="curl-${PV//./_}"
 
-## EXPORT_FUNCTIONS: src_unpack
-inherit git-hosting
+##
+inherit github
 
 ## functions: rindeal:prefix_flags
 inherit rindeal-utils
@@ -28,12 +27,25 @@ inherit ltprune
 inherit prefix
 
 DESCRIPTION="Command line tool and library for transferring data with URLs"
-HOMEPAGE="https://curl.haxx.se/ ${GH_HOMEPAGE}"
-LICENSE="MIT"
+HOMEPAGE_A=(
+	"https://curl.haxx.se/"
+	"${GITHUB_HOMEPAGE}"
+)
+LICENSE_A=(
+	"MIT"
+)
 
 SLOT="0"
 
-KEYWORDS="amd64 arm arm64"
+SRC_URI_A=(
+	"${GITHUB_SRC_URI}"
+)
+
+KEYWORDS_A=(
+	"amd64"
+	"arm"
+	"arm64"
+)
 IUSE_A=(
 	curldebug +largefile libgcc +rt +symbol-hiding versioned-symbols static-libs +shared-libs test threads
 
@@ -142,6 +154,11 @@ REQUIRED_USE_A=(
 )
 
 inherit arrays
+
+src_unpack()
+{
+	github:src_unpack
+}
 
 src_prepare() {
 	eapply "${FILESDIR}/${PN}-7.30.0-prefix.patch"

@@ -16,9 +16,6 @@ esac
 
 inherit rindeal
 
-## functions: ver_cut
-(( EAPI < 7 )) && inherit eapi7-ver
-
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
 

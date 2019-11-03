@@ -1,7 +1,7 @@
 # Copyright 2016 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 JBIJ_PN_PRETTY='CLion'
 JBIJ_URI="cpp/CLion-${PV}"

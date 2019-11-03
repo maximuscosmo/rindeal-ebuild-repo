@@ -1,7 +1,7 @@
 # Copyright 2016-2017 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 JBIJ_PN_PRETTY='IntelliJ IDEA'
 JBIJ_URI="idea/ideaIC-${PV}"
